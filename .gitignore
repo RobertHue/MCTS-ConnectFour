@@ -1,0 +1,13 @@
+# ignore all object and archive files
+*.[oa]
+
+# ignore all temporary files
+*~
+
+# ignore all the files in the build/ directory
+build/
+
+# do not ignore .gitignore
+!.gitignore
+ 
+# end
