@@ -6,6 +6,7 @@
 
 # ignore all the files in the build/ directory
 build/
+bin/
 
 # do not ignore .gitignore
 !.gitignore

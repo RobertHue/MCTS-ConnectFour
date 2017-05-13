@@ -44,7 +44,7 @@ Falls es keine solche 3er-Reihe gibt, wird NONE zurckgegeben
 
 Beispiele:
         "X,X,X,O" => NONE;  "X,X,X,_" oder "X,_,X,X" oder "O,X,X,_,X" => Player X
-        "_,_,X,_,X,_,X,_,X,X" 
+        "_,_,X,_,X,_,X,_,X,X"
  */
 Player GamePanel::isAboutToWin() {
     bool closeFreeField = false;
@@ -61,7 +61,7 @@ Player GamePanel::isAboutToWin() {
         otherPlayer = PLAYER_1;
     }
 
-    // immer mitz�hlen wieviel tokens in einer Reihe: 
+    // immer mitz�hlen wieviel tokens in einer Reihe:
     int num_of_tokens_in_row = 0;
 
 
@@ -97,7 +97,7 @@ Player GamePanel::isAboutToWin() {
     };
 
     // berprfe vom platzierten Spielstein aus alle 8 Richtungen, und zhle die Anzahl der Spielsteine in einer Reihe
-    for (int i = 0; i < ((sizeof (offsets) / sizeof (int)) / 2); ++i) {
+    for (size_t i = 0; i < ((sizeof (offsets) / sizeof (int)) / 2); ++i) {
         // neue Zeile in der offset_Matrix => neue berprfung der Anzahl der Token in einer Reihe
         if ((i % 7) == 0) {
             num_of_tokens_in_row = 0;
@@ -136,7 +136,7 @@ Player GamePanel::isAboutToWin() {
 
 
 
-// gibt den Spieler, der gewonnen hat zuck; 
+// gibt den Spieler, der gewonnen hat zuck;
 // gibt NONE (0) zur�ck falls unentschieden oder gewinner noch nicht feststeht
 
 Player GamePanel::hasSomeoneWon() {
@@ -185,7 +185,7 @@ Player GamePanel::hasSomeoneWon() {
     // cout << sizeof(offsets) << endl;
 
     // berprfe vom platzierten Spielstein aus alle 8 Richtungen, und zhle die Anzahl der Spielsteine in einer Reihe
-    for (int i = 0; i < ((sizeof (offsets) / sizeof (int)) / 2); ++i) {
+    for (size_t i = 0; i < ((sizeof (offsets) / sizeof (int)) / 2); ++i) {
         // neue Zeile in der offset_Matrix => neue berprfung der Anzahl der Token in einer Reihe
         if ((i % 7) == 0) {
             num_of_tokens_p1_in_row = 0;
@@ -220,7 +220,7 @@ Player GamePanel::hasSomeoneWon() {
 }
 
 void GamePanel::drawGamePanelOnConsole(vector<vector<int>> gameData, int MAX_X, int MAX_Y) {
-    system("cls");
+    // system("cls");
     cout << "Connect-Four (" << MAX_Y << "x" << MAX_X << "):\n\n" << endl;
     cout << "  ";
     for (int x = 0; x < MAX_X; ++x) {

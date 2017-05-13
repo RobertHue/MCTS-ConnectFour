@@ -8,7 +8,7 @@
 BOOST_AUTO_TEST_CASE( TreeFunctionality1 )
 {
 	BOOST_TEST_MESSAGE("TreeFunctionality1");
-	
+
 	Tree tree;
-	BOOST_CHECK(tree.is_empty() == false);
+	BOOST_CHECK(tree.isEmpty() == false);
 }

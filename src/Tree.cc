@@ -8,33 +8,33 @@ Tree::Tree() {
     root = createNewNode();
 }
 
-bool Tree::is_empty() const {
+bool Tree::isEmpty() const {
     return !root;
 }
 
-t_node * Tree::getRoot() {
+NodeType * Tree::getRoot() {
     return root;
 }
 
-t_node * Tree::createNewNode() {
-    t_node *node = new t_node;
+NodeType * Tree::createNewNode() {
+    NodeType *Node = new NodeType;
 
-    node->UCTB = 0;
-    node->value = 0;
-    node->visits = 0;
-    node->parent = NULL;
+    Node->UCTB = 0;
+    Node->value = 0;
+    Node->visits = 0;
+    Node->parent = NULL;
 
-    return node;
+    return Node;
 }
 
-void Tree::addNodeTo(t_node *node, t_node *dst_node) {
-    node->parent = dst_node;
-    dst_node->childNodes.push_back(node);
+void Tree::addNodeTo(NodeType *Node, NodeType *dst_node) {
+    Node->parent = dst_node;
+    dst_node->childNodes.push_back(Node);
 }
 
-void Tree::printAllChildsUCTB(node *n) {
-    int i = 0;
-    for (int i = 0; i < n->childNodes.size(); ++i) {
+void Tree::printAllChildsUCTB(Node *n) {
+    cout << "GameTree:" << endl;
+    for (size_t i = 0; i < n->childNodes.size(); ++i) {
         cout << n->childNodes[i]->UCTB << "  ";
 
     }
@@ -43,27 +43,34 @@ void Tree::printAllChildsUCTB(node *n) {
 
 // Print the tree level-order assisted by queue
 
-void Tree::levelOrder(node* n) {
+void Tree::levelOrder(Node* n) {
     // Create a queue
-    queue<t_node *> q;
+    queue<NodeType *> q;
 
-    // Push the root and its neighboors
-    q.push(n);
+    // Push all the root's neighboors
+    for (size_t i = 0; i < n->childNodes.size(); ++i) {
+        q.push((n->childNodes[i]));
+    }
 
+    int countPulled = 0;
     int level = 0;
-    cout << level << ": ";
+    cout << "\n" << level << ": ";
 
     while (!q.empty()) {
         // Dequeue a node from front
-        node* v = q.front();
+        Node* v = q.front();
+        ++countPulled;
         cout << v->UCTB << " ";
 
-        for (int i = 0; i < v->childNodes.size(); ++i) {
+        for (size_t i = 0; i < v->childNodes.size(); ++i) {
             q.push((v->childNodes[i]));
         }
 
-        // Pop the visited node 
+        // Pop the visited node
         q.pop();
+        if(countPulled%8==0) {
+            cout << "\n" << ++level << ": ";
+        }
     }
     cout << endl << endl;
 }

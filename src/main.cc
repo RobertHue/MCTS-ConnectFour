@@ -1,6 +1,6 @@
 
 #include <iostream>
-
+#include <cstdio>
 #include "GamePanel.h"
 #include "GameKI.h"
 
@@ -20,8 +20,8 @@ int main() {
     char input_char;
     do {
         cout << "Bitte Spieler waehlen (xX / oO): ";
-        while ((input_char = getchar()) == '\n');
-        // doesn't eat the char NL from stdin 
+        cin.getline(&input_char, 2);
+        cout << "Eingabe erfolgreich!";
 
         switch (input_char) {
             case 'x': case 'X':
@@ -37,6 +37,8 @@ int main() {
         }
     } while (input_char != 'x' && input_char != 'X' && input_char != 'o' && input_char != 'O');
 
+
+    cout << "ddd!" << endl;
 
 
     //*************************

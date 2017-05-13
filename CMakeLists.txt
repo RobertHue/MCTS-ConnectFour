@@ -2,21 +2,21 @@
 cmake_minimum_required (VERSION 3.2 FATAL_ERROR)
 
 # Define the project name
-project(MCTS_ConnectFour VERSION 0.1 LANGUAGES CXX) 
+project(MCTS_ConnectFour VERSION 0.1 LANGUAGES CXX)
 
 message(STATUS "~~~ ${PROJECT_NAME} v${PROJECT_VERSION} ~~~")
 message(STATUS "Target: ${CMAKE_SYSTEM_PROCESSOR} (${CMAKE_SYSTEM_NAME})")
 message(STATUS "Build Type : ${CMAKE_BUILD_TYPE}")
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
- 
+
 ########################################
 # set some compiler flags
-SET(COMPILER_FLAGS	
+SET(COMPILER_FLAGS
 	"-std=c++11 -g3 -Wall"
 )
 SET(LINKER_FLAGS
-	"" 
+	""
 )
 SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${COMPILER_FLAGS}" )
 SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${LINKER_FLAGS}" )
@@ -41,7 +41,7 @@ include_directories (${Boost_INCLUDE_DIRS})
 
 ########################################
 
-# Add a subdirectory to the project. The CMakeLists.txt in that 
+# Add a subdirectory to the project. The CMakeLists.txt in that
 # subdirectory will be used for further setting up  the project.
 # CMake creates a Makefiles/Solution for each subproject
 add_subdirectory( src )

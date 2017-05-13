@@ -81,29 +81,29 @@ int GameKI::doRandomTurnH(GamePanel &gp) {
 /*
 Expansion aller child nodes vom root node aus:
  */
-void GameKI::expandAllChildrenOf(t_node *node) {
+void GameKI::expandAllChildrenOf(NodeType *Node) {
     // alle Zge durchgehen:
     for (int col = 0; col < simulatedGamePanel.getMAX_X(); ++col) {
         int columnChosen = col;
         int col_err = simulatedGamePanel.insertTokenIntoColumn(columnChosen);
 
         if (col_err != -1) {
-            t_node *newNode = gameTree.createNewNode();
+            NodeType *newNode = gameTree.createNewNode();
             newNode->UCTB = rand() % 1000 + 10000;
             newNode->chosenTurnThatLeadedToThisNode = columnChosen;
-            Tree::addNodeTo(newNode, node);
+            Tree::addNodeTo(newNode, Node);
         }
     }
 }
 
-t_node * GameKI::UCTSelect(t_node *node) {
-    t_node *res = node;
+NodeType * GameKI::UCTSelect(NodeType *Node) {
+    NodeType *res = Node;
     double best_uct = 0;
 
-    for (size_t i = 0; i < node->childNodes.size(); ++i) // for !all! children
+    for (size_t i = 0; i < Node->childNodes.size(); ++i) // for !all! children
     {
         // inspect all siblings...
-        t_node *next = node->childNodes[i];
+        NodeType *next = Node->childNodes[i];
 
 
 
@@ -111,7 +111,7 @@ t_node * GameKI::UCTSelect(t_node *node) {
 
         if (next->visits > 0) {
             double winrate = next->value / next->visits;
-            double uct = C_FACTOR * sqrt(log(node->visits) / next->visits);
+            double uct = C_FACTOR * sqrt(log(Node->visits) / next->visits);
             uctvalue = winrate + uct;
         } else {
             // Always play a random unexplored move first
@@ -123,16 +123,16 @@ t_node * GameKI::UCTSelect(t_node *node) {
         if (best_uct < uctvalue) { // get max uctvalue of all children
             best_uct = uctvalue;
             i = 0;
-            node = next;
+            Node = next;
             res = next;
         }
     }
 
     stack<int> stack_turns;
 
-    while (node->parent != NULL) {
-        stack_turns.push(node->chosenTurnThatLeadedToThisNode);
-        node = node->parent;
+    while (Node->parent != NULL) {
+        stack_turns.push(Node->chosenTurnThatLeadedToThisNode);
+        Node = Node->parent;
     }
 
     while (!stack_turns.empty()) {
@@ -145,24 +145,24 @@ t_node * GameKI::UCTSelect(t_node *node) {
     return res;
 }
 
-t_node * GameKI::recursive_selection(t_node *node) {
+NodeType * GameKI::recursive_selection(NodeType *Node) {
     // Abbruchbedingung: (Blatt erreicht)
-    if ((node->childNodes).empty()) {
-        return node;
+    if ((Node->childNodes).empty()) {
+        return Node;
     } else {
-        // dursuche alle Nachfolger und whle denjenigen mit dem hchsten UCTB aus 
-        t_node *next = NULL;
+        // dursuche alle Nachfolger und whle denjenigen mit dem hchsten UCTB aus
+        NodeType *next = NULL;
         double max_uctb = 0.0f;
-        for (size_t i = 0; i < (node->childNodes).size(); ++i) {
-            if (max_uctb <= (node->childNodes[i])->UCTB) {
-                max_uctb = (node->childNodes[i])->UCTB;
-                next = (node->childNodes[i]);
+        for (size_t i = 0; i < (Node->childNodes).size(); ++i) {
+            if (max_uctb <= (Node->childNodes[i])->UCTB) {
+                max_uctb = (Node->childNodes[i])->UCTB;
+                next = (Node->childNodes[i]);
             }
         }
         simulatedGamePanel.insertTokenIntoColumn(next->chosenTurnThatLeadedToThisNode);
         recursive_selection(next);
     }
-    return nullptr;
+    return Node;
 }
 
 /*
@@ -170,7 +170,7 @@ Walk down the game tree using a selection function at each
 node to determine which child node to walk to next.
 Stop when you reach a node that you dont have statistics for yet.
  */
-t_node * GameKI::selection(t_node *node) // aka follow_confident_branch()
+NodeType * GameKI::selection(NodeType *Node) // aka follow_confident_branch()
 {
     /*
     // sel1.) whle unbesuchte Nodes aus
@@ -185,32 +185,32 @@ t_node * GameKI::selection(t_node *node) // aka follow_confident_branch()
 
     // sel3.) selektiere Knoten mit dem hchsten UCTB-Wert und gehe so weiter bis zu einem Blatt
     // Falls alle Nachfolger bereits einmal besucht wurden, whle den Node mit der hchsten UCTB
-    t_node *selected_node = node;
+    NodeType *selected_node = Node;
     do {
-        // dursuche alle Nachfolger... 
+        // dursuche alle Nachfolger...
         double max_uctb = 0.0f;
-        for (size_t i = 0; i < (node->childNodes).size(); ++i) {
-            if (max_uctb <= (node->childNodes[i])->UCTB) {
-                max_uctb = (node->childNodes[i])->UCTB;
-                selected_node = (node->childNodes[i]);
+        for (size_t i = 0; i < (Node->childNodes).size(); ++i) {
+            if (max_uctb <= (Node->childNodes[i])->UCTB) {
+                max_uctb = (Node->childNodes[i])->UCTB;
+                selected_node = (Node->childNodes[i]);
             }
         }
-        node = selected_node;
+        Node = selected_node;
 
         //********************************
         // simuliertes Spiel anpassen!!!
         //********************************
-        simulatedGamePanel.insertTokenIntoColumn(node->chosenTurnThatLeadedToThisNode);
+        simulatedGamePanel.insertTokenIntoColumn(Node->chosenTurnThatLeadedToThisNode);
 
-    } while (!node->childNodes.empty()); // falls ein blatt erreicht wird!
+    } while (!Node->childNodes.empty()); // falls ein blatt erreicht wird!
 
 
     return selected_node; // = Leaf Node L
 }
 
-t_node * GameKI::expansion(t_node *leaf_node) // http://de.slideshare.net/ftgaic/mcts-ai
+NodeType * GameKI::expansion(NodeType *leaf_node) // http://de.slideshare.net/ftgaic/mcts-ai
 {
-    // e1.) Does the Leaf Node L node ends the Game? Gewonnen oder verloren...? 
+    // e1.) Does the Leaf Node L node ends the Game? Gewonnen oder verloren...?
     Player hasWonSim = simulatedGamePanel.hasSomeoneWon();
     if (hasWonSim == PLAYER_1 || hasWonSim == PLAYER_2) return leaf_node; // jemand hat gewonnen => expandiere nicht!
 
@@ -228,7 +228,7 @@ t_node * GameKI::expansion(t_node *leaf_node) // http://de.slideshare.net/ftgaic
 
 
     // e2.) expansion: create a newNode
-    t_node *newNode = gameTree.createNewNode();
+    NodeType *newNode = gameTree.createNewNode();
     newNode->chosenTurnThatLeadedToThisNode = columnChosen;
     newNode->parent = leaf_node;
     newNode->UCTB = rand() % 1000 + 10000;
@@ -248,7 +248,7 @@ t_node * GameKI::expansion(t_node *leaf_node) // http://de.slideshare.net/ftgaic
  * 0.5 - the game was a draw
  * rewards taken from http://www.tantrix.com/Tantrix/TRobot/MCTS%20Final%20Report.pdf
  */
-double GameKI::simulation(t_node *expanded_node) {
+double GameKI::simulation(NodeType *expanded_node) {
     // hat jemand gewonnen?
     Player hasWonSim = simulatedGamePanel.hasSomeoneWon();
     if (hasWonSim == AI_Player) {
@@ -284,11 +284,11 @@ double GameKI::simulation(t_node *expanded_node) {
     return VALUE_TIE;
 }
 
-void GameKI::backpropagation(t_node *expanded_node, double bewertung) {
+void GameKI::backpropagation(NodeType *expanded_node, double bewertung) {
     // GamePanel::drawGamePanelOnConsole(gameDataH, actualGamePanel.getMAX_X(), actualGamePanel.getMAX_Y());
 
     // b1.) gehe von expanded_node C aus �ber L und weitere Knoten hoch zur Root
-    t_node *cur_node = expanded_node;
+    NodeType *cur_node = expanded_node;
     do {
         // b2.) erh�he die Anzahl der Besuche der Knoten und addiere die Bewertung zu/von den Knoten
         cur_node->value += bewertung;
@@ -319,16 +319,16 @@ void GameKI::backpropagation(t_node *expanded_node, double bewertung) {
     } while (cur_node->parent != NULL);
 }
 
-t_node * GameKI::selectSaveChild(t_node *node) {
-    t_node *sel_node;
+NodeType * GameKI::selectSaveChild(NodeType *Node) {
+    NodeType *sel_node;
     int A_PARAM = 4;
     double max_save_val = 0.0;
 
     // von node aus alle kinder:
-    for (size_t i = 0; i < node->childNodes.size(); ++i) // for !all! children
+    for (size_t i = 0; i < Node->childNodes.size(); ++i) // for !all! children
     {
         // inspect all siblings...
-        t_node *next = node->childNodes[i];
+        NodeType *next = Node->childNodes[i];
         if (next->visits <= 0) continue;
 
         double save_val;
@@ -343,16 +343,16 @@ t_node * GameKI::selectSaveChild(t_node *node) {
 
 }
 
-t_node * GameKI::selectRobustChild(t_node *node) {
-    t_node *sel_node;
+NodeType * GameKI::selectRobustChild(NodeType *Node) {
+    NodeType *sel_node;
     // int A_PARAM = 4; TODO is unused
     int max_visit_count = 0;
 
     // von node aus alle kinder:
-    for (size_t i = 0; i < node->childNodes.size(); ++i) // for !all! children
+    for (size_t i = 0; i < Node->childNodes.size(); ++i) // for !all! children
     {
         // inspect all siblings...
-        t_node *next = node->childNodes[i];
+        NodeType *next = Node->childNodes[i];
 
         double save_val;
         save_val = next->visits;
@@ -382,8 +382,8 @@ int GameKI::calculateNextTurn(const GamePanel &gPanel) {
     gameTree = Tree();
 
     cout << "Start des MCTS!" << endl;
-    t_node *selected_node;
-    t_node *expanded_node;
+    NodeType *selected_node;
+    NodeType *expanded_node;
     double bewertung;
 
     simulatedGamePanel = gPanel; // = echte tiefe Kopie
@@ -404,8 +404,8 @@ int GameKI::calculateNextTurn(const GamePanel &gPanel) {
         ///////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////
 
-        // debug: 
-        // Tree::levelOrder(gameTree.getRoot()); 
+        // debug:
+        // Tree::levelOrder(gameTree.getRoot());
         // system("PAUSE");
         // GamePanel::drawGamePanelOnConsole(simulatedGamePanel.getGameData(), simulatedGamePanel.getMAX_X(), simulatedGamePanel.getMAX_Y());
         // system("PAUSE");
@@ -415,7 +415,7 @@ int GameKI::calculateNextTurn(const GamePanel &gPanel) {
     cout << "Ende des MCTS!" << endl;
     // debug: Tree::printAllChildsUCTB(gameTree.getRoot());
 
-    t_node *chosen_node = selectSaveChild(gameTree.getRoot());
+    NodeType *chosen_node = selectSaveChild(gameTree.getRoot());
     int chosenTurn = chosen_node->chosenTurnThatLeadedToThisNode;
     return chosenTurn;
 }
