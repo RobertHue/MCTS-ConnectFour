@@ -4,6 +4,7 @@ implementation of an KI in the game ConnectFour using the MCTS algorithm
 ## Installation
 
 - sudo apt-get install libboost-all-dev
+- mkdir build bin
 - cd build
 - cmake ..
 - make
