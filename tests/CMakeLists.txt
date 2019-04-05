@@ -1,13 +1,20 @@
 if( Boost_FOUND )
 
-	# include_directories(${Boost_INCLUDE_DIRS})  -> is already in root CMakeLists.txt
-	add_executable( Test.exe
-		../src/GameKI.cc ../includes/GameKI.h
-		../src/GamePanel.cc ../includes/GamePanel.h
-		../src/Tree.cc ../includes/Tree.h
-		TreeTest.cc
+	message(STATUS "boost-include-dirs : ${Boost_INCLUDE_DIRS}")
+	message(STATUS "Boost_LIBRARIES : ${Boost_LIBRARIES}")
+	
+	add_executable( 
+		${TEST_NAME} 
+		${DEPENDENCIES}
 	)
-	target_link_libraries( Test.exe ${Boost_LIBRARIES} )
+	target_include_directories(
+		${TEST_NAME} PUBLIC
+		${Boost_INCLUDE_DIRS}
+	)	
+	target_link_libraries( 
+		${TEST_NAME} 
+		${Boost_LIBRARIES} 
+	)
 
 endif()
 
