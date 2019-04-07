@@ -23,7 +23,8 @@ struct Node {
 
 class Tree {
 public:
-    Tree();
+    Tree(); 
+	~Tree();
 
     bool isEmpty() const;
     NodeType* getRoot();
@@ -37,6 +38,8 @@ public:
 
 private:
     NodeType *root;
+
+	void deleteTree(NodeType* node);
 };
 
 #endif /* TREE_H_ */

@@ -7,6 +7,9 @@ using namespace std;
 Tree::Tree() {
     root = createNewNode();
 }
+Tree::~Tree() {
+	deleteTree(root);
+}
 
 bool Tree::isEmpty() const {
     return !root;
@@ -74,4 +77,18 @@ void Tree::levelOrder(Node* n) {
         q.pop();
     }
     cout << endl << endl;
+}
+
+void Tree::deleteTree(NodeType * node)
+{
+	if (node == nullptr) { return; }
+
+	/* first delete all subtrees (from left to right) */
+	for (int i = 0; i < node->childNodes.size(); ++i) {
+		deleteTree(node->childNodes[i]);
+	} 
+
+	/* then delete the node */
+	cout << "\n\n Deleting node: " << node->UCTB << "\n\n";
+	delete node;
 }

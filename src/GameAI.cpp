@@ -10,7 +10,7 @@ GameAI::GameAI(Player tokenKI) : AI_Player(tokenKI) {
 }
 
 int GameAI::calculateNextTurn(const GamePanel &gPanel) {
-	gameTree = Tree();
+	//gameTree = Tree();
 
 	cout << "Start of MCTS!" << endl;
 	NodeType *selected_node;
@@ -36,7 +36,7 @@ int GameAI::calculateNextTurn(const GamePanel &gPanel) {
 		///////////////////////////////////////////////////////////////////
 
 		// debug:
-		Tree::levelOrder(gameTree.getRoot());
+		//Tree::levelOrder(gameTree.getRoot());
 		//system("PAUSE");
 		// GamePanel::drawGamePanelOnConsole(simulatedGamePanel.getGameData(), simulatedGamePanel.getMAX_X(), simulatedGamePanel.getMAX_Y());
 		// system("PAUSE");
