@@ -19,7 +19,7 @@ NodeType * Tree::getRoot() {
 NodeType * Tree::createNewNode() {
     NodeType *Node = new NodeType;
 
-    Node->UCTB = 0;
+    Node->UCTB = rand() % 1000 + 10000;	// assign unvisited nodes with a very large UCTB-value
     Node->value = 0;
     Node->visits = 0;
     Node->parent = NULL;
@@ -44,33 +44,34 @@ void Tree::printAllChildsUCTB(Node *n) {
 // Print the tree level-order assisted by queue
 
 void Tree::levelOrder(Node* n) {
-    // Create a queue
+	if (n == nullptr) { return; }
+
+    // Create a queue (FIFO)
     queue<NodeType *> q;
+	
+	// push root to the queue
+	q.push(n);
 
-    // Push all the root's neighboors
-    for (size_t i = 0; i < n->childNodes.size(); ++i) {
-        q.push((n->childNodes[i]));
-    }
-
-    int countPulled = 0;
+    int countNeededForNextLevel = 1;
     int level = 0;
-    cout << "\n" << level << ": ";
-
+	cout << "\n" << level++ << ": ";
     while (!q.empty()) {
-        // Dequeue a node from front
-        Node* v = q.front();
-        ++countPulled;
-        cout << v->UCTB << " ";
+		// Dequeue a node from front
+		Node* v = q.front();
+		cout << v->UCTB << " ";
+		--countNeededForNextLevel;
+		if (countNeededForNextLevel == 0) {
+			cout << "\n" << level++ << ": ";
+			countNeededForNextLevel = v->childNodes.size();
+		}
 
+		// enqueue v's childrens (first left then right) to q
         for (size_t i = 0; i < v->childNodes.size(); ++i) {
             q.push((v->childNodes[i]));
         }
-
+		
         // Pop the visited node
         q.pop();
-        if(countPulled%8==0) {
-            cout << "\n" << ++level << ": ";
-        }
     }
     cout << endl << endl;
 }

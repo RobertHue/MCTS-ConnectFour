@@ -32,7 +32,7 @@ public:
     int calculateNextTurn(const GamePanel &gPanel);
 
 private:
-    size_t MAX_NUM_OF_ITERATIONS = 2000; // the number of iterations (each iteration resembles a simualation of one complete game)
+    const size_t MAX_NUM_OF_ITERATIONS = 5; // the number of iterations (each iteration resembles a simualation of one complete game)
     // const GamePanel &actualGamePanel;
     GamePanel simulatedGamePanel;
     Player AI_Player, OP_Player; // The AI knows about opponent and user player token

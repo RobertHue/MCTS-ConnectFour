@@ -133,6 +133,8 @@ void GameAI::expandAllChildrenOf(NodeType *Node) {
 /// S E L E C T I O N ///
 /////////////////////////
 NodeType * GameAI::recursive_selection(NodeType *Node) {
+	NodeType *selectedNode = Node;
+
 	// if current viewed node is not a Leaf Node L,
     if (!(Node->childNodes).empty()) {
 		// go through all childNodes and choose the one with the highest UCTB-value
@@ -147,12 +149,13 @@ NodeType * GameAI::recursive_selection(NodeType *Node) {
 		// replay what has been already analysed inside the game tree
         simulatedGamePanel.insertTokenIntoColumn(next->chosenTurnThatLeadedToThisNode);
 
-		// recursive call
-        recursive_selection(next);
+		// ::: recursive call :::
+		// select node with highest UCTB value all the way down to a leaf-node
+		selectedNode = recursive_selection(next);	
     }
 
 	// leaf node L reached (termination condition reached)
-    return Node;
+    return selectedNode;
 }
 
 
@@ -172,7 +175,7 @@ NodeType * GameAI::expansion(NodeType *leaf_node)
     // sim1.) choose a good move (columnChosen)
     int columnChosen = pickBestMove(simulatedGamePanel);
     if (columnChosen == -1) {
-        return leaf_node; // falls spielfeld voll & unentschieden => hre auf zu simulieren
+        return leaf_node;  // if game panel is full => FULL_TIE and stop simulating
     }
     // sim2.) do the selected move (columnChosen)
     simulatedGamePanel.insertTokenIntoColumn(columnChosen);
@@ -180,7 +183,7 @@ NodeType * GameAI::expansion(NodeType *leaf_node)
     // e2.) expansion: create a newNode
     NodeType *newNodeC = gameTree.createNewNode();
     newNodeC->chosenTurnThatLeadedToThisNode = columnChosen;
-    newNodeC->UCTB = rand() % 1000 + 10000;
+    newNodeC->UCTB = rand() % 1000 + 10000;	// assign unvisited nodes with a very large UCTB-value
 
     // e4.) add the newly created Node to the leaf node L
     Tree::addNodeTo(newNodeC, leaf_node);
@@ -250,18 +253,20 @@ void GameAI::backpropagation(NodeType *expanded_node, double ratingToBeUpdated) 
 			*/
        
             // ::: exploitation :::
-            double winrate = cur_node->value / cur_node->visits;
+            double winratio = cur_node->value / cur_node->visits;
 
             // ::: exploration :::
             double uct = CURIOUSITY_FACTOR * sqrt(log(cur_node->parent->visits) / cur_node->visits);
 
-            cur_node->UCTB = winrate + uct;
+            cur_node->UCTB = winratio + uct;
         }
         //-------------------------------------------------------------------
         cur_node = cur_node->parent;
     } while (cur_node->parent != NULL);
 }
 
+///////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
 NodeType * GameAI::selectSaveChild(NodeType *Node) {

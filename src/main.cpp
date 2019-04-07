@@ -17,8 +17,8 @@
 #define ERROR -1
 using namespace std;
 
-const int MAX_X = 8;
-const int MAX_Y = 6;
+const int MAX_X = 4;
+const int MAX_Y = 4;
 
 int main(int argc, char** argv) {
 	int col_err;
