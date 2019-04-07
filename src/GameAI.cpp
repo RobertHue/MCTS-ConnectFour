@@ -1,6 +1,59 @@
-#include "GameKI.h"
+#include "GameAI.h"
 
-int GameKI::pickBestMove(const GamePanel &gp) {
+///////////////////////////////////////////////////////////////////////////
+
+GameAI::GameAI(Player tokenKI) : AI_Player(tokenKI) {
+	if (AI_Player == PLAYER_1)
+		OP_Player = PLAYER_2;
+	else
+		OP_Player = PLAYER_1;
+}
+
+int GameAI::calculateNextTurn(const GamePanel &gPanel) {
+	gameTree = Tree();
+
+	cout << "Start of MCTS!" << endl;
+	NodeType *selected_node;
+	NodeType *expanded_node;
+	double rating;
+
+	simulatedGamePanel = gPanel; // make a mutable copy of the const GamePanel (deep copy)
+	expandAllChildrenOf(gameTree.getRoot());
+	for (size_t i = 0; i < MAX_NUM_OF_ITERATIONS; ++i) {
+		// reset the simulated GamePanel
+		simulatedGamePanel = gPanel; // = echte tiefe Kopie
+		// @note:   root-node is always the opponent's turn (OP_Player), which is also the current done turn, so now the AI can chose it's turn
+
+		///////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////
+		selected_node = recursive_selection(gameTree.getRoot());
+		expanded_node = expansion(selected_node);
+		rating = simulation(expanded_node);
+		backpropagation(expanded_node, rating);
+		///////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////////////
+
+		// debug:
+		Tree::levelOrder(gameTree.getRoot());
+		//system("PAUSE");
+		// GamePanel::drawGamePanelOnConsole(simulatedGamePanel.getGameData(), simulatedGamePanel.getMAX_X(), simulatedGamePanel.getMAX_Y());
+		// system("PAUSE");
+		// cout << "X: " << simulatedGamePanel.getPositionOfLastPlacedToken().x << "\nY: " << simulatedGamePanel.getPositionOfLastPlacedToken().y << endl;
+
+	}
+	cout << "End of MCTS!" << endl;
+	// debug: Tree::printAllChildsUCTB(gameTree.getRoot());
+
+	NodeType *chosen_node = selectSaveChild(gameTree.getRoot());
+	int chosenTurn = chosen_node->chosenTurnThatLeadedToThisNode;
+	return chosenTurn;
+}
+
+///////////////////////////////////////////////////////////////////////////
+
+int GameAI::pickBestMove(const GamePanel &gp) {
     int col_move;
 
     // try to look for a winning move
@@ -31,7 +84,7 @@ int GameKI::pickBestMove(const GamePanel &gp) {
     return col_move;
 }
 
-int GameKI::pickRandomMove(const GamePanel &gp) {
+int GameAI::pickRandomMove(const GamePanel &gp) {
     vector<vector<int>> gameData = gp.getGameData();
 
     // collect every column, where a token can be put into:
@@ -55,13 +108,13 @@ int GameKI::pickRandomMove(const GamePanel &gp) {
     return randomColumn;
 }
 
-int GameKI::doRandomMove(GamePanel &gp) {
+int GameAI::doRandomMove(GamePanel &gp) {
     int pickedColumn = pickRandomMove(gp);
     if (pickedColumn != -1) gp.insertTokenIntoColumn(pickedColumn);
     return pickedColumn;
 }
 
-void GameKI::expandAllChildrenOf(NodeType *Node) {
+void GameAI::expandAllChildrenOf(NodeType *Node) {
     // go through all turns:
     for (int col = 0; col < simulatedGamePanel.getMAX_X(); ++col) {
         int columnChosen = col;
@@ -79,7 +132,7 @@ void GameKI::expandAllChildrenOf(NodeType *Node) {
 /////////////////////////////////
 /// S E L E C T I O N ///
 /////////////////////////
-NodeType * GameKI::recursive_selection(NodeType *Node) {
+NodeType * GameAI::recursive_selection(NodeType *Node) {
 	// if current viewed node is not a Leaf Node L,
     if (!(Node->childNodes).empty()) {
 		// go through all childNodes and choose the one with the highest UCTB-value
@@ -106,7 +159,7 @@ NodeType * GameKI::recursive_selection(NodeType *Node) {
 /////////////////////////////////
 /// E X P A N S I O N ///
 /////////////////////////
-NodeType * GameKI::expansion(NodeType *leaf_node)
+NodeType * GameAI::expansion(NodeType *leaf_node)
 {
     // e1.) Does the Leaf Node L node end the Game? (won/loss/tie)?
     Player hasWonSim = simulatedGamePanel.hasSomeoneWon();
@@ -137,7 +190,7 @@ NodeType * GameKI::expansion(NodeType *leaf_node)
  /////////////////////////////////
  /// S I M U L A T I O N ///
  ///////////////////////////
-double GameKI::simulation(NodeType *expanded_node) {
+double GameAI::simulation(NodeType *expanded_node) {
     // has someone won?
     Player hasWonSim = simulatedGamePanel.hasSomeoneWon();
     if (hasWonSim == AI_Player) {
@@ -173,7 +226,7 @@ double GameKI::simulation(NodeType *expanded_node) {
 ///////////////////////////////////////
 /// B A C K P O P A G A T I O N ///
 ///////////////////////////////////
-void GameKI::backpropagation(NodeType *expanded_node, double ratingToBeUpdated) {
+void GameAI::backpropagation(NodeType *expanded_node, double ratingToBeUpdated) {
     // GamePanel::drawGamePanelOnConsole(gameDataH, actualGamePanel.getMAX_X(), actualGamePanel.getMAX_Y());
 
 	// b1.) backpropagate from expandednode (C) to Leaf Node (L) and other nodes on that way up to root node (R)
@@ -209,7 +262,9 @@ void GameKI::backpropagation(NodeType *expanded_node, double ratingToBeUpdated) 
     } while (cur_node->parent != NULL);
 }
 
-NodeType * GameKI::selectSaveChild(NodeType *Node) {
+///////////////////////////////////////////////////////////////////////////
+
+NodeType * GameAI::selectSaveChild(NodeType *Node) {
     NodeType *selected_node;
     int A_PARAM = 4;
     double max_save_val = 0.0;
@@ -232,7 +287,7 @@ NodeType * GameKI::selectSaveChild(NodeType *Node) {
 
 }
 
-NodeType * GameKI::selectRobustChild(NodeType *Node) {
+NodeType * GameAI::selectRobustChild(NodeType *Node) {
     NodeType *selected_node;
     int max_visit_count = 0;
 
@@ -253,52 +308,3 @@ NodeType * GameKI::selectRobustChild(NodeType *Node) {
     return selected_node;
 }
 
-
-GameKI::GameKI(Player tokenKI) : AI_Player(tokenKI) {
-    if (AI_Player == PLAYER_1)
-        OP_Player = PLAYER_2;
-    else
-        OP_Player = PLAYER_1;
-}
-
-int GameKI::calculateNextTurn(const GamePanel &gPanel) {
-    gameTree = Tree();
-
-    cout << "Start of MCTS!" << endl;
-    NodeType *selected_node;
-    NodeType *expanded_node;
-    double rating;
-
-    simulatedGamePanel = gPanel; // make a mutable copy of the const GamePanel (deep copy)
-    expandAllChildrenOf(gameTree.getRoot());
-    for (size_t i = 0; i < MAX_NUM_OF_ITERATIONS; ++i) {
-        // reset the simulated GamePanel
-        simulatedGamePanel = gPanel; // = echte tiefe Kopie
-        // @note:   root-node is always the opponent's turn (OP_Player), which is also the current done turn, so now the AI can chose it's turn
-
-        ///////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////
-        selected_node = recursive_selection(gameTree.getRoot());
-        expanded_node = expansion(selected_node);
-        rating = simulation(expanded_node);
-        backpropagation(expanded_node, rating);
-        ///////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////
-
-        // debug:
-        Tree::levelOrder(gameTree.getRoot());
-        //system("PAUSE");
-        // GamePanel::drawGamePanelOnConsole(simulatedGamePanel.getGameData(), simulatedGamePanel.getMAX_X(), simulatedGamePanel.getMAX_Y());
-        // system("PAUSE");
-        // cout << "X: " << simulatedGamePanel.getPositionOfLastPlacedToken().x << "\nY: " << simulatedGamePanel.getPositionOfLastPlacedToken().y << endl;
-
-    }
-    cout << "End of MCTS!" << endl;
-    // debug: Tree::printAllChildsUCTB(gameTree.getRoot());
-
-    NodeType *chosen_node = selectSaveChild(gameTree.getRoot());
-    int chosenTurn = chosen_node->chosenTurnThatLeadedToThisNode;
-    return chosenTurn;
-}

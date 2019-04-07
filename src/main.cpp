@@ -5,7 +5,7 @@
 #include <cstdio>
 
 #include "GamePanel.h"
-#include "GameKI.h"
+#include "GameAI.h"
 
 #include <QApplication>
 #include <QWidget>
@@ -67,7 +67,7 @@ int main(int argc, char** argv) {
     //*************************
     //*** Spieler-Auwahl ******
     //*************************
-    Player playerYou, playerKI;
+    Player playerYou, playerAI;
     char input_char;
     do {
         cout << "Choose Player (xX / oO): ";
@@ -77,11 +77,11 @@ int main(int argc, char** argv) {
         switch (input_char) {
             case 'x': case 'X':
                 playerYou = PLAYER_2;
-                playerKI = PLAYER_1;
+                playerAI = PLAYER_1;
                 break;
             case 'o': case 'O':
                 playerYou = PLAYER_1;
-                playerKI = PLAYER_2;
+                playerAI = PLAYER_2;
                 break;
             default:
                 cout << "Wrong input! Please choose again!";
@@ -92,9 +92,9 @@ int main(int argc, char** argv) {
     //***************************
     //*** Player-Move-Choice ****
     //***************************
-    gp.setTurnPlayer(playerKI); // set Player that needs to begin here
+    gp.setTurnPlayer(playerAI); // set Player that needs to begin here
 
-    GameKI gKI(playerKI);
+    GameAI gKI(playerAI);
 
 
     while (1) {
@@ -123,7 +123,7 @@ int main(int argc, char** argv) {
         if (hasWon == playerYou) {
             cout << "Congratulations!!! You have won!!! :)" << endl;
             break;
-        } else if (hasWon == playerKI) {
+        } else if (hasWon == playerAI) {
             cout << "Unfortunately the KI has won... :(" << endl;
             break;
         }

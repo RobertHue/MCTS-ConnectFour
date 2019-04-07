@@ -20,11 +20,12 @@ using boost::property_tree::ptree;
 /// for more information on the mcts, see:
 ///		http://de.slideshare.net/ftgaic/mcts-ai
 ///		https://en.wikipedia.org/wiki/Monte_Carlo_tree_search
-class GameKI {
+class GameAI {
 public:
 
-	// let the GameKI take control over the passed Player (every Player has a Controller or a GameKI)
-    GameKI(Player tokenKI);
+	/// construct a GameAI for the given Player and let it take control over him
+	/// call calculateNextTurn to make the AI do the next move for the Player
+    GameAI(Player tokenKI);
 
 	/// calculates the next move for the AI based on the MCTS-algorithm
 	/// @return		the MCTS-based move for the AI
@@ -34,10 +35,9 @@ private:
     size_t MAX_NUM_OF_ITERATIONS = 2000; // the number of iterations (each iteration resembles a simualation of one complete game)
     // const GamePanel &actualGamePanel;
     GamePanel simulatedGamePanel;
-    Player AI_Player, OP_Player; // The KI knows about opponent and user player token
+    Player AI_Player, OP_Player; // The AI knows about opponent and user player token
     Tree gameTree;	// the game tree @TODO can be replaced with the boost property tree
-
-	ptree m_pt; // @TODO future game tree ?
+	//ptree m_pt; // @TODO future game tree ?
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////// highly coupled methods depending on the kind of game (here connect four) ////////////
