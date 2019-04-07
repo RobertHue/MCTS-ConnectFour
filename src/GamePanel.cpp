@@ -136,23 +136,15 @@ Player GamePanel::isAboutToWin() {
 
 
 
-// gibt den Spieler, der gewonnen hat zuck;
-// gibt NONE (0) zur�ck falls unentschieden oder gewinner noch nicht feststeht
-
 Player GamePanel::hasSomeoneWon() {
-    // todo nicht alle diagonalen werden berprft
-    // evtl besser: dort wo spielstein platziert wurde 3 spielsteine in alle richtungen prfen
-    // Player hasWon;
     int x_placed = positionOfLastPlacedToken.x;
     int y_placed = positionOfLastPlacedToken.y;
 
-    // immer mitzhlen wieviel tokens in einer Reihe:
+    // count how many tokens there are in each row:
     int num_of_tokens_p1_in_row = 0;
     int num_of_tokens_p2_in_row = 0;
 
-
     int offsets[][2] = {
-
         { -3, 0},
         { -2, 0},
         { -1, 0},
@@ -184,9 +176,9 @@ Player GamePanel::hasSomeoneWon() {
     };
     // cout << sizeof(offsets) << endl;
 
-    // berprfe vom platzierten Spielstein aus alle 8 Richtungen, und zhle die Anzahl der Spielsteine in einer Reihe
+	// check all 8 directions on the current placed token, and count the number of tokens in each of those directions
     for (size_t i = 0; i < ((sizeof (offsets) / sizeof (int)) / 2); ++i) {
-        // neue Zeile in der offset_Matrix => neue berprfung der Anzahl der Token in einer Reihe
+		// new line inside the offset_Matrix => new check of number of tokens in each of the 8 directions
         if ((i % 7) == 0) {
             num_of_tokens_p1_in_row = 0;
             num_of_tokens_p2_in_row = 0;
@@ -194,7 +186,7 @@ Player GamePanel::hasSomeoneWon() {
         int x_check = x_placed + offsets[i][0];
         int y_check = y_placed + offsets[i][1];
 
-        // Plausi-Check (Grenzwerte des GamePanels erreicht):
+        // check whether bounds are reached in those directions:
         if (x_check < 0 || x_check >= MAX_X) continue;
         if (y_check < 0 || y_check >= MAX_Y) continue;
 
@@ -210,13 +202,18 @@ Player GamePanel::hasSomeoneWon() {
             num_of_tokens_p2_in_row = 0;
         }
 
-        // hat wer gewonnen?
+        // has someone won?
         if (num_of_tokens_p1_in_row >= 4) return PLAYER_1;
         else if (num_of_tokens_p2_in_row >= 4) return PLAYER_2;
     }
 
+	// if number of free fields are 0,
+	if (numOfFreeFields == 0) {
+		// then there is a tie!
+		return BOTH;
+	}
 
-    return NONE; // niemand hat bis jetzt gewonnen!
+    return NONE; // noone has won yet!
 }
 
 void GamePanel::drawGamePanelOnConsole(vector<vector<int>> gameData, int MAX_X, int MAX_Y) {
@@ -264,26 +261,35 @@ void GamePanel::drawGamePanelOnConsole(vector<vector<int>> gameData, int MAX_X, 
     cout << endl;
 }
 
+void GamePanel::drawGamePanelOnWindow(vector<vector<int>> gameData, int max_x, int max_y)
+{
+
+}
+
 int GamePanel::insertTokenIntoColumn(int column) {
     int row;
     for (row = MAX_Y - 1; row >= 0; --row) {
 
+		// check whether insertion cell is still free
         if (gameData[column][row] == FREE_FIELD) {
-            // fge Token in freier gefundener Zelle ein:
+            // insert token into the cell, which is free:
             gameData[column][row] = this->turnPlayer;
-            // Merke die Position des zuletzt platzierten Tokens
+
+            // remember the position of the last placed token
             positionOfLastPlacedToken.x = column;
             positionOfLastPlacedToken.y = row;
+
+			// decrease the number of left free fields on the GamePanel
             --numOfFreeFields;
 
-            // wechsle TurnPlayer im Fall des gltigen Zuges
+            // swap TurnPlayer, in case of an valid move
             nextTurn();
-            return 0;
+            return VALID_MOVE;
         }
     }
-    // Token konnte der Spalte nicht hinzugefgt werden. Bitte nochmal whlen!
-    // Grund:	Column ist bereits voll!!
-    return -1;
+    // token couldn't be placed at column. Please choose again!
+	// Reason: Column is already full
+    return NO_VALID_MOVE;
 }
 
 int GamePanel::getMAX_X() const {

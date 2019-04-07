@@ -1,17 +1,68 @@
 
 #include <iostream>
+#include <string>
+#include <sstream>
 #include <cstdio>
+
 #include "GamePanel.h"
 #include "GameKI.h"
+
+#include <QApplication>
+#include <QWidget>
+#include <QGridLayout>
+#include <QPushButton>
+#include <QObject>
 
 #define OK   0
 #define ERROR -1
 using namespace std;
 
-int main() {
-    int col_err;
-    GamePanel gp(8, 6);
-    GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+const int MAX_X = 8;
+const int MAX_Y = 6;
+
+int main(int argc, char** argv) {
+	int col_err;
+	GamePanel gp(MAX_X, MAX_Y);
+	GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+	/*
+	QApplication app(argc, argv);
+
+	QPixmap pixmap_cross("../../resources/cross.jpg");
+	QPixmap pixmap_circle("../../resources/circle.jpg");
+	QIcon iconBackCross(pixmap_cross);
+	QIcon iconBackCircle(pixmap_circle);
+
+	QPushButton *buttons[MAX_X][MAX_Y];
+	QGridLayout *layout = new QGridLayout();
+	for (int i = 0; i < gp.getMAX_X(); ++i) {
+		for (int j = 0; j < gp.getMAX_Y(); ++j) {
+
+			buttons[i][j] = new QPushButton(
+				QString::fromStdString(
+					std::to_string(i).append(" , ").append(std::to_string(j))
+			));
+			buttons[i][j]->setIcon(iconBackCross); 
+			buttons[i][j]->setIconSize(QSize(65, 65));
+			layout->addWidget(buttons[i][j], i, j);
+		}
+	}
+	QModelIndex indexA = model->index(0, 0, QModelIndex());
+	QModelIndex indexB = model->index(1, 1, QModelIndex());
+	QModelIndex indexC = model->index(2, 1, QModelIndex());
+
+
+	QWidget *widget = new QWidget();
+	widget->setLayout(layout);
+	ostringstream windowTitle;
+	windowTitle << "Connect 4 ( "
+		<< std::to_string(gp.getMAX_X())
+		<< " x "
+		<< std::to_string(gp.getMAX_Y())
+		<< " )";
+	widget->setWindowTitle(QString(windowTitle.str().c_str()));
+	widget->show();
+	*/
+	//GamePanel::drawGamePanelOnWindow(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
 
     //*************************
     //*** Spieler-Auwahl ******
@@ -19,9 +70,9 @@ int main() {
     Player playerYou, playerKI;
     char input_char;
     do {
-        cout << "Bitte Spieler waehlen (xX / oO): ";
+        cout << "Choose Player (xX / oO): ";
         cin.getline(&input_char, 2);
-        cout << "Eingabe erfolgreich!";
+        cout << "Input successful!";
 
         switch (input_char) {
             case 'x': case 'X':
@@ -33,18 +84,15 @@ int main() {
                 playerKI = PLAYER_2;
                 break;
             default:
-                cout << "falsche eingabe bitte nochmal eingeben!";
+                cout << "Wrong input! Please choose again!";
         }
     } while (input_char != 'x' && input_char != 'X' && input_char != 'o' && input_char != 'O');
 
 
-    cout << "ddd!" << endl;
-
-
-    //*************************
-    //*** Spieler-Z�gewahl ****
-    //*************************
-    gp.setTurnPlayer(playerKI); // Spieler der beginnen soll setzen!
+    //***************************
+    //*** Player-Move-Choice ****
+    //***************************
+    gp.setTurnPlayer(playerKI); // set Player that needs to begin here
 
     GameKI gKI(playerKI);
 
@@ -53,12 +101,12 @@ int main() {
         if (gp.getTurnPlayer() == playerYou) {
             int col;
             do {
-                cout << "Bitte COLUMN waehlen: ";
+                cout << "Please choose COLUMN: ";
                 cin >> col;
 
                 col_err = gp.insertTokenIntoColumn(col);
                 if (col_err == ERROR) {
-                    cout << "Column ist bereits voll! Bitte nochmal Column eingeben: " << endl;
+                    cout << "Column is already full! Please chose again: " << endl;
                 }
             } while (col < 0 || col >= gp.getMAX_X() || col_err);
 
@@ -73,21 +121,19 @@ int main() {
 
         Player hasWon = gp.hasSomeoneWon();
         if (hasWon == playerYou) {
-            cout << "Herzlichen Glueckwunsch du hast gewonnen!!!" << endl;
+            cout << "Congratulations!!! You have won!!! :)" << endl;
             break;
         } else if (hasWon == playerKI) {
-            cout << "Leider hat die KI gewonnen..." << endl;
+            cout << "Unfortunately the KI has won... :(" << endl;
             break;
         }
 
         if (gp.getNumOfFreeFields() <= 0) {
-            cout << "Spiel ist zuende. Da keine Felder mehr frei!" << endl;
+            cout << "Game is over. You did well!. No more cells are free on the Game!" << endl;
             break;
         }
-        // system("PAUSE");
+        //system("PAUSE");
     }
 
-
-    system("PAUSE");
     return 0;
 }
