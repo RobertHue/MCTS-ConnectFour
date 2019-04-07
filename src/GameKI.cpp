@@ -253,51 +253,6 @@ NodeType * GameKI::selectRobustChild(NodeType *Node) {
     return selected_node;
 }
 
-NodeType * GameKI::UCTSelect(NodeType *Node) {
-	NodeType *selected_node = Node;
-	double best_uct = 0;
-
-	for (size_t i = 0; i < Node->childNodes.size(); ++i) // for all children
-	{
-		// inspect all siblings...
-		NodeType *next = Node->childNodes[i];
-
-		double uctvalue = next->UCTB;
-
-		if (next->visits > 0) {
-			double winrate = next->value / next->visits;
-			double uct = CURIOUSITY_FACTOR * sqrt(log(Node->visits) / next->visits);
-			uctvalue = winrate + uct;
-		}
-		else {
-			// Always play a random unexplored move first
-			uctvalue = 10000 + 1000 * rand();
-		}
-
-		if (best_uct < uctvalue) { // get max uctvalue of all children
-			best_uct = uctvalue;
-			i = 0;
-			Node = next;
-			selected_node = next;
-		}
-	}
-
-	stack<int> stack_turns;
-
-	while (Node->parent != NULL) {
-		stack_turns.push(Node->chosenTurnThatLeadedToThisNode);
-		Node = Node->parent;
-	}
-
-	while (!stack_turns.empty()) {
-		// adapt simulated game
-		int value = stack_turns.top();
-		simulatedGamePanel.insertTokenIntoColumn(value);
-		stack_turns.pop();
-	}
-
-	return selected_node;
-}
 
 GameKI::GameKI(Player tokenKI) : AI_Player(tokenKI) {
     if (AI_Player == PLAYER_1)

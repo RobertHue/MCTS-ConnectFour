@@ -123,6 +123,4 @@ private:
 	/// selects a robust child node of passed node from the game tree
     NodeType *selectRobustChild(NodeType *Node);
 
-	/// selects a UCTS-maximizing child node  of passed node from the game tree
-	NodeType *UCTSelect(NodeType *Node);
 };
