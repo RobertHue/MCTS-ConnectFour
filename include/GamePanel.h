@@ -4,9 +4,6 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include <QApplication>
-#include <QtWidgets>
-
 #define FREE_FIELD 0
 
 
@@ -74,5 +71,4 @@ public:
     void nextTurn();
 
     static void drawGamePanelOnConsole(vector<vector<int>> gameData, int max_x, int max_y);
-	static void drawGamePanelOnWindow(vector<vector<int>> gameData, int max_x, int max_y);
 };

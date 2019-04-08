@@ -13,16 +13,13 @@
 #include <QPushButton>
 #include <QObject>
 
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
 
 #define OK   0
 #define ERROR -1
 using namespace std;
 
-const int MAX_X = 8;
-const int MAX_Y = 7;
+const int MAX_X = 7;
+const int MAX_Y = 5;
 int main(int argc, char* argv[]) {
 	int col_err;
 	GamePanel gp(MAX_X, MAX_Y);
@@ -76,7 +73,7 @@ int main(int argc, char* argv[]) {
         cout << "Choose Player (xX / oO): ";
         //cin.getline(&input_char, 256);
 		//cin >> input_char;
-		input_char = getchar();
+		input_char = getchar();  //'x'; // 
         cout << "Input successful!\n";
 
         switch (input_char) {
@@ -94,10 +91,11 @@ int main(int argc, char* argv[]) {
     } while (input_char != 'x' && input_char != 'X' && input_char != 'o' && input_char != 'O');
 
 
+
     //***************************
     //*** Player-Move-Choice ****
     //***************************
-    gp.setTurnPlayer(playerAI); // set Player that needs to begin here
+    gp.setTurnPlayer(playerYou); // set Player that needs to begin here
     GameAI gKI(playerAI);
 
 

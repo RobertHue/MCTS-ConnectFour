@@ -10,7 +10,7 @@ GameAI::GameAI(Player tokenKI) : AI_Player(tokenKI) {
 }
 
 int GameAI::calculateNextTurn(const GamePanel &gPanel) {
-	//gameTree = Tree();
+	m_pGameTree.reset(new Tree());
 
 	cout << "Start of MCTS!" << endl;
 	NodeType *selected_node;
@@ -18,7 +18,7 @@ int GameAI::calculateNextTurn(const GamePanel &gPanel) {
 	double rating;
 
 	simulatedGamePanel = gPanel; // make a mutable copy of the const GamePanel (deep copy)
-	expandAllChildrenOf(gameTree.getRoot());
+	expandAllChildrenOf(m_pGameTree->getRoot());
 	for (size_t i = 0; i < MAX_NUM_OF_ITERATIONS; ++i) {
 		// reset the simulated GamePanel
 		simulatedGamePanel = gPanel; // = echte tiefe Kopie
@@ -27,16 +27,20 @@ int GameAI::calculateNextTurn(const GamePanel &gPanel) {
 		///////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////
-		selected_node = recursive_selection(gameTree.getRoot());
+		selected_node = recursive_selection(m_pGameTree->getRoot());
+
 		expanded_node = expansion(selected_node);
+
 		rating = simulation(expanded_node);
+
 		backpropagation(expanded_node, rating);
+
 		///////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////
 
 		// debug:
-		//Tree::levelOrder(gameTree.getRoot());
+		//Tree::levelOrder(m_pGameTree->getRoot());
 		//system("PAUSE");
 		// GamePanel::drawGamePanelOnConsole(simulatedGamePanel.getGameData(), simulatedGamePanel.getMAX_X(), simulatedGamePanel.getMAX_Y());
 		// system("PAUSE");
@@ -44,11 +48,18 @@ int GameAI::calculateNextTurn(const GamePanel &gPanel) {
 
 	}
 	cout << "End of MCTS!" << endl;
-	// debug: Tree::printAllChildsUCTB(gameTree.getRoot());
+	// debug: Tree::printAllChildsUCTB(m_pGameTree->getRoot());
+	//savePropertyTree("pt.xml");
 
-	NodeType *chosen_node = selectSaveChild(gameTree.getRoot());
+	NodeType *chosen_node = selectMostVisitedChild(m_pGameTree->getRoot());
 	int chosenTurn = chosen_node->chosenTurnThatLeadedToThisNode;
 	return chosenTurn;
+}
+
+void GameAI::savePropertyTree(const std::string &filename) const
+{
+	// Write the property tree to the XML file.
+	write_xml(filename, m_pt);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -120,11 +131,17 @@ void GameAI::expandAllChildrenOf(NodeType *Node) {
         int columnChosen = col;
         int col_err = simulatedGamePanel.insertTokenIntoColumn(columnChosen);
 
-        if (col_err != -1) {
-            NodeType *newNode = gameTree.createNewNode();
+        if (col_err != NO_VALID_MOVE) {
+            NodeType *newNode = m_pGameTree->createNewNode();
             newNode->UCTB = rand() % 1000 + 10000;
             newNode->chosenTurnThatLeadedToThisNode = columnChosen;
+			newNode->sequenceThatLeadedToThisNode = "root.move" + std::to_string(newNode->chosenTurnThatLeadedToThisNode);
             Tree::addNodeTo(newNode, Node);
+
+			//debug
+			//m_pt.put(newNode->sequenceThatLeadedToThisNode + ".UCTB", newNode->UCTB);
+			//m_pt.put(newNode->sequenceThatLeadedToThisNode + ".visits", newNode->visits);
+			//m_pt.put(newNode->sequenceThatLeadedToThisNode + ".value", newNode->value);
         }
     }
 }
@@ -181,12 +198,19 @@ NodeType * GameAI::expansion(NodeType *leaf_node)
     simulatedGamePanel.insertTokenIntoColumn(columnChosen);
 
     // e2.) expansion: create a newNode
-    NodeType *newNodeC = gameTree.createNewNode();
+    NodeType *newNodeC = m_pGameTree->createNewNode();
     newNodeC->chosenTurnThatLeadedToThisNode = columnChosen;
+	newNodeC->sequenceThatLeadedToThisNode = leaf_node->sequenceThatLeadedToThisNode + ".move" + std::to_string(leaf_node->chosenTurnThatLeadedToThisNode);
     newNodeC->UCTB = rand() % 1000 + 10000;	// assign unvisited nodes with a very large UCTB-value
-
+	
     // e4.) add the newly created Node to the leaf node L
     Tree::addNodeTo(newNodeC, leaf_node);
+
+	//debug
+	//m_pt.put(newNodeC->sequenceThatLeadedToThisNode + ".UCTB", newNodeC->UCTB);
+	//m_pt.put(newNodeC->sequenceThatLeadedToThisNode + ".visits", newNodeC->visits);
+	//m_pt.put(newNodeC->sequenceThatLeadedToThisNode + ".value", newNodeC->value);
+
     return newNodeC; // = expanded_node C
 }
 
@@ -204,8 +228,8 @@ double GameAI::simulation(NodeType *expanded_node) {
 
     // for (int i = 0; i < NUM_OF_SIMULATION_FRAMES; ++i)
     while (1) {
-        // GamePanel::drawGamePanelOnConsole(simulatedGamePanel.getGameData(), simulatedGamePanel.getMAX_X(), simulatedGamePanel.getMAX_Y());
-        // system("PAUSE");
+        //GamePanel::drawGamePanelOnConsole(simulatedGamePanel.getGameData(), simulatedGamePanel.getMAX_X(), simulatedGamePanel.getMAX_Y());
+        //system("PAUSE");
 
         // choose a move
         int columnChosen = pickBestMove(simulatedGamePanel);
@@ -233,21 +257,17 @@ void GameAI::backpropagation(NodeType *expanded_node, double ratingToBeUpdated) 
     // GamePanel::drawGamePanelOnConsole(gameDataH, actualGamePanel.getMAX_X(), actualGamePanel.getMAX_Y());
 
 	// b1.) backpropagate from expandednode (C) to Leaf Node (L) and other nodes on that way up to root node (R)
-    NodeType *cur_node = expanded_node;
-    do {
-        // b2.) increase the amount of visits of each node and add that to the rating
-        cur_node->value += ratingToBeUpdated;
-		++cur_node->visits;
-
-    } while ((cur_node = cur_node->parent) != nullptr);
-
-    // b3.) update the rating (UCTS) of the nodes up to the root (exluding the root)
-    cur_node = expanded_node;
+    // b3.) update the rating (UCTS) of the nodes up to the root (excluding the root)
+	NodeType *cur_node = expanded_node;
     do {
         //-------------------------------------------------------------------
-        if (cur_node->visits != 0) {
+		// b2.) increase the amount of visits of each node and add that to the rating
+		cur_node->value += ratingToBeUpdated;
+		++(cur_node->visits);
+
+        if (cur_node->visits != 0) {	// protects against division by 0
             /*
-				constant C = curiousity of the algorithm
+				constant C = CURIOUSITY_FACTOR = curiousity of the algorithm
 				small C => game tree gets deeper expanded (only the best variation gets explored)
 				big C => game tree gets broader expanded (nodes with lesser visits are prefered)
 			*/
@@ -256,12 +276,20 @@ void GameAI::backpropagation(NodeType *expanded_node, double ratingToBeUpdated) 
             double winratio = cur_node->value / cur_node->visits;
 
             // ::: exploration :::
-            double uct = CURIOUSITY_FACTOR * sqrt(log(cur_node->parent->visits) / cur_node->visits);
+            double uct = CURIOUSITY_FACTOR * sqrt(log(cur_node->parent->visits+1) / cur_node->visits);
 
             cur_node->UCTB = winratio + uct;
-        }
+
+			//debug - update uctb value inside property tree
+			//m_pt.put(cur_node->sequenceThatLeadedToThisNode + ".UCTB", cur_node->UCTB);
+			//m_pt.put(cur_node->sequenceThatLeadedToThisNode + ".visits", cur_node->visits);
+			//m_pt.put(cur_node->sequenceThatLeadedToThisNode + ".value", cur_node->value);
+		}
+		else {
+			std::cout << "cur node visits == 0 !!!!!!!!!!! error!!!" << std::endl;
+		}
         //-------------------------------------------------------------------
-        cur_node = cur_node->parent;
+        cur_node = cur_node->parent;	// advance upwards
     } while (cur_node->parent != NULL);
 }
 
@@ -269,45 +297,22 @@ void GameAI::backpropagation(NodeType *expanded_node, double ratingToBeUpdated) 
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-NodeType * GameAI::selectSaveChild(NodeType *Node) {
-    NodeType *selected_node;
-    int A_PARAM = 4;
-    double max_save_val = 0.0;
 
-    for (size_t i = 0; i < Node->childNodes.size(); ++i) // for all children
-    {
-        // inspect all siblings...
-        NodeType *next = Node->childNodes[i];
-        if (next->visits <= 0) continue;
-
-        double save_val;
-        save_val = (next->value / next->visits) + (A_PARAM / sqrt(next->visits));
-
-        if (max_save_val <= save_val) {
-            max_save_val = save_val;
-			selected_node = next;
-        }
-    }
-    return selected_node;
-
-}
-
-NodeType * GameAI::selectRobustChild(NodeType *Node) {
-    NodeType *selected_node;
+NodeType * GameAI::selectMostVisitedChild(NodeType *rootNode) {
+    NodeType *selected_node = nullptr;
     int max_visit_count = 0;
 
     // von node aus alle kinder:
-    for (size_t i = 0; i < Node->childNodes.size(); ++i) // for all children
+    for (size_t i = 0; i < rootNode->childNodes.size(); ++i) // for all children
     {
-        // inspect all siblings
-        NodeType *next = Node->childNodes[i];
+        // inspect all children
+        NodeType *currentChildNode = rootNode->childNodes[i];
 
-        double save_val;
-        save_val = next->visits;
+        double save_val = currentChildNode->visits;
 
-        if (max_visit_count <= save_val) {
+        if (max_visit_count <= save_val) { 
             max_visit_count = save_val;
-			selected_node = next;
+			selected_node = currentChildNode;
         }
     }
     return selected_node;

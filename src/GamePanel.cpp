@@ -261,10 +261,6 @@ void GamePanel::drawGamePanelOnConsole(vector<vector<int>> gameData, int MAX_X, 
     cout << endl;
 }
 
-void GamePanel::drawGamePanelOnWindow(vector<vector<int>> gameData, int max_x, int max_y)
-{
-
-}
 
 int GamePanel::insertTokenIntoColumn(int column) {
     int row;

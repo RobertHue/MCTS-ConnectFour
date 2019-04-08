@@ -60,6 +60,9 @@ set (CMAKE_CXX_STANDARD 14)
 
 # looking for all dependencies
 file(GLOB_RECURSE SOURCES_DEPS "src/*.cpp" "src/*.cc")
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR : ${CMAKE_CURRENT_SOURCE_DIR}") 
+
+list(REMOVE_ITEM SOURCES_DEPS ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp) # remove main.cpp so its not included inside test build
 file(GLOB_RECURSE HEADERS_DEPS "include/*.hpp" "include/*.h")
 set(DEPENDENCIES ${SOURCES_DEPS} ${HEADERS_DEPS}) 
 message(STATUS "DEPENDENCIES : ${DEPENDENCIES}") 

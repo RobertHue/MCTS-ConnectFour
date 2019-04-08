@@ -16,11 +16,13 @@ using boost::property_tree::ptree;
 
 
 
-// @TODO kleine beschreibung der klasse? was kann man damit machen? wie funktioniert sie grob`?
+/// @TODO kleine beschreibung der klasse? was kann man damit machen? wie funktioniert sie grob`?
 /// for more information on the mcts, see:
 ///		http://de.slideshare.net/ftgaic/mcts-ai
 ///		https://en.wikipedia.org/wiki/Monte_Carlo_tree_search
 class GameAI {
+private:
+	const size_t MAX_NUM_OF_ITERATIONS = 100000; // the number of iterations (each iteration resembles a simualation of one complete game)
 public:
 
 	/// construct a GameAI for the given Player and let it take control over him
@@ -31,13 +33,14 @@ public:
 	/// @return		the MCTS-based move for the AI
     int calculateNextTurn(const GamePanel &gPanel);
 
+	/// Saves the debug_settings structure to the specified XML file
+	void savePropertyTree(const std::string &filename) const;
 private:
-    const size_t MAX_NUM_OF_ITERATIONS = 2000; // the number of iterations (each iteration resembles a simualation of one complete game)
     // const GamePanel &actualGamePanel;
     GamePanel simulatedGamePanel;
     Player AI_Player, OP_Player; // The AI knows about opponent and user player token
-    Tree gameTree;	// the game tree @TODO can be replaced with the boost property tree
-	//ptree m_pt; // @TODO future game tree ?
+    unique_ptr<Tree> m_pGameTree;	// the game tree @TODO can be replaced with the boost property tree
+	ptree m_pt; // @TODO future game tree ?
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////// highly coupled methods depending on the kind of game (here connect four) ////////////
@@ -82,7 +85,7 @@ private:
 	/// also initializes those created child nodes with a randomly assigned high UCTB-value
     void expandAllChildrenOf(NodeType *Node);
 	
-	/// recursively does the selection step of the mcts
+	/// recursively does the selection step of the mcts (passed node is the root)
     NodeType *recursive_selection(NodeType *Node);
 
 	/// does the expansion step of the mcts
@@ -117,10 +120,7 @@ private:
 
 	///////////////////////////////////////////////////////////////////////////
 
-	/// selects a save child node of passed node from the game tree
-    NodeType *selectSaveChild(NodeType *Node);
-
-	/// selects a robust child node of passed node from the game tree
-    NodeType *selectRobustChild(NodeType *Node);
+	/// selects the most visited child node from the game tree rootNode
+    NodeType *selectMostVisitedChild(NodeType *rootNode);
 
 };

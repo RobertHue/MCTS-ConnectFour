@@ -1,5 +1,7 @@
 if( Boost_FOUND AND Qt5Widgets_FOUND )
 
+	message(STATUS " ############ SETTING UP MAIN MODULE ############ ")
+	message(STATUS "DEPENDENCIES : ${DEPENDENCIES}") 
 	message(STATUS "boost-include-dirs : ${Boost_INCLUDE_DIRS}")
 	message(STATUS "Boost_LIBRARIES : ${Boost_LIBRARIES}")
 	
@@ -26,7 +28,7 @@ if( Boost_FOUND AND Qt5Widgets_FOUND )
 	)
 	add_executable( 
 		${EXECUTABLE_NAME} 
-		${DEPENDENCIES}	
+		${DEPENDENCIES} main.cpp
 	)	
 	target_include_directories(
 		${EXECUTABLE_NAME} PUBLIC
