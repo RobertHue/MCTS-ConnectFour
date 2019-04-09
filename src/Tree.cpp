@@ -6,19 +6,19 @@
 using namespace std;
 
 Tree::Tree() : m_amountOfNodes(0) {
-	cout << "constructor called " << endl;
+	//cout << "constructor called " << endl;
     root = createNewNode();
 }
 Tree::~Tree() {
-	cout << "destructor called " << endl;
-	std::cout << "before call to deleteTree: " << m_amountOfNodes << "\n";
+	//cout << "destructor called " << endl;
+	//std::cout << "before call to deleteTree: " << m_amountOfNodes << "\n";
 	deleteTree(root);
-	std::cout << "after call to deleteTree: " << m_amountOfNodes << "\n";
+	//std::cout << "after call to deleteTree: " << m_amountOfNodes << "\n";
 }
 
 Tree::Tree(const Tree &other)
 {
-	cout << "copy constructor called " << endl;
+	//cout << "copy constructor called " << endl;
 	// check for self-assignment
 	if (this == &other) {
 		return;
@@ -31,7 +31,7 @@ Tree::Tree(const Tree &other)
 
 Tree & Tree::operator=(const Tree &other)
 {
-	cout << "copy assignment constructor called " << endl;
+	//cout << "copy assignment constructor called " << endl;
 
 	// check for self-assignment
 	if (this == &other) {
@@ -73,7 +73,6 @@ void Tree::printAllChildsUCTB(Node *n) {
     cout << "GameTree:" << endl;
     for (size_t i = 0; i < n->childNodes.size(); ++i) {
         cout << n->childNodes[i]->UCTB << "  ";
-
     }
     cout << endl;
 }
@@ -128,7 +127,7 @@ void Tree::deleteTree(NodeType * node)
 	} 
 
 	/* then delete the node */
-	cout << "\n\n Deleting node: " << node->UCTB << "\n\n";
+	//cout << "\n\n Deleting node: " << node->UCTB << "\n\n";
 	delete node;
 	--m_amountOfNodes;
 }

@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
     //***************************
     //*** Player-Move-Choice ****
     //***************************
-    gp.setTurnPlayer(playerYou); // set Player that needs to begin here
+    gp.setTurnPlayer(playerAI); // set Player that needs to begin here
     GameAI gKI(playerAI);
 
 
@@ -111,14 +111,12 @@ int main(int argc, char* argv[]) {
                     cout << "Column is already full! Please chose again: " << endl;
                 }
             } while (col < 0 || col >= gp.getMAX_X() || col_err);
-
         }
         else {
             int col = gKI.calculateNextTurn(gp);
             col_err = gp.insertTokenIntoColumn(col);
         }
         GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
-
 
 
         Player hasWon = gp.hasSomeoneWon();
@@ -134,7 +132,7 @@ int main(int argc, char* argv[]) {
             cout << "Game is over. You did well!. No more cells are free on the Game!" << endl;
             break;
         }
-        //system("PAUSE");
+		system("PAUSE");
     }
 	system("PAUSE");
     return 0;

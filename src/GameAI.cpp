@@ -17,17 +17,23 @@ int GameAI::calculateNextTurn(const GamePanel &gPanel) {
 	NodeType *expanded_node;
 	double rating;
 
-	simulatedGamePanel = gPanel; // make a mutable copy of the const GamePanel (deep copy)
-	expandAllChildrenOf(m_pGameTree->getRoot());
+	// make a mutable copy of the const GamePanel (deep copy)
+	simulatedGamePanel = gPanel;
+
+	expandAllChildrenOf(m_pGameTree->getRoot(), gPanel);
 	for (size_t i = 0; i < MAX_NUM_OF_ITERATIONS; ++i) {
 		// reset the simulated GamePanel
-		simulatedGamePanel = gPanel; // = echte tiefe Kopie
-		// @note:   root-node is always the opponent's turn (OP_Player), which is also the current done turn, so now the AI can chose it's turn
+		// make a mutable copy of the const GamePanel (deep copy)
+		simulatedGamePanel = gPanel; 
+
+		//@note:   root-node is always the opponent's turn (OP_Player), 
+		//which is also the current turn, so now the AI can chose it's turn
 
 		///////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////
-		selected_node = recursive_selection(m_pGameTree->getRoot());
+
+		selected_node = selection(m_pGameTree->getRoot());
 
 		expanded_node = expansion(selected_node);
 
@@ -42,9 +48,9 @@ int GameAI::calculateNextTurn(const GamePanel &gPanel) {
 		// debug:
 		//Tree::levelOrder(m_pGameTree->getRoot());
 		//system("PAUSE");
-		// GamePanel::drawGamePanelOnConsole(simulatedGamePanel.getGameData(), simulatedGamePanel.getMAX_X(), simulatedGamePanel.getMAX_Y());
+		// GamePanel::drawGamePanelOnConsole(simulatedGamePanel.getGameData(), 
+		//	simulatedGamePanel.getMAX_X(), simulatedGamePanel.getMAX_Y());
 		// system("PAUSE");
-		// cout << "X: " << simulatedGamePanel.getPositionOfLastPlacedToken().x << "\nY: " << simulatedGamePanel.getPositionOfLastPlacedToken().y << endl;
 
 	}
 	cout << "End of MCTS!" << endl;
@@ -69,8 +75,8 @@ int GameAI::pickBestMove(const GamePanel &gp) {
 
     // try to look for a winning move
     for (col_move = 0; col_move < gp.getMAX_X(); ++col_move) {
-        GamePanel newState = gp;	// make a mutable copy of the const GamePanel
-        newState.insertTokenIntoColumn(col_move); // make the move on the copy previously made
+        GamePanel newState = gp;  // make a mutable copy of the const GamePanel
+        newState.insertTokenIntoColumn(col_move); // make the move on the copy
 
         Player playerThatJustWon = newState.hasSomeoneWon();
         if (playerThatJustWon == AI_Player) {
@@ -80,13 +86,15 @@ int GameAI::pickBestMove(const GamePanel &gp) {
 
 	// try to look for a move that hinders the opponent from winning
     for (col_move = 0; col_move < gp.getMAX_X(); ++col_move) {
-        GamePanel newState = gp;		// make a mutable copy of the const GamePanel
-		newState.setTurnPlayer(OP_Player);	// simulate a turn of the opponent, so its his turn now
-        newState.insertTokenIntoColumn(col_move); // make the move on the copy previously made
+        GamePanel newState = gp;  // make mutable copy of the const GamePanel
+		newState.setTurnPlayer(OP_Player);	// simulate a turn of the opponent
+        newState.insertTokenIntoColumn(col_move); // make the move on the copy
 
         Player playerThatJustWon = newState.hasSomeoneWon();
         if (playerThatJustWon == OP_Player) {
-			return col_move; // the opponent player will probably make this move to win in his next turn, so hinder him on doing that!
+			return col_move; 
+			// opponent player will probably make this move to win in his turn, 
+			// so hinder him on doing that!
         }
     }
 
@@ -105,7 +113,7 @@ int GameAI::pickRandomMove(const GamePanel &gp) {
             possibleColumns.push_back(i);
         }
     }
-	if (possibleColumns.empty()) { return -1; } // all columns are already full!
+	if (possibleColumns.empty()) { return -1; } // all columns are already full
 
     /* initialize random seed: */
     time_t t;
@@ -125,23 +133,37 @@ int GameAI::doRandomMove(GamePanel &gp) {
     return pickedColumn;
 }
 
-void GameAI::expandAllChildrenOf(NodeType *Node) {
-    // go through all turns:
-    for (int col = 0; col < simulatedGamePanel.getMAX_X(); ++col) {
-        int columnChosen = col;
-        int col_err = simulatedGamePanel.insertTokenIntoColumn(columnChosen);
+void GameAI::expandAllChildrenOf(NodeType *Node, const GamePanel & gp) {
+    // go through all possible moves:
 
+	GamePanel tmpState = gp;	// @todo bad performance to copy over all again
+    for (int col = 0; col < tmpState.getMAX_X(); ++col) {
+		
+		tmpState = gp;	// added missing reset of game state
+
+		// try to insert into a column inside the game state
+        int columnChosen = col;
+        int col_err = tmpState.insertTokenIntoColumn(columnChosen);
+
+		// update the game tree to hold expanded nodes
         if (col_err != NO_VALID_MOVE) {
             NodeType *newNode = m_pGameTree->createNewNode();
             newNode->UCTB = rand() % 1000 + 10000;
             newNode->chosenTurnThatLeadedToThisNode = columnChosen;
-			newNode->sequenceThatLeadedToThisNode = "root.move" + std::to_string(newNode->chosenTurnThatLeadedToThisNode);
+			newNode->sequenceThatLeadedToThisNode = "root.move" 
+				+ std::to_string(newNode->chosenTurnThatLeadedToThisNode);
+
             Tree::addNodeTo(newNode, Node);
 
 			//debug
-			//m_pt.put(newNode->sequenceThatLeadedToThisNode + ".UCTB", newNode->UCTB);
-			//m_pt.put(newNode->sequenceThatLeadedToThisNode + ".visits", newNode->visits);
-			//m_pt.put(newNode->sequenceThatLeadedToThisNode + ".value", newNode->value);
+			/*
+			m_pt.put(newNode->sequenceThatLeadedToThisNode 
+									+ ".UCTB", newNode->UCTB);
+			m_pt.put(newNode->sequenceThatLeadedToThisNode 
+									+ ".visits", newNode->visits);
+			m_pt.put(newNode->sequenceThatLeadedToThisNode 
+									+ ".value", newNode->value);
+			*/
         }
     }
 }
@@ -149,36 +171,65 @@ void GameAI::expandAllChildrenOf(NodeType *Node) {
 /////////////////////////////////
 /// S E L E C T I O N ///
 /////////////////////////
-NodeType * GameAI::recursive_selection(NodeType *Node) {
-	NodeType *selectedNode = Node;
+NodeType * GameAI::recursive_selection(NodeType *node) {
+	NodeType *selectedNode = node;
 
 	// if current viewed node is not a Leaf Node L,
-    if (!(Node->childNodes).empty()) {
-		// go through all childNodes and choose the one with the highest UCTB-value
+    if (!(node->childNodes).empty()) 
+	{
+		// go through all childNodes and choose the one with the highest UCTB
         NodeType *next = nullptr;
         double max_uctb = 0.0f;
-        for (size_t i = 0; i < (Node->childNodes).size(); ++i) {
-            if (max_uctb <= (Node->childNodes[i])->UCTB) {
-                max_uctb = (Node->childNodes[i])->UCTB;
-                next = (Node->childNodes[i]);
+        for (size_t i = 0; i < (node->childNodes).size(); ++i) {
+            if (max_uctb <= (node->childNodes[i])->UCTB) {
+                max_uctb = (node->childNodes[i])->UCTB;
+                next = (node->childNodes[i]);
             }
         }
 		// replay what has been already analysed inside the game tree
-        simulatedGamePanel.insertTokenIntoColumn(next->chosenTurnThatLeadedToThisNode);
+        simulatedGamePanel.insertTokenIntoColumn(
+			next->chosenTurnThatLeadedToThisNode
+		);
 
 		// ::: recursive call :::
 		// select node with highest UCTB value all the way down to a leaf-node
 		selectedNode = recursive_selection(next);	
     }
-
 	// leaf node L reached (termination condition reached)
     return selectedNode;
 }
 
+NodeType * GameAI::selection(NodeType *node)
+{
+	NodeType *selectedNode = node;
 
+	// select nodes with the highest UCTB-value and 
+	// advance like that until a leaf node L is reached
+	while (!(selectedNode->childNodes.empty()))
+	{
+		// go through all childNodes and choose the one with the highest UCTB
+		NodeType *next = nullptr;
+		double max_uctb = 0.0f;
+		for (size_t i = 0; i < (selectedNode->childNodes).size(); ++i) {
+			if (max_uctb <= (selectedNode->childNodes[i])->UCTB) {
+				max_uctb = (selectedNode->childNodes[i])->UCTB;
+				next = (selectedNode->childNodes[i]);
+			}
+		}
+		selectedNode = next; //advance selectedNode to one of itsUCTB-children
+
+		// replay what has been already analysed inside the game tree
+		simulatedGamePanel.insertTokenIntoColumn(
+			selectedNode->chosenTurnThatLeadedToThisNode
+		);
+	}
+	// leaf node L reached (termination condition reached)
+	return selectedNode;
+}
+///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////
 /// E X P A N S I O N ///
-/////////////////////////
+/////////////////////////	// L -> C
 NodeType * GameAI::expansion(NodeType *leaf_node)
 {
     // e1.) Does the Leaf Node L node end the Game? (won/loss/tie)?
@@ -192,7 +243,7 @@ NodeType * GameAI::expansion(NodeType *leaf_node)
     // sim1.) choose a good move (columnChosen)
     int columnChosen = pickBestMove(simulatedGamePanel);
     if (columnChosen == -1) {
-        return leaf_node;  // if game panel is full => FULL_TIE and stop simulating
+        return leaf_node;  //if game panel is full => FULL_TIE & stop sim
     }
     // sim2.) do the selected move (columnChosen)
     simulatedGamePanel.insertTokenIntoColumn(columnChosen);
@@ -200,17 +251,22 @@ NodeType * GameAI::expansion(NodeType *leaf_node)
     // e2.) expansion: create a newNode
     NodeType *newNodeC = m_pGameTree->createNewNode();
     newNodeC->chosenTurnThatLeadedToThisNode = columnChosen;
-	newNodeC->sequenceThatLeadedToThisNode = leaf_node->sequenceThatLeadedToThisNode + ".move" + std::to_string(leaf_node->chosenTurnThatLeadedToThisNode);
-    newNodeC->UCTB = rand() % 1000 + 10000;	// assign unvisited nodes with a very large UCTB-value
+	newNodeC->sequenceThatLeadedToThisNode = 
+		leaf_node->sequenceThatLeadedToThisNode + ".move" 
+		+ std::to_string(leaf_node->chosenTurnThatLeadedToThisNode);
 	
     // e4.) add the newly created Node to the leaf node L
     Tree::addNodeTo(newNodeC, leaf_node);
 
 	//debug
-	//m_pt.put(newNodeC->sequenceThatLeadedToThisNode + ".UCTB", newNodeC->UCTB);
-	//m_pt.put(newNodeC->sequenceThatLeadedToThisNode + ".visits", newNodeC->visits);
-	//m_pt.put(newNodeC->sequenceThatLeadedToThisNode + ".value", newNodeC->value);
-
+	/*
+	m_pt.put(newNodeC->sequenceThatLeadedToThisNode 
+				+ ".UCTB", newNodeC->UCTB);
+	m_pt.put(newNodeC->sequenceThatLeadedToThisNode 
+				+ ".visits", newNodeC->visits);
+	m_pt.put(newNodeC->sequenceThatLeadedToThisNode 
+				+ ".value", newNodeC->value);
+	*/
     return newNodeC; // = expanded_node C
 }
 
@@ -228,13 +284,14 @@ double GameAI::simulation(NodeType *expanded_node) {
 
     // for (int i = 0; i < NUM_OF_SIMULATION_FRAMES; ++i)
     while (1) {
-        //GamePanel::drawGamePanelOnConsole(simulatedGamePanel.getGameData(), simulatedGamePanel.getMAX_X(), simulatedGamePanel.getMAX_Y());
+        //GamePanel::drawGamePanelOnConsole(simulatedGamePanel.getGameData(), 
+		//		simulatedGamePanel.getMAX_X(), simulatedGamePanel.getMAX_Y());
         //system("PAUSE");
 
         // choose a move
         int columnChosen = pickBestMove(simulatedGamePanel);
         if (columnChosen == -1) {
-            return VALUE_DRAW; // if game panel is full => FULL_TIE and stop simulating
+            return VALUE_DRAW; // if game panel is full => FULL_TIE & stop sim
         }
         // sim2.) chose a move
         simulatedGamePanel.insertTokenIntoColumn(columnChosen);
@@ -253,40 +310,51 @@ double GameAI::simulation(NodeType *expanded_node) {
 ///////////////////////////////////////
 /// B A C K P O P A G A T I O N ///
 ///////////////////////////////////
-void GameAI::backpropagation(NodeType *expanded_node, double ratingToBeUpdated) {
-    // GamePanel::drawGamePanelOnConsole(gameDataH, actualGamePanel.getMAX_X(), actualGamePanel.getMAX_Y());
+void GameAI::backpropagation(NodeType *expanded_node,double ratingToBeUpdated){
+    // GamePanel::drawGamePanelOnConsole(gameDataH, actualGamePanel.getMAX_X(), 
+	//				actualGamePanel.getMAX_Y());
 
-	// b1.) backpropagate from expandednode (C) to Leaf Node (L) and other nodes on that way up to root node (R)
-    // b3.) update the rating (UCTS) of the nodes up to the root (excluding the root)
+	// b1.) backpropagate from expandednode (C) to Leaf Node (L) and 
+	//						other nodes on that way up to root node (R)
+    // b3.) update the rating (UCTS) of the nodes up to the root 
+	//						(excluding the root)
 	NodeType *cur_node = expanded_node;
     do {
         //-------------------------------------------------------------------
-		// b2.) increase the amount of visits of each node and add that to the rating
+		//b2.)increase the amount of visits of each node and add that to rating
 		cur_node->value += ratingToBeUpdated;
 		++(cur_node->visits);
 
         if (cur_node->visits != 0) {	// protects against division by 0
             /*
 				constant C = CURIOUSITY_FACTOR = curiousity of the algorithm
-				small C => game tree gets deeper expanded (only the best variation gets explored)
-				big C => game tree gets broader expanded (nodes with lesser visits are prefered)
+				small C => game tree gets deeper expanded 
+								(only the best variation gets explored)
+				big C => game tree gets broader expanded 
+								(nodes with lesser visits are prefered)
 			*/
        
             // ::: exploitation :::
             double winratio = cur_node->value / cur_node->visits;
 
             // ::: exploration :::
-            double uct = CURIOUSITY_FACTOR * sqrt(log(cur_node->parent->visits+1) / cur_node->visits);
+            double uct = CURIOUSITY_FACTOR 
+				* sqrt(log(cur_node->parent->visits+1) / cur_node->visits);
 
             cur_node->UCTB = winratio + uct;
 
 			//debug - update uctb value inside property tree
-			//m_pt.put(cur_node->sequenceThatLeadedToThisNode + ".UCTB", cur_node->UCTB);
-			//m_pt.put(cur_node->sequenceThatLeadedToThisNode + ".visits", cur_node->visits);
-			//m_pt.put(cur_node->sequenceThatLeadedToThisNode + ".value", cur_node->value);
+			/*
+			m_pt.put(cur_node->sequenceThatLeadedToThisNode 
+									+ ".UCTB", cur_node->UCTB);
+			m_pt.put(cur_node->sequenceThatLeadedToThisNode 
+									+ ".visits", cur_node->visits);
+			m_pt.put(cur_node->sequenceThatLeadedToThisNode 
+									+ ".value", cur_node->value);
+			*/
 		}
 		else {
-			std::cout << "cur node visits == 0 !!!!!!!!!!! error!!!" << std::endl;
+			std::cout << "cur node visits == 0 !!!! error!!!" << std::endl;
 		}
         //-------------------------------------------------------------------
         cur_node = cur_node->parent;	// advance upwards
@@ -303,7 +371,7 @@ NodeType * GameAI::selectMostVisitedChild(NodeType *rootNode) {
     int max_visit_count = 0;
 
     // von node aus alle kinder:
-    for (size_t i = 0; i < rootNode->childNodes.size(); ++i) // for all children
+    for (size_t i = 0; i < rootNode->childNodes.size(); ++i) //for all children
     {
         // inspect all children
         NodeType *currentChildNode = rootNode->childNodes[i];
@@ -317,4 +385,3 @@ NodeType * GameAI::selectMostVisitedChild(NodeType *rootNode) {
     }
     return selected_node;
 }
-

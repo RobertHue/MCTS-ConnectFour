@@ -64,7 +64,6 @@ BOOST_AUTO_TEST_CASE( MCTS_Test01 )
 	const int MAX_Y = 5;
 	GamePanel gp(MAX_X, MAX_Y);
 	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
-	GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
 	GameAI gKI(playerAI);
 
 	gp.insertTokenIntoColumn(5);
@@ -91,7 +90,6 @@ BOOST_AUTO_TEST_CASE(MCTS_Test02)
 	const int MAX_Y = 5;
 	GamePanel gp(MAX_X, MAX_Y);
 	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
-	GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
 	GameAI gKI(playerAI);
 
 	gp.insertTokenIntoColumn(3);
@@ -121,7 +119,6 @@ BOOST_AUTO_TEST_CASE(MCTS_Test03)
 	const int MAX_Y = 5;
 	GamePanel gp(MAX_X, MAX_Y);
 	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
-	GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
 	GameAI gKI(playerAI);
 
 	gp.setTurnPlayer(playerAI);
@@ -171,7 +168,6 @@ BOOST_AUTO_TEST_CASE(MCTS_Test04)
 	const int MAX_Y = 5;
 	GamePanel gp(MAX_X, MAX_Y);
 	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
-	GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
 	GameAI gKI(playerAI);
 
 	gp.setTurnPlayer(playerYou); gp.insertTokenIntoColumn(5);
@@ -201,4 +197,69 @@ BOOST_AUTO_TEST_CASE(MCTS_Test04)
 	int ACTUAL_COLUMN = gKI.calculateNextTurn(gp);
 	int EXPECTED_COLUMN = 5;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
+}
+
+
+BOOST_AUTO_TEST_CASE(MCTS_Test05)
+{
+	BOOST_TEST_MESSAGE("MCTS_Test05");
+
+	Player playerYou = PLAYER_2;
+	Player playerAI = PLAYER_1;
+	const int MAX_X = 7;
+	const int MAX_Y = 5;
+	GamePanel gp(MAX_X, MAX_Y);
+	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
+	GameAI gKI(playerAI);
+
+	gp.insertTokenIntoColumn(6);
+	gp.insertTokenIntoColumn(3);
+	gp.insertTokenIntoColumn(3);
+	gp.insertTokenIntoColumn(4);
+	gp.insertTokenIntoColumn(5);
+	gp.insertTokenIntoColumn(2);
+	gp.insertTokenIntoColumn(1);
+	gp.insertTokenIntoColumn(2);
+	gp.insertTokenIntoColumn(6);
+	gp.insertTokenIntoColumn(2);
+	GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+
+	gp.setTurnPlayer(playerAI);
+	int ACTUAL_COLUMN = gKI.calculateNextTurn(gp);
+	int EXPECTED_COLUMN = 2;
+	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
+}
+
+BOOST_AUTO_TEST_CASE(MCTS_Test06)
+{
+	BOOST_TEST_CHECKPOINT("Starting MCTS_Test06");
+	BOOST_TEST_MESSAGE("MCTS_Test06");
+
+	Player playerYou = PLAYER_2;
+	Player playerAI = PLAYER_1;
+	const int MAX_X = 7;
+	const int MAX_Y = 5;
+	GamePanel gp(MAX_X, MAX_Y);
+	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
+	GameAI gKI(playerAI);
+	GameAI gKI2(playerYou);
+
+	gp.insertTokenIntoColumn(3);
+	gp.insertTokenIntoColumn(2);
+	gp.insertTokenIntoColumn(2);
+	gp.insertTokenIntoColumn(0);
+	gp.insertTokenIntoColumn(5);
+	gp.insertTokenIntoColumn(3);
+	gp.insertTokenIntoColumn(6);
+	gp.insertTokenIntoColumn(4);
+	gp.insertTokenIntoColumn(6);
+	gp.insertTokenIntoColumn(5);
+	gp.insertTokenIntoColumn(6); // here circle is about to win...
+	GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+
+	//gp.setTurnPlayer(playerYou);
+	int ACTUAL_COLUMN = gKI2.calculateNextTurn(gp);
+	int EXPECTED_COLUMN = 6;	// should be chosen to avoid circle from winning
+	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
+	BOOST_TEST_CHECKPOINT("Ending MCTS_Test06");
 }
