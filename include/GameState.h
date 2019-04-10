@@ -25,7 +25,7 @@ typedef struct {
     int y;
 } Position;
 
-class GamePanel {
+class GameState {
 private:
     // kleinste Groesse: 4x4
     // groesste Groesse: 8x8
@@ -39,7 +39,7 @@ private:
 
 public:
 
-    GamePanel(int x = 4, int y = 4) : MAX_X(x), MAX_Y(y) {
+    GameState(int x = 4, int y = 4) : MAX_X(x), MAX_Y(y) {
         gameData = vector<vector<int>> (MAX_X, vector<int> (MAX_Y, FREE_FIELD));
 
         this->setTurnPlayer(PLAYER_1);

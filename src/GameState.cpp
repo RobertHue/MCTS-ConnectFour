@@ -1,31 +1,31 @@
 
-#include "GamePanel.h"
+#include "GameState.h"
 
-int GamePanel::getNumOfFreeFields() const {
+int GameState::getNumOfFreeFields() const {
     return this->numOfFreeFields;
 }
 
-Position GamePanel::getPositionOfLastPlacedToken() const {
+Position GameState::getPositionOfLastPlacedToken() const {
     return this->positionOfLastPlacedToken;
 }
 
-vector<vector<int>> GamePanel::getGameData() const {
+vector<vector<int>> GameState::getGameData() const {
     return gameData;
 }
 
-void GamePanel::setTurnPlayer(Player turnPlayer) {
+void GameState::setTurnPlayer(Player turnPlayer) {
     this->turnPlayer = turnPlayer;
 }
 
-Player GamePanel::getTurnPlayer() const {
+Player GameState::getTurnPlayer() const {
     return this->turnPlayer;
 }
 
-Player GamePanel::getOtherPlayer() const {
+Player GameState::getOtherPlayer() const {
     return this->otherPlayer;
 }
 
-void GamePanel::nextTurn() {
+void GameState::nextTurn() {
     if (turnPlayer == PLAYER_1) {
         turnPlayer = PLAYER_2;
         otherPlayer = PLAYER_1;
@@ -46,7 +46,7 @@ Beispiele:
         "X,X,X,O" => NONE;  "X,X,X,_" oder "X,_,X,X" oder "O,X,X,_,X" => Player X
         "_,_,X,_,X,_,X,_,X,X"
  */
-Player GamePanel::isAboutToWin() {
+Player GameState::isAboutToWin() {
     bool closeFreeField = false;
     int x_placed = positionOfLastPlacedToken.x;
     int y_placed = positionOfLastPlacedToken.y;
@@ -136,7 +136,7 @@ Player GamePanel::isAboutToWin() {
 
 
 
-Player GamePanel::hasSomeoneWon() {
+Player GameState::hasSomeoneWon() {
     int x_placed = positionOfLastPlacedToken.x;
     int y_placed = positionOfLastPlacedToken.y;
 
@@ -216,7 +216,7 @@ Player GamePanel::hasSomeoneWon() {
     return NONE; // noone has won yet!
 }
 
-void GamePanel::drawGamePanelOnConsole(vector<vector<int>> gameData, int MAX_X, int MAX_Y) {
+void GameState::drawGamePanelOnConsole(vector<vector<int>> gameData, int MAX_X, int MAX_Y) {
     // system("cls");
     cout << "Connect-Four (" << MAX_Y << "x" << MAX_X << "):\n\n" << endl;
     cout << "  ";
@@ -262,7 +262,7 @@ void GamePanel::drawGamePanelOnConsole(vector<vector<int>> gameData, int MAX_X, 
 }
 
 
-int GamePanel::insertTokenIntoColumn(int column) {
+int GameState::insertTokenIntoColumn(int column) {
     int row;
     for (row = MAX_Y - 1; row >= 0; --row) {
 
@@ -288,10 +288,10 @@ int GamePanel::insertTokenIntoColumn(int column) {
     return NO_VALID_MOVE;
 }
 
-int GamePanel::getMAX_X() const {
+int GameState::getMAX_X() const {
     return MAX_X;
 }
 
-int GamePanel::getMAX_Y() const {
+int GameState::getMAX_Y() const {
     return MAX_Y;
 }

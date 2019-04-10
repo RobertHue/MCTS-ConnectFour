@@ -23,7 +23,11 @@ const int MAX_Y = 5;
 int main(int argc, char* argv[]) {
 	int col_err;
 	GamePanel gp(MAX_X, MAX_Y);
-	GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+	GamePanel::drawGamePanelOnConsole(
+		gp.getGameData(), 
+		gp.getMAX_X(), 
+		gp.getMAX_Y()
+	);
 	/*
 	QApplication app(argc, argv);
 
@@ -62,7 +66,6 @@ int main(int argc, char* argv[]) {
 	widget->setWindowTitle(QString(windowTitle.str().c_str()));
 	widget->show();
 	*/
-	//GamePanel::drawGamePanelOnWindow(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
 
     //*************************
     //*** Spieler-Auwahl ******
@@ -88,7 +91,12 @@ int main(int argc, char* argv[]) {
             default:
                 cout << "Wrong input! Please choose again!";
         }
-    } while (input_char != 'x' && input_char != 'X' && input_char != 'o' && input_char != 'O');
+    } while (
+		input_char != 'x' && 
+		input_char != 'X' && 
+		input_char != 'o' && 
+		input_char != 'O'
+	);
 
 
 
@@ -108,7 +116,7 @@ int main(int argc, char* argv[]) {
 
                 col_err = gp.insertTokenIntoColumn(col);
                 if (col_err == ERROR) {
-                    cout << "Column is already full! Please chose again: " << endl;
+                    cout << "Column is already full! Please chose again: \n";
                 }
             } while (col < 0 || col >= gp.getMAX_X() || col_err);
         }
@@ -116,23 +124,28 @@ int main(int argc, char* argv[]) {
             int col = gKI.calculateNextTurn(gp);
             col_err = gp.insertTokenIntoColumn(col);
         }
-        GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+        GamePanel::drawGamePanelOnConsole(
+			gp.getGameData(), 
+			gp.getMAX_X(), 
+			gp.getMAX_Y()
+		);
 
 
         Player hasWon = gp.hasSomeoneWon();
         if (hasWon == playerYou) {
-            cout << "Congratulations!!! You have won!!! :)" << endl;
+            cout << "Congratulations!!! You have won!!! :)\n";
             break;
         } else if (hasWon == playerAI) {
-            cout << "Unfortunately the KI has won... :(" << endl;
+            cout << "Unfortunately the KI has won... :(\n";
             break;
         }
 
         if (gp.getNumOfFreeFields() <= 0) {
-            cout << "Game is over. You did well!. No more cells are free on the Game!" << endl;
+            cout << "Game is over. You did well!."
+					"No more cells are free on the Game!\n";
             break;
         }
-		system("PAUSE");
+		//system("PAUSE");
     }
 	system("PAUSE");
     return 0;
