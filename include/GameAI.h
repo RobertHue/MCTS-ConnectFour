@@ -91,7 +91,6 @@ private:
     void expandAllChildrenOf(NodeType *Node, const GameState & gp);
 	
 	/// recursively does the selection step of the mcts (arg node is the root)
-    NodeType *recursive_selection(NodeType *node);
 	NodeType *selection(NodeType *node);
 
 	/// does the expansion step of the mcts

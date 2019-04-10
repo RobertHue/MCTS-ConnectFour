@@ -175,34 +175,6 @@ void GameAI::expandAllChildrenOf(NodeType *nodeToExpand, const GameState & gs) {
 /////////////////////////////////
 /// S E L E C T I O N ///
 /////////////////////////
-NodeType * GameAI::recursive_selection(NodeType *node) {
-	NodeType *selectedNode = node;
-
-	// if current viewed node is not a Leaf Node L,
-    if (!(node->childNodes).empty()) 
-	{
-		// go through all childNodes and choose the one with the highest UCTB
-        NodeType *next = nullptr;
-        double max_uctb = 0.0f;
-        for (size_t i = 0; i < (node->childNodes).size(); ++i) {
-            if (max_uctb <= (node->childNodes[i])->UCTB) {
-                max_uctb = (node->childNodes[i])->UCTB;
-                next = (node->childNodes[i]);
-            }
-        }
-		// replay what has been already analysed inside the game tree
-        simulatedGameState.insertTokenIntoColumn(
-			next->chosenTurnThatLeadedToThisNode
-		);
-
-		// ::: recursive call :::
-		// select node with highest UCTB value all the way down to a leaf-node
-		selectedNode = recursive_selection(next);	
-    }
-	// leaf node L reached (termination condition reached)
-    return selectedNode;
-}
-
 NodeType * GameAI::selection(NodeType *node)
 {
 	NodeType *selectedNode = node;
