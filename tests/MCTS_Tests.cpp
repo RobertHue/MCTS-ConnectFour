@@ -24,11 +24,11 @@ BOOST_AUTO_TEST_CASE(TreeTest01)
 		tree.addNodeTo(newNode1, tree.getRoot());
 		NodeType *newNode2 = tree.createNewNode();
 		tree.addNodeTo(newNode2, tree.getRoot());
-		tree.levelOrder(tree.getRoot());
+		Tree::printLevelOrder(tree.getRoot());
 	}
 
 	Tree tree2 = tree;
-	tree.levelOrder(tree.getRoot());
+	Tree::printLevelOrder(tree.getRoot());
 
 	Tree *ptree3 = new Tree;
 	{
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(TreeTest01)
 		ptree3->addNodeTo(newNode1, ptree3->getRoot());
 		NodeType *newNode2 = ptree3->createNewNode();
 		ptree3->addNodeTo(newNode2, ptree3->getRoot());
-		ptree3->levelOrder(ptree3->getRoot());
+		Tree::printLevelOrder(ptree3->getRoot());
 	}
 
 	ACTUAL = tree.getAmountOfNodes();
@@ -62,20 +62,20 @@ BOOST_AUTO_TEST_CASE( MCTS_Test01 )
 	Player playerAI = PLAYER_1;
 	const int MAX_X = 7;
 	const int MAX_Y = 5;
-	GameState gp(MAX_X, MAX_Y);
-	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
+	GameState gs(MAX_X, MAX_Y);
+	gs.setTurnPlayer(playerAI); // set Player that needs to begin here
 	GameAI gKI(playerAI);
 
-	gp.insertTokenIntoColumn(5);
-	gp.insertTokenIntoColumn(3);
-	gp.insertTokenIntoColumn(4);
-	gp.insertTokenIntoColumn(3);
-	gp.insertTokenIntoColumn(4);
-	gp.insertTokenIntoColumn(3);
-	GameState::drawGameStateOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+	gs.insertTokenIntoColumn(5);
+	gs.insertTokenIntoColumn(3);
+	gs.insertTokenIntoColumn(4);
+	gs.insertTokenIntoColumn(3);
+	gs.insertTokenIntoColumn(4);
+	gs.insertTokenIntoColumn(3);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
-	gp.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = gKI.calculateNextTurn(gp);
+	gs.setTurnPlayer(playerAI);
+	int ACTUAL_COLUMN = gKI.calculateNextTurn(gs);
 	int EXPECTED_COLUMN = 3;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 }
@@ -88,23 +88,23 @@ BOOST_AUTO_TEST_CASE(MCTS_Test02)
 	Player playerAI = PLAYER_1;
 	const int MAX_X = 7;
 	const int MAX_Y = 5;
-	GameState gp(MAX_X, MAX_Y);
-	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
+	GameState gs(MAX_X, MAX_Y);
+	gs.setTurnPlayer(playerAI); // set Player that needs to begin here
 	GameAI gKI(playerAI);
 
-	gp.insertTokenIntoColumn(3);
-	gp.insertTokenIntoColumn(2);
-	gp.insertTokenIntoColumn(5);
-	gp.insertTokenIntoColumn(2);
-	gp.insertTokenIntoColumn(6);
-	gp.insertTokenIntoColumn(4);
-	gp.insertTokenIntoColumn(6);
-	gp.insertTokenIntoColumn(2);
+	gs.insertTokenIntoColumn(3);
+	gs.insertTokenIntoColumn(2);
+	gs.insertTokenIntoColumn(5);
+	gs.insertTokenIntoColumn(2);
+	gs.insertTokenIntoColumn(6);
+	gs.insertTokenIntoColumn(4);
+	gs.insertTokenIntoColumn(6);
+	gs.insertTokenIntoColumn(2);
 	//-> KI has to place in col2 now
-	GameState::drawGameStateOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
-	gp.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = gKI.calculateNextTurn(gp);
+	gs.setTurnPlayer(playerAI);
+	int ACTUAL_COLUMN = gKI.calculateNextTurn(gs);
 	int EXPECTED_COLUMN = 2;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 }
@@ -117,43 +117,43 @@ BOOST_AUTO_TEST_CASE(MCTS_Test03)
 	Player playerAI = PLAYER_1;
 	const int MAX_X = 7;
 	const int MAX_Y = 5;
-	GameState gp(MAX_X, MAX_Y);
-	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
+	GameState gs(MAX_X, MAX_Y);
+	gs.setTurnPlayer(playerAI); // set Player that needs to begin here
 	GameAI gKI(playerAI);
 
-	gp.setTurnPlayer(playerAI);
-	gp.insertTokenIntoColumn(0);
-	gp.setTurnPlayer(playerAI);
-	gp.insertTokenIntoColumn(0);
+	gs.setTurnPlayer(playerAI);
+	gs.insertTokenIntoColumn(0);
+	gs.setTurnPlayer(playerAI);
+	gs.insertTokenIntoColumn(0);
 
-	gp.setTurnPlayer(playerAI);
-	gp.insertTokenIntoColumn(1);
-	gp.setTurnPlayer(playerAI);
-	gp.insertTokenIntoColumn(1);
+	gs.setTurnPlayer(playerAI);
+	gs.insertTokenIntoColumn(1);
+	gs.setTurnPlayer(playerAI);
+	gs.insertTokenIntoColumn(1);
 
-	gp.setTurnPlayer(playerAI);
-	gp.insertTokenIntoColumn(4);
-	gp.setTurnPlayer(playerAI);
-	gp.insertTokenIntoColumn(4);
+	gs.setTurnPlayer(playerAI);
+	gs.insertTokenIntoColumn(4);
+	gs.setTurnPlayer(playerAI);
+	gs.insertTokenIntoColumn(4);
 
-	gp.setTurnPlayer(playerAI);
-	gp.insertTokenIntoColumn(5);
-	gp.setTurnPlayer(playerAI);
-	gp.insertTokenIntoColumn(5);
-	gp.setTurnPlayer(playerAI);
-	gp.insertTokenIntoColumn(6);
-	gp.setTurnPlayer(playerAI);
-	gp.insertTokenIntoColumn(6);
+	gs.setTurnPlayer(playerAI);
+	gs.insertTokenIntoColumn(5);
+	gs.setTurnPlayer(playerAI);
+	gs.insertTokenIntoColumn(5);
+	gs.setTurnPlayer(playerAI);
+	gs.insertTokenIntoColumn(6);
+	gs.setTurnPlayer(playerAI);
+	gs.insertTokenIntoColumn(6);
 
-	gp.insertTokenIntoColumn(2);
-	gp.insertTokenIntoColumn(3);
-	gp.insertTokenIntoColumn(2);
-	gp.insertTokenIntoColumn(3);
-	gp.insertTokenIntoColumn(2);
-	GameState::drawGameStateOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+	gs.insertTokenIntoColumn(2);
+	gs.insertTokenIntoColumn(3);
+	gs.insertTokenIntoColumn(2);
+	gs.insertTokenIntoColumn(3);
+	gs.insertTokenIntoColumn(2);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
-	gp.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = gKI.calculateNextTurn(gp);
+	gs.setTurnPlayer(playerAI);
+	int ACTUAL_COLUMN = gKI.calculateNextTurn(gs);
 	int EXPECTED_COLUMN = 2;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 }
@@ -166,36 +166,34 @@ BOOST_AUTO_TEST_CASE(MCTS_Test04)
 	Player playerAI = PLAYER_1;
 	const int MAX_X = 7;
 	const int MAX_Y = 5;
-	GameState gp(MAX_X, MAX_Y);
-	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
+	GameState gs(MAX_X, MAX_Y);
+	gs.setTurnPlayer(playerAI); // set Player that needs to begin here
 	GameAI gKI(playerAI);
 
-	gp.setTurnPlayer(playerYou); gp.insertTokenIntoColumn(5);
-	gp.setTurnPlayer(playerYou); gp.insertTokenIntoColumn(5);
-	gp.setTurnPlayer(playerYou); gp.insertTokenIntoColumn(5);
+	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(5);
+	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(5);
 
+	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(0);
+	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(0);
+	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(1);
+	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(1);
+	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(2);
+	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(2);
 
-	gp.setTurnPlayer(playerYou); gp.insertTokenIntoColumn(0);
-	gp.setTurnPlayer(playerYou); gp.insertTokenIntoColumn(0);
-	gp.setTurnPlayer(playerYou); gp.insertTokenIntoColumn(1);
-	gp.setTurnPlayer(playerYou); gp.insertTokenIntoColumn(1);
-	gp.setTurnPlayer(playerYou); gp.insertTokenIntoColumn(2);
-	gp.setTurnPlayer(playerYou); gp.insertTokenIntoColumn(2);
+	gs.setTurnPlayer(playerAI); gs.insertTokenIntoColumn(0);
+	gs.setTurnPlayer(playerAI); gs.insertTokenIntoColumn(1);
+	gs.setTurnPlayer(playerAI); gs.insertTokenIntoColumn(2);
+	gs.setTurnPlayer(playerAI); gs.insertTokenIntoColumn(0);
+	gs.setTurnPlayer(playerAI); gs.insertTokenIntoColumn(1);
+	gs.setTurnPlayer(playerAI); gs.insertTokenIntoColumn(2);
+	gs.setTurnPlayer(playerAI); gs.insertTokenIntoColumn(3);
+	gs.setTurnPlayer(playerAI); gs.insertTokenIntoColumn(6);
+	gs.setTurnPlayer(playerAI); gs.insertTokenIntoColumn(6);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
-	gp.setTurnPlayer(playerAI); gp.insertTokenIntoColumn(0);
-	gp.setTurnPlayer(playerAI); gp.insertTokenIntoColumn(1);
-	gp.setTurnPlayer(playerAI); gp.insertTokenIntoColumn(2);
-	gp.setTurnPlayer(playerAI); gp.insertTokenIntoColumn(0);
-	gp.setTurnPlayer(playerAI); gp.insertTokenIntoColumn(1);
-	gp.setTurnPlayer(playerAI); gp.insertTokenIntoColumn(2);
-	gp.setTurnPlayer(playerAI); gp.insertTokenIntoColumn(3);
-	gp.setTurnPlayer(playerAI); gp.insertTokenIntoColumn(6);
-	gp.setTurnPlayer(playerAI); gp.insertTokenIntoColumn(6);
-	GameState::drawGameStateOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
-
-	gp.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = gKI.calculateNextTurn(gp);
-	int EXPECTED_COLUMN = 5;
+	gs.setTurnPlayer(playerAI);
+	int ACTUAL_COLUMN = gKI.calculateNextTurn(gs);
+	int EXPECTED_COLUMN = 3;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 }
 
@@ -208,24 +206,24 @@ BOOST_AUTO_TEST_CASE(MCTS_Test05)
 	Player playerAI = PLAYER_1;
 	const int MAX_X = 7;
 	const int MAX_Y = 5;
-	GameState gp(MAX_X, MAX_Y);
-	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
+	GameState gs(MAX_X, MAX_Y);
+	gs.setTurnPlayer(playerAI); // set Player that needs to begin here
 	GameAI gKI(playerAI);
 
-	gp.insertTokenIntoColumn(6);
-	gp.insertTokenIntoColumn(3);
-	gp.insertTokenIntoColumn(3);
-	gp.insertTokenIntoColumn(4);
-	gp.insertTokenIntoColumn(5);
-	gp.insertTokenIntoColumn(2);
-	gp.insertTokenIntoColumn(1);
-	gp.insertTokenIntoColumn(2);
-	gp.insertTokenIntoColumn(6);
-	gp.insertTokenIntoColumn(2);
-	GameState::drawGameStateOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+	gs.insertTokenIntoColumn(6);
+	gs.insertTokenIntoColumn(3);
+	gs.insertTokenIntoColumn(3);
+	gs.insertTokenIntoColumn(4);
+	gs.insertTokenIntoColumn(5);
+	gs.insertTokenIntoColumn(2);
+	gs.insertTokenIntoColumn(1);
+	gs.insertTokenIntoColumn(2);
+	gs.insertTokenIntoColumn(6);
+	gs.insertTokenIntoColumn(2);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
-	gp.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = gKI.calculateNextTurn(gp);
+	gs.setTurnPlayer(playerAI);
+	int ACTUAL_COLUMN = gKI.calculateNextTurn(gs);
 	int EXPECTED_COLUMN = 2;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 }
@@ -239,26 +237,26 @@ BOOST_AUTO_TEST_CASE(MCTS_Test06)
 	Player playerAI = PLAYER_1;
 	const int MAX_X = 7;
 	const int MAX_Y = 5;
-	GameState gp(MAX_X, MAX_Y);
-	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
+	GameState gs(MAX_X, MAX_Y);
+	gs.setTurnPlayer(playerAI); // set Player that needs to begin here
 	GameAI gKI(playerAI);
 	GameAI gKI2(playerYou);
 
-	gp.insertTokenIntoColumn(3);
-	gp.insertTokenIntoColumn(2);
-	gp.insertTokenIntoColumn(2);
-	gp.insertTokenIntoColumn(0);
-	gp.insertTokenIntoColumn(5);
-	gp.insertTokenIntoColumn(3);
-	gp.insertTokenIntoColumn(6);
-	gp.insertTokenIntoColumn(4);
-	gp.insertTokenIntoColumn(6);
-	gp.insertTokenIntoColumn(5);
-	gp.insertTokenIntoColumn(6); // here circle is about to win...
-	GameState::drawGameStateOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+	gs.insertTokenIntoColumn(3);
+	gs.insertTokenIntoColumn(2);
+	gs.insertTokenIntoColumn(2);
+	gs.insertTokenIntoColumn(0);
+	gs.insertTokenIntoColumn(5);
+	gs.insertTokenIntoColumn(3);
+	gs.insertTokenIntoColumn(6);
+	gs.insertTokenIntoColumn(4);
+	gs.insertTokenIntoColumn(6);
+	gs.insertTokenIntoColumn(5);
+	gs.insertTokenIntoColumn(6); // here circle is about to win...
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
-	//gp.setTurnPlayer(playerYou);
-	int ACTUAL_COLUMN = gKI2.calculateNextTurn(gp);
+	//gs.setTurnPlayer(playerYou);
+	int ACTUAL_COLUMN = gKI2.calculateNextTurn(gs);
 	int EXPECTED_COLUMN = 6;	// should be chosen to avoid circle from winning
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 	BOOST_TEST_CHECKPOINT("Ending MCTS_Test06");

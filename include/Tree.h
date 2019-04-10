@@ -8,7 +8,9 @@
 typedef struct Node		NodeType;
 
 struct Node {
-    double UCTB;            /// UCTB rating
+    double UCTB;            /// UCTB rating -- used for selection
+	double winratio;        /// winratio -- used for exploitation
+	double uct;				/// uct -- used for exploration
     double value;           /// accumulated reward value
     int visits;             /// total amount of visits
 
@@ -35,9 +37,9 @@ public:
     NodeType* getRoot();
 	int getAmountOfNodes() const;
 
-	// Print the tree level-order assisted by queue
-	static void levelOrder(Node* n);
-	static void printAllChildsUCTB(Node *n);
+	// Prints the n-ary tree level wise (level-order)
+	static void printLevelOrder(NodeType* rootNode);
+	static void printChildNodeInfo(NodeType *n);
 
     NodeType* createNewNode();	// factory for new nodes
     static void addNodeTo(NodeType* newNode, NodeType* dstNode);

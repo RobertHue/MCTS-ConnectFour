@@ -9,7 +9,7 @@ Position GameState::getPositionOfLastPlacedToken() const {
     return this->positionOfLastPlacedToken;
 }
 
-vector<vector<int>> GameState::getGameData() const {
+std::vector<std::vector<int>> GameState::getGameData() const {
     return gameData;
 }
 
@@ -216,49 +216,49 @@ Player GameState::hasSomeoneWon() {
     return NONE; // noone has won yet!
 }
 
-void GameState::drawGameStateOnConsole(vector<vector<int>> gameData, int MAX_X, int MAX_Y) {
+void GameState::drawGameStateOnConsole(std::vector<std::vector<int>> gameData, int MAX_X, int MAX_Y) {
     // system("cls");
-    cout << "Connect-Four (" << MAX_Y << "x" << MAX_X << "):\n\n" << endl;
-    cout << "  ";
+	std::cout << "Connect-Four (" << MAX_Y << "x" << MAX_X << "):\n\n\n";
+	std::cout << "  ";
     for (int x = 0; x < MAX_X; ++x) {
-        cout << " " << x;
+		std::cout << " " << x;
     }
-    cout << "\n  ";
+	std::cout << "\n  ";
 
 
     for (int x = 0; x < MAX_X; ++x) {
-        cout << "--";
+		std::cout << "--";
     }
-    cout << "-\n";
+	std::cout << "-\n";
 
 
     for (int y = 0; y < MAX_Y; ++y) {
-        cout << y << " ";
+		std::cout << y << " ";
         for (int x = 0; x < MAX_X; ++x) {
-            cout << "|";
+			std::cout << "|";
 
             switch (gameData[x][y]) {
                 case FREE_FIELD:
-                    cout << " "; // freier Platz
+					std::cout << " "; // freier Platz
                     break;
                 case PLAYER_1:
-                    cout << "O";
+					std::cout << "O";
                     break;
                 case PLAYER_2:
-                    cout << "X";
+					std::cout << "X";
                     break;
                 default:
-                    cout << "E"; // Error...
+					std::cout << "E"; // Error...
             }
         }
         // zwischenzeile fr Trennlinie
-        cout << "|\n  ";
+		std::cout << "|\n  ";
         for (int x = 0; x < MAX_X; ++x) {
-            cout << "--";
+			std::cout << "--";
         }
-        cout << "-\n";
+		std::cout << "-\n";
     }
-    cout << endl;
+	std::cout << "\n";
 }
 
 

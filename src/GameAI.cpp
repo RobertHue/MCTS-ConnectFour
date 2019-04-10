@@ -2,6 +2,7 @@
 
 ///////////////////////////////////////////////////////////////////////////
 
+
 GameAI::GameAI(Player tokenKI) : AI_Player(tokenKI) {
 	if (AI_Player == PLAYER_1)
 		OP_Player = PLAYER_2;
@@ -9,22 +10,22 @@ GameAI::GameAI(Player tokenKI) : AI_Player(tokenKI) {
 		OP_Player = PLAYER_1;
 }
 
-int GameAI::calculateNextTurn(const GameState &gPanel) {
+int GameAI::calculateNextTurn(const GameState &gameState) {
 	m_pGameTree.reset(new Tree());
 
-	cout << "Start of MCTS!" << endl;
+	std::cout << "Start of MCTS!" << std::endl;
 	NodeType *selected_node;
 	NodeType *expanded_node;
 	double rating;
 
 	// make a mutable copy of the const GameState (deep copy)
-	simulatedGameState = gPanel;
+	simulatedGameState = gameState;
 
-	expandAllChildrenOf(m_pGameTree->getRoot(), gPanel);
+	expandAllChildrenOf(m_pGameTree->getRoot(), gameState);
 	for (size_t i = 0; i < MAX_NUM_OF_ITERATIONS; ++i) {
 		// reset the simulated GameState
 		// make a mutable copy of the const GameState (deep copy)
-		simulatedGameState = gPanel; 
+		simulatedGameState = gameState; 
 
 		//@note:   root-node is always the opponent's turn (OP_Player), 
 		//which is also the current turn, so now the AI can chose it's turn
@@ -38,7 +39,7 @@ int GameAI::calculateNextTurn(const GameState &gPanel) {
 		expanded_node = expansion(selected_node);
 
 		rating = simulation(expanded_node);
-
+		
 		backpropagation(expanded_node, rating);
 
 		///////////////////////////////////////////////////////////////////
@@ -51,12 +52,15 @@ int GameAI::calculateNextTurn(const GameState &gPanel) {
 		// GameState::drawGameStateOnConsole(simulatedGameState.getGameData(), 
 		//	simulatedGameState.getMAX_X(), simulatedGameState.getMAX_Y());
 		// system("PAUSE");
-
+		// debug:
+		Tree::printLevelOrder(m_pGameTree->getRoot());
+		Tree::printChildNodeInfo(m_pGameTree->getRoot());
 	}
-	cout << "End of MCTS!" << endl;
-	// debug: Tree::printAllChildsUCTB(m_pGameTree->getRoot());
-	//savePropertyTree("pt.xml");
+	// debug:
+	Tree::printLevelOrder(m_pGameTree->getRoot());
+	Tree::printChildNodeInfo(m_pGameTree->getRoot());
 
+	std::cout << "End of MCTS!" << std::endl;
 	NodeType *chosen_node = selectMostVisitedChild(m_pGameTree->getRoot());
 	int chosenTurn = chosen_node->chosenTurnThatLeadedToThisNode;
 	return chosenTurn;
@@ -103,12 +107,12 @@ int GameAI::pickBestMove(const GameState &gp) {
     return col_move;
 }
 
-int GameAI::pickRandomMove(const GameState &gp) {
-    vector<vector<int>> gameData = gp.getGameData();
+int GameAI::pickRandomMove(const GameState &gs) {
+	std::vector<std::vector<int>> gameData = gs.getGameData();
 
     // collect every column, where a token can be put into:
-    vector<int> possibleColumns;
-    for (int i = 0; i < gp.getMAX_X(); ++i) {
+	std::vector<int> possibleColumns;
+    for (int i = 0; i < gs.getMAX_X(); ++i) {
         if (gameData[i][0] == FREE_FIELD) {
             possibleColumns.push_back(i);
         }
@@ -133,13 +137,13 @@ int GameAI::doRandomMove(GameState &gp) {
     return pickedColumn;
 }
 
-void GameAI::expandAllChildrenOf(NodeType *Node, const GameState & gp) {
+void GameAI::expandAllChildrenOf(NodeType *nodeToExpand, const GameState & gs) {
     // go through all possible moves:
 
-	GameState tmpState = gp;	// @todo bad performance to copy over all again
+	GameState tmpState;	// @todo bad performance to copy over all again
     for (int col = 0; col < tmpState.getMAX_X(); ++col) {
 		
-		tmpState = gp;	// added missing reset of game state
+		tmpState = gs;	// reset of game state
 
 		// try to insert into a column inside the game state
         int columnChosen = col;
@@ -153,7 +157,7 @@ void GameAI::expandAllChildrenOf(NodeType *Node, const GameState & gp) {
 			newNode->sequenceThatLeadedToThisNode = "root.move" 
 				+ std::to_string(newNode->chosenTurnThatLeadedToThisNode);
 
-            Tree::addNodeTo(newNode, Node);
+            Tree::addNodeTo(newNode, nodeToExpand);
 
 			//debug
 			/*
@@ -253,7 +257,7 @@ NodeType * GameAI::expansion(NodeType *leaf_node)
     newNodeC->chosenTurnThatLeadedToThisNode = columnChosen;
 	newNodeC->sequenceThatLeadedToThisNode = 
 		leaf_node->sequenceThatLeadedToThisNode + ".move" 
-		+ std::to_string(leaf_node->chosenTurnThatLeadedToThisNode);
+		+ std::to_string(columnChosen);
 	
     // e4.) add the newly created Node to the leaf node L
     Tree::addNodeTo(newNodeC, leaf_node);
@@ -308,11 +312,10 @@ double GameAI::simulation(NodeType *expanded_node) {
 }
 
 ///////////////////////////////////////
-/// B A C K P O P A G A T I O N ///
-///////////////////////////////////
+/// B A C K P R O P A G A T I O N ///
+/////////////////////////////////////
 void GameAI::backpropagation(NodeType *expanded_node,double ratingToBeUpdated){
-    // GameState::drawGameStateOnConsole(gameDataH, actualGameState.getMAX_X(), 
-	//				actualGameState.getMAX_Y());
+
 
 	// b1.) backpropagate from expandednode (C) to Leaf Node (L) and 
 	//						other nodes on that way up to root node (R)
@@ -335,13 +338,16 @@ void GameAI::backpropagation(NodeType *expanded_node,double ratingToBeUpdated){
 			*/
        
             // ::: exploitation :::
-            double winratio = cur_node->value / cur_node->visits;
+			cur_node->winratio = cur_node->value / cur_node->visits;
 
             // ::: exploration :::
-            double uct = CURIOUSITY_FACTOR 
-				* sqrt(log(cur_node->parent->visits+1) / cur_node->visits);
+			cur_node->uct = CURIOUSITY_FACTOR
+				* sqrt(		// +1 because the parent node's visit count hasn't been updated yet
+					static_cast<double>(log(cur_node->parent->visits +1)) 
+					/ static_cast<double>(cur_node->visits)
+			);
 
-            cur_node->UCTB = winratio + uct;
+            cur_node->UCTB = cur_node->winratio + cur_node->uct;
 
 			//debug - update uctb value inside property tree
 			/*
@@ -359,6 +365,11 @@ void GameAI::backpropagation(NodeType *expanded_node,double ratingToBeUpdated){
         //-------------------------------------------------------------------
         cur_node = cur_node->parent;	// advance upwards
     } while (cur_node->parent != NULL);
+
+	// ensure that root visit and rating are updated as well: 
+	// cur_node == rootNode here!
+	++(cur_node->visits);
+	(cur_node->value) += ratingToBeUpdated;
 }
 
 ///////////////////////////////////////////////////////////////////////////

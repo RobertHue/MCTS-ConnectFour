@@ -1,7 +1,10 @@
-#include <string>
 #include <iostream>
+#include <iomanip>
+#include <string>
+
 #include <queue>
 #include <memory>
+
 #include "Tree.h"
 using namespace std;
 
@@ -61,6 +64,8 @@ NodeType * Tree::createNewNode() {
     NodeType *newNode = new NodeType;
 
 	newNode->UCTB = rand() % 1000 + 10000;	// assign unvisited nodes with a very large UCTB-value
+	newNode->winratio = 0.0;
+	newNode->uct = 0.0;
 	newNode->value = 0;
 	newNode->visits = 0;
 	newNode->parent = nullptr;
@@ -73,47 +78,66 @@ void Tree::addNodeTo(NodeType *newNode, NodeType *dstNode) {
 	dstNode->childNodes.push_back(newNode);
 }
 
-void Tree::printAllChildsUCTB(Node *n) {
-    cout << "GameTree:" << endl;
-    for (size_t i = 0; i < n->childNodes.size(); ++i) {
-        cout << n->childNodes[i]->UCTB << "  ";
-    }
-    cout << endl;
-}
 
 // Print the tree level-order assisted by queue
 
-void Tree::levelOrder(Node* n) {
-	if (n == nullptr) { return; }
+void Tree::printLevelOrder(NodeType* rootNode) {
+	if (rootNode == nullptr) { return; }
+    queue<NodeType *> q; // Create a queue (FIFO)
+	q.push(rootNode); // Enqueue root  
 
-    // Create a queue (FIFO)
-    queue<NodeType *> q;
-	
-	// push root to the queue
-	q.push(n);
-
-    int countNeededForNextLevel = 1;
     int level = 0;
-	cout << "\n" << level++ << ": ";
-    while (!q.empty()) {
-		// Dequeue a node from front
-		Node* v = q.front();
-		cout << v->UCTB << " ";
-		--countNeededForNextLevel;
-		if (countNeededForNextLevel == 0) {
-			cout << "\n" << level++ << ": ";
-			countNeededForNextLevel = v->childNodes.size();
+    while (!q.empty()) 
+	{
+		cout << "\n" << level++ << ": \t";
+		int n = q.size();
+
+		// If this node has children 
+		while (n > 0)
+		{
+			// Dequeue an item from queue and print it 
+			NodeType * p = q.front();
+			q.pop();
+			cout << setw(10) << p->value << " / " << p->visits << " ";
+
+			// Enqueue all children of the dequeued item 
+			for (int i = 0; i < p->childNodes.size(); i++)
+				q.push(p->childNodes[i]);
+			n--;
 		}
 
-		// enqueue v's childrens (first left then right) to q
-        for (size_t i = 0; i < v->childNodes.size(); ++i) {
-            q.push((v->childNodes[i]));
-        }
-		
-        // Pop the visited node
-        q.pop();
+		cout << endl; // Print new line between two levels
     }
     cout << endl << endl;
+}
+
+
+void Tree::printChildNodeInfo(NodeType *n) {
+	cout << "-----------------------\n";
+	cout << "Child Node Info:\n";
+	NodeType* tmpNode = n;
+	int firstTab = 15;
+	int secondTab = 8;
+	for (auto& n : tmpNode->childNodes) {
+
+		cout << "[ Move:"
+			<< n->chosenTurnThatLeadedToThisNode
+			<< setw(firstTab) << "Wins:"		<< setw(secondTab) << n->value
+			<< setw(firstTab) << "Visits:"		<< setw(secondTab) << n->visits
+			<< setw(firstTab) << "UCTB:"		<< setw(secondTab) << n->UCTB
+			<< setw(firstTab) << "winratio:"	<< setw(secondTab) << n->winratio
+			<< setw(firstTab) << "uct:"			<< setw(secondTab) << n->uct
+			<< "]\n";
+	}
+	cout << "-----------------------\n";
+
+	/* was former:
+	cout << "GameTree:" << endl;
+	for (size_t i = 0; i < n->childNodes.size(); ++i) {
+		cout << n->childNodes[i]->UCTB << "  ";
+	}
+	cout << endl;
+	*/
 }
 
 int Tree::getAmountOfNodes() const

@@ -8,7 +8,7 @@
 
 
 // see https://doc.qt.io/qt-5/model-view-programming.html#rows-and-columns
-using namespace std;
+
 
 enum Player {
     NONE = 0, 
@@ -30,7 +30,7 @@ private:
     // smallest size: 4x4
     // biggest size: 8x8
     int MAX_X, MAX_Y;
-    vector<vector<int>> gameData; /// stores the data needed for the game field
+    std::vector<std::vector<int>> gameData; /// stores the data needed for the game field
 
     Player turnPlayer;	/// Player whose turn it is to move
     Player otherPlayer; /// Player who does not move next
@@ -40,7 +40,7 @@ private:
 public:
 
     GameState(int x = 4, int y = 4) : MAX_X(x), MAX_Y(y) {
-        gameData = vector<vector<int>> (MAX_X, vector<int> (MAX_Y, FREE_FIELD));
+        gameData = std::vector<std::vector<int>> (MAX_X, std::vector<int> (MAX_Y, FREE_FIELD));
 
         this->setTurnPlayer(PLAYER_1);
         this->numOfFreeFields = MAX_X * MAX_Y;
@@ -54,7 +54,7 @@ public:
     int getNumOfFreeFields() const;
     Player getTurnPlayer() const;
     Player getOtherPlayer() const;
-    vector<vector<int>> getGameData() const;
+    std::vector<std::vector<int>> getGameData() const;
 
 	/** @brief		checks whether the move into column is valid 
 	  * if valid,	then this method inserts it into GamePanel and returns VALID_MOVE
@@ -70,5 +70,5 @@ public:
     Player isAboutToWin();
     void nextTurn();
 
-    static void drawGameStateOnConsole(vector<vector<int>> gameData, int max_x, int max_y);
+    static void drawGameStateOnConsole(std::vector<std::vector<int>> gameData, int max_x, int max_y);
 };

@@ -41,7 +41,7 @@ private:
     // const GameState &actualGameState;
     GameState simulatedGameState;
     Player AI_Player, OP_Player; // AI knows about opponent & user player token
-    unique_ptr<Tree> m_pGameTree;	// the game tree
+    std::unique_ptr<Tree> m_pGameTree;	// the game tree
 	ptree m_pt; // @TODO future game tree ?
 
 	////////////////////////////////////////////////////////////////////////////
@@ -97,19 +97,10 @@ private:
 	/// does the expansion step of the mcts
     NodeType *expansion(NodeType *leaf_node);
 
-#define VALUE_WIN_IMM  3000.0;
-#define VALUE_LOOSE_IMM  0.0;
-#define VALUE_WIN   1.0;
-#define VALUE_FULL_TIE  0.0;
-#define VALUE_TIE   0.5;
-#define VALUE_DRAW	VALUE_TIE;
-#define VALUE_LOOSE   0.0;
 
-// curiousity of the algorithm (mostly squareroot of 2 is chosen)
-#define CURIOUSITY_FACTOR 1.41421L
 	/**
 	 @brief		simulates a game from the expanded node (C) and 
-				updates the game tree
+				updates the game tree (just one simulation per call)
 
 	 @note		the simulation is only needed to rate the expanded node (C) and 
 				the path to that expanded node
@@ -123,7 +114,18 @@ private:
 	 *	http://www.tantrix.com/Tantrix/TRobot/MCTS%20Final%20Report.pdf
 	 */
     double simulation(NodeType *expanded_node);
+#define VALUE_WIN   1.0;
+#define VALUE_TIE   0.5;
+#define VALUE_DRAW	VALUE_TIE;
+#define VALUE_LOOSE 0.0; 
+/*
+#define VALUE_WIN_IMM  3000.0;
+#define VALUE_LOOSE_IMM  0.0;
+#define VALUE_FULL_TIE  0.0;
+*/
 
+// curiousity of the algorithm (mostly squareroot of 2 is chosen)
+#define CURIOUSITY_FACTOR 1.41421L
 	/// use the result of the playout to update (backpropagate) information in 
 	/// the nodes (of the game tree) on the path from 
 	/// expanded node (C) to root node (R)
