@@ -4,7 +4,7 @@
 #include <sstream>
 #include <cstdio>
 
-#include "GamePanel.h"
+#include "GameState.h"
 #include "GameAI.h"
 
 #include <QApplication>
@@ -22,8 +22,8 @@ const int MAX_X = 7;
 const int MAX_Y = 5;
 int main(int argc, char* argv[]) {
 	int col_err;
-	GamePanel gp(MAX_X, MAX_Y);
-	GamePanel::drawGamePanelOnConsole(
+	GameState gp(MAX_X, MAX_Y);
+	GameState::drawGameStateOnConsole(
 		gp.getGameData(), 
 		gp.getMAX_X(), 
 		gp.getMAX_Y()
@@ -124,7 +124,7 @@ int main(int argc, char* argv[]) {
             int col = gKI.calculateNextTurn(gp);
             col_err = gp.insertTokenIntoColumn(col);
         }
-        GamePanel::drawGamePanelOnConsole(
+        GameState::drawGameStateOnConsole(
 			gp.getGameData(), 
 			gp.getMAX_X(), 
 			gp.getMAX_Y()

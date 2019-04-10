@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <cmath>
-#include "GamePanel.h"
+#include "GameState.h"
 #include "Tree.h"
 
 
@@ -33,13 +33,13 @@ public:
 
 	/// calculates the next move for the AI based on the MCTS-algorithm
 	/// @return		the MCTS-based move for the AI
-    int calculateNextTurn(const GamePanel &gPanel);
+    int calculateNextTurn(const GameState &gPanel);
 
 	/// Saves the debug_settings structure to the specified XML file
 	void savePropertyTree(const std::string &filename) const;
 private:
-    // const GamePanel &actualGamePanel;
-    GamePanel simulatedGamePanel;
+    // const GameState &actualGameState;
+    GameState simulatedGameState;
     Player AI_Player, OP_Player; // AI knows about opponent & user player token
     unique_ptr<Tree> m_pGameTree;	// the game tree
 	ptree m_pt; // @TODO future game tree ?
@@ -61,25 +61,25 @@ private:
 	 * the avoidance of opponent winning is not possible with this move,
 	 * then select a random move
 	 *
-	 * @Note: this function does not change the passed GamePanel-object (const)
+	 * @Note: this function does not change the passed GameState-object (const)
 	 */
-    int pickBestMove(const GamePanel &gp);
+    int pickBestMove(const GameState &gp);
 
 	/**
 	 * @brief:	picks a random move in column
 	 * @return: the column col (0-7)
 	 *		returns -1 when every column is already full
 	 */
-    int pickRandomMove(const GamePanel &gp);
+    int pickRandomMove(const GameState &gp);
 
 	// macht einen zuflligen spielzug und ndert gameDataH
 	// es wird die position des Spielsteins zurckgegeben
 	/**
 	* @brief	do a random move
 	* @return	the move (aka the chosen column)
-	* @note		changes the passed GamePanel
+	* @note		changes the passed GameState
 	*/
-    int doRandomMove(GamePanel &gp);
+    int doRandomMove(GameState &gp);
 
 	////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ private:
 	/// expands all child nodes of passed node (mostly used for root (R)) 
 	/// also initializes those created child nodes with a 
 	/// randomly assigned high UCTB-value
-    void expandAllChildrenOf(NodeType *Node, const GamePanel & gp);
+    void expandAllChildrenOf(NodeType *Node, const GameState & gp);
 	
 	/// recursively does the selection step of the mcts (arg node is the root)
     NodeType *recursive_selection(NodeType *node);

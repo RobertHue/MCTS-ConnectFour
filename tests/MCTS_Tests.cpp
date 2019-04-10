@@ -6,7 +6,7 @@
 #include <sstream>
 #include <cstdio>
 
-#include "GamePanel.h"
+#include "GameState.h"
 #include "GameAI.h"
 #include "Tree.h"
 
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE( MCTS_Test01 )
 	Player playerAI = PLAYER_1;
 	const int MAX_X = 7;
 	const int MAX_Y = 5;
-	GamePanel gp(MAX_X, MAX_Y);
+	GameState gp(MAX_X, MAX_Y);
 	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
 	GameAI gKI(playerAI);
 
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE( MCTS_Test01 )
 	gp.insertTokenIntoColumn(3);
 	gp.insertTokenIntoColumn(4);
 	gp.insertTokenIntoColumn(3);
-	GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+	GameState::drawGameStateOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
 
 	gp.setTurnPlayer(playerAI);
 	int ACTUAL_COLUMN = gKI.calculateNextTurn(gp);
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test02)
 	Player playerAI = PLAYER_1;
 	const int MAX_X = 7;
 	const int MAX_Y = 5;
-	GamePanel gp(MAX_X, MAX_Y);
+	GameState gp(MAX_X, MAX_Y);
 	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
 	GameAI gKI(playerAI);
 
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test02)
 	gp.insertTokenIntoColumn(6);
 	gp.insertTokenIntoColumn(2);
 	//-> KI has to place in col2 now
-	GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+	GameState::drawGameStateOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
 
 	gp.setTurnPlayer(playerAI);
 	int ACTUAL_COLUMN = gKI.calculateNextTurn(gp);
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test03)
 	Player playerAI = PLAYER_1;
 	const int MAX_X = 7;
 	const int MAX_Y = 5;
-	GamePanel gp(MAX_X, MAX_Y);
+	GameState gp(MAX_X, MAX_Y);
 	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
 	GameAI gKI(playerAI);
 
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test03)
 	gp.insertTokenIntoColumn(2);
 	gp.insertTokenIntoColumn(3);
 	gp.insertTokenIntoColumn(2);
-	GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+	GameState::drawGameStateOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
 
 	gp.setTurnPlayer(playerAI);
 	int ACTUAL_COLUMN = gKI.calculateNextTurn(gp);
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test04)
 	Player playerAI = PLAYER_1;
 	const int MAX_X = 7;
 	const int MAX_Y = 5;
-	GamePanel gp(MAX_X, MAX_Y);
+	GameState gp(MAX_X, MAX_Y);
 	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
 	GameAI gKI(playerAI);
 
@@ -191,7 +191,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test04)
 	gp.setTurnPlayer(playerAI); gp.insertTokenIntoColumn(3);
 	gp.setTurnPlayer(playerAI); gp.insertTokenIntoColumn(6);
 	gp.setTurnPlayer(playerAI); gp.insertTokenIntoColumn(6);
-	GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+	GameState::drawGameStateOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
 
 	gp.setTurnPlayer(playerAI);
 	int ACTUAL_COLUMN = gKI.calculateNextTurn(gp);
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test05)
 	Player playerAI = PLAYER_1;
 	const int MAX_X = 7;
 	const int MAX_Y = 5;
-	GamePanel gp(MAX_X, MAX_Y);
+	GameState gp(MAX_X, MAX_Y);
 	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
 	GameAI gKI(playerAI);
 
@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test05)
 	gp.insertTokenIntoColumn(2);
 	gp.insertTokenIntoColumn(6);
 	gp.insertTokenIntoColumn(2);
-	GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+	GameState::drawGameStateOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
 
 	gp.setTurnPlayer(playerAI);
 	int ACTUAL_COLUMN = gKI.calculateNextTurn(gp);
@@ -239,7 +239,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test06)
 	Player playerAI = PLAYER_1;
 	const int MAX_X = 7;
 	const int MAX_Y = 5;
-	GamePanel gp(MAX_X, MAX_Y);
+	GameState gp(MAX_X, MAX_Y);
 	gp.setTurnPlayer(playerAI); // set Player that needs to begin here
 	GameAI gKI(playerAI);
 	GameAI gKI2(playerYou);
@@ -255,7 +255,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test06)
 	gp.insertTokenIntoColumn(6);
 	gp.insertTokenIntoColumn(5);
 	gp.insertTokenIntoColumn(6); // here circle is about to win...
-	GamePanel::drawGamePanelOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
+	GameState::drawGameStateOnConsole(gp.getGameData(), gp.getMAX_X(), gp.getMAX_Y());
 
 	//gp.setTurnPlayer(playerYou);
 	int ACTUAL_COLUMN = gKI2.calculateNextTurn(gp);

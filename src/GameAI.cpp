@@ -9,7 +9,7 @@ GameAI::GameAI(Player tokenKI) : AI_Player(tokenKI) {
 		OP_Player = PLAYER_1;
 }
 
-int GameAI::calculateNextTurn(const GamePanel &gPanel) {
+int GameAI::calculateNextTurn(const GameState &gPanel) {
 	m_pGameTree.reset(new Tree());
 
 	cout << "Start of MCTS!" << endl;
@@ -17,14 +17,14 @@ int GameAI::calculateNextTurn(const GamePanel &gPanel) {
 	NodeType *expanded_node;
 	double rating;
 
-	// make a mutable copy of the const GamePanel (deep copy)
-	simulatedGamePanel = gPanel;
+	// make a mutable copy of the const GameState (deep copy)
+	simulatedGameState = gPanel;
 
 	expandAllChildrenOf(m_pGameTree->getRoot(), gPanel);
 	for (size_t i = 0; i < MAX_NUM_OF_ITERATIONS; ++i) {
-		// reset the simulated GamePanel
-		// make a mutable copy of the const GamePanel (deep copy)
-		simulatedGamePanel = gPanel; 
+		// reset the simulated GameState
+		// make a mutable copy of the const GameState (deep copy)
+		simulatedGameState = gPanel; 
 
 		//@note:   root-node is always the opponent's turn (OP_Player), 
 		//which is also the current turn, so now the AI can chose it's turn
@@ -48,8 +48,8 @@ int GameAI::calculateNextTurn(const GamePanel &gPanel) {
 		// debug:
 		//Tree::levelOrder(m_pGameTree->getRoot());
 		//system("PAUSE");
-		// GamePanel::drawGamePanelOnConsole(simulatedGamePanel.getGameData(), 
-		//	simulatedGamePanel.getMAX_X(), simulatedGamePanel.getMAX_Y());
+		// GameState::drawGameStateOnConsole(simulatedGameState.getGameData(), 
+		//	simulatedGameState.getMAX_X(), simulatedGameState.getMAX_Y());
 		// system("PAUSE");
 
 	}
@@ -70,12 +70,12 @@ void GameAI::savePropertyTree(const std::string &filename) const
 
 ///////////////////////////////////////////////////////////////////////////
 
-int GameAI::pickBestMove(const GamePanel &gp) {
+int GameAI::pickBestMove(const GameState &gp) {
     int col_move;
 
     // try to look for a winning move
     for (col_move = 0; col_move < gp.getMAX_X(); ++col_move) {
-        GamePanel newState = gp;  // make a mutable copy of the const GamePanel
+        GameState newState = gp;  // make a mutable copy of the const GameState
         newState.insertTokenIntoColumn(col_move); // make the move on the copy
 
         Player playerThatJustWon = newState.hasSomeoneWon();
@@ -86,7 +86,7 @@ int GameAI::pickBestMove(const GamePanel &gp) {
 
 	// try to look for a move that hinders the opponent from winning
     for (col_move = 0; col_move < gp.getMAX_X(); ++col_move) {
-        GamePanel newState = gp;  // make mutable copy of the const GamePanel
+        GameState newState = gp;  // make mutable copy of the const GameState
 		newState.setTurnPlayer(OP_Player);	// simulate a turn of the opponent
         newState.insertTokenIntoColumn(col_move); // make the move on the copy
 
@@ -103,7 +103,7 @@ int GameAI::pickBestMove(const GamePanel &gp) {
     return col_move;
 }
 
-int GameAI::pickRandomMove(const GamePanel &gp) {
+int GameAI::pickRandomMove(const GameState &gp) {
     vector<vector<int>> gameData = gp.getGameData();
 
     // collect every column, where a token can be put into:
@@ -127,16 +127,16 @@ int GameAI::pickRandomMove(const GamePanel &gp) {
     return randomColumn;
 }
 
-int GameAI::doRandomMove(GamePanel &gp) {
+int GameAI::doRandomMove(GameState &gp) {
     int pickedColumn = pickRandomMove(gp);
     if (pickedColumn != -1) gp.insertTokenIntoColumn(pickedColumn);
     return pickedColumn;
 }
 
-void GameAI::expandAllChildrenOf(NodeType *Node, const GamePanel & gp) {
+void GameAI::expandAllChildrenOf(NodeType *Node, const GameState & gp) {
     // go through all possible moves:
 
-	GamePanel tmpState = gp;	// @todo bad performance to copy over all again
+	GameState tmpState = gp;	// @todo bad performance to copy over all again
     for (int col = 0; col < tmpState.getMAX_X(); ++col) {
 		
 		tmpState = gp;	// added missing reset of game state
@@ -187,7 +187,7 @@ NodeType * GameAI::recursive_selection(NodeType *node) {
             }
         }
 		// replay what has been already analysed inside the game tree
-        simulatedGamePanel.insertTokenIntoColumn(
+        simulatedGameState.insertTokenIntoColumn(
 			next->chosenTurnThatLeadedToThisNode
 		);
 
@@ -216,10 +216,10 @@ NodeType * GameAI::selection(NodeType *node)
 				next = (selectedNode->childNodes[i]);
 			}
 		}
-		selectedNode = next; //advance selectedNode to one of itsUCTB-children
+		selectedNode = next; //advance selectedNode to one of its UCTB-children
 
 		// replay what has been already analysed inside the game tree
-		simulatedGamePanel.insertTokenIntoColumn(
+		simulatedGameState.insertTokenIntoColumn(
 			selectedNode->chosenTurnThatLeadedToThisNode
 		);
 	}
@@ -233,7 +233,7 @@ NodeType * GameAI::selection(NodeType *node)
 NodeType * GameAI::expansion(NodeType *leaf_node)
 {
     // e1.) Does the Leaf Node L node end the Game? (won/loss/tie)?
-    Player hasWonSim = simulatedGamePanel.hasSomeoneWon();
+    Player hasWonSim = simulatedGameState.hasSomeoneWon();
     if (hasWonSim == PLAYER_1 || 
 		hasWonSim == PLAYER_2 || 
 		hasWonSim == BOTH) {
@@ -241,12 +241,12 @@ NodeType * GameAI::expansion(NodeType *leaf_node)
 	}
 
     // sim1.) choose a good move (columnChosen)
-    int columnChosen = pickBestMove(simulatedGamePanel);
+    int columnChosen = pickBestMove(simulatedGameState);
     if (columnChosen == -1) {
         return leaf_node;  //if game panel is full => FULL_TIE & stop sim
     }
     // sim2.) do the selected move (columnChosen)
-    simulatedGamePanel.insertTokenIntoColumn(columnChosen);
+    simulatedGameState.insertTokenIntoColumn(columnChosen);
 
     // e2.) expansion: create a newNode
     NodeType *newNodeC = m_pGameTree->createNewNode();
@@ -275,7 +275,7 @@ NodeType * GameAI::expansion(NodeType *leaf_node)
  ///////////////////////////
 double GameAI::simulation(NodeType *expanded_node) {
     // has someone won?
-    Player hasWonSim = simulatedGamePanel.hasSomeoneWon();
+    Player hasWonSim = simulatedGameState.hasSomeoneWon();
     if (hasWonSim == AI_Player) {
         return VALUE_WIN; // AI has won immediately => stop simulating
     } else if (hasWonSim == OP_Player) {
@@ -284,20 +284,20 @@ double GameAI::simulation(NodeType *expanded_node) {
 
     // for (int i = 0; i < NUM_OF_SIMULATION_FRAMES; ++i)
     while (1) {
-        //GamePanel::drawGamePanelOnConsole(simulatedGamePanel.getGameData(), 
-		//		simulatedGamePanel.getMAX_X(), simulatedGamePanel.getMAX_Y());
+        //GameState::drawGameStateOnConsole(simulatedGameState.getGameData(), 
+		//		simulatedGameState.getMAX_X(), simulatedGameState.getMAX_Y());
         //system("PAUSE");
 
         // choose a move
-        int columnChosen = pickBestMove(simulatedGamePanel);
+        int columnChosen = pickBestMove(simulatedGameState);
         if (columnChosen == -1) {
             return VALUE_DRAW; // if game panel is full => FULL_TIE & stop sim
         }
         // sim2.) chose a move
-        simulatedGamePanel.insertTokenIntoColumn(columnChosen);
+        simulatedGameState.insertTokenIntoColumn(columnChosen);
 			   
         // has someone won?
-        Player hasWonSim = simulatedGamePanel.hasSomeoneWon();
+        Player hasWonSim = simulatedGameState.hasSomeoneWon();
         if (hasWonSim == AI_Player) {
             return VALUE_WIN; // AI has won => stop simulating
         } else if (hasWonSim == OP_Player) {
@@ -311,8 +311,8 @@ double GameAI::simulation(NodeType *expanded_node) {
 /// B A C K P O P A G A T I O N ///
 ///////////////////////////////////
 void GameAI::backpropagation(NodeType *expanded_node,double ratingToBeUpdated){
-    // GamePanel::drawGamePanelOnConsole(gameDataH, actualGamePanel.getMAX_X(), 
-	//				actualGamePanel.getMAX_Y());
+    // GameState::drawGameStateOnConsole(gameDataH, actualGameState.getMAX_X(), 
+	//				actualGameState.getMAX_Y());
 
 	// b1.) backpropagate from expandednode (C) to Leaf Node (L) and 
 	//						other nodes on that way up to root node (R)

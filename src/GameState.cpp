@@ -216,7 +216,7 @@ Player GameState::hasSomeoneWon() {
     return NONE; // noone has won yet!
 }
 
-void GameState::drawGamePanelOnConsole(vector<vector<int>> gameData, int MAX_X, int MAX_Y) {
+void GameState::drawGameStateOnConsole(vector<vector<int>> gameData, int MAX_X, int MAX_Y) {
     // system("cls");
     cout << "Connect-Four (" << MAX_Y << "x" << MAX_X << "):\n\n" << endl;
     cout << "  ";

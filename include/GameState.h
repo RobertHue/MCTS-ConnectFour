@@ -27,15 +27,15 @@ typedef struct {
 
 class GameState {
 private:
-    // kleinste Groesse: 4x4
-    // groesste Groesse: 8x8
+    // smallest size: 4x4
+    // biggest size: 8x8
     int MAX_X, MAX_Y;
-    vector<vector<int>> gameData;
+    vector<vector<int>> gameData; /// stores the data needed for the game field
 
-    Player turnPlayer; // Player whose turn it is to move
-    Player otherPlayer; // Player who does not move next
+    Player turnPlayer;	/// Player whose turn it is to move
+    Player otherPlayer; /// Player who does not move next
     Position positionOfLastPlacedToken;
-    int numOfFreeFields;
+    int numOfFreeFields;	///num of free fields on the game field
 
 public:
 
@@ -70,5 +70,5 @@ public:
     Player isAboutToWin();
     void nextTurn();
 
-    static void drawGamePanelOnConsole(vector<vector<int>> gameData, int max_x, int max_y);
+    static void drawGameStateOnConsole(vector<vector<int>> gameData, int max_x, int max_y);
 };

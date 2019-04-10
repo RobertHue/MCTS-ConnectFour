@@ -5,6 +5,8 @@
 #include "Tree.h"
 using namespace std;
 
+////////////////////////////////////////////////////////////////////////////////
+
 Tree::Tree() : m_amountOfNodes(0) {
 	//cout << "constructor called " << endl;
     root = createNewNode();
@@ -44,6 +46,8 @@ Tree & Tree::operator=(const Tree &other)
 
 	return *this;
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 bool Tree::isEmpty() const {
     return !root;
