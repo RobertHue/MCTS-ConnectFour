@@ -10,6 +10,26 @@
 #include "GameAI.h"
 #include "Tree.h"
 
+
+void checkChildVisitsValuePlausibily(const GameAI& ai) {
+	NodeType* rootNode = ai.getGameTree()->getRoot();
+
+	double sumOfChildValues = 0.0;
+	for (auto& c : rootNode->childNodes) {
+		sumOfChildValues += c->value;
+	}
+	BOOST_CHECK(rootNode->value == sumOfChildValues);
+
+
+	int sumOfChildVisits = 0;
+	for (auto& c : rootNode->childNodes) {
+		sumOfChildVisits += c->visits;
+	}
+	BOOST_CHECK(rootNode->visits == sumOfChildVisits);
+}
+
+
+// tests tree create, copy assignment and proper deconstruction of a Tree
 BOOST_AUTO_TEST_CASE(TreeTest01)
 {
 	int ACTUAL, EXPECTED;
@@ -64,7 +84,7 @@ BOOST_AUTO_TEST_CASE( MCTS_Test01 )
 	const int MAX_Y = 5;
 	GameState gs(MAX_X, MAX_Y);
 	gs.setTurnPlayer(playerAI); // set Player that needs to begin here
-	GameAI gKI(playerAI);
+	GameAI ai(playerAI);
 
 	gs.insertTokenIntoColumn(5);
 	gs.insertTokenIntoColumn(3);
@@ -75,10 +95,12 @@ BOOST_AUTO_TEST_CASE( MCTS_Test01 )
 	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
 	gs.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = gKI.calculateNextTurn(gs);
+	int ACTUAL_COLUMN = ai.calculateNextTurn(gs);
 	int EXPECTED_COLUMN = 3;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
-}
+
+	checkChildVisitsValuePlausibily(ai);
+} // --run_test=MCTS_Test01
 
 BOOST_AUTO_TEST_CASE(MCTS_Test02)
 {
@@ -90,7 +112,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test02)
 	const int MAX_Y = 5;
 	GameState gs(MAX_X, MAX_Y);
 	gs.setTurnPlayer(playerAI); // set Player that needs to begin here
-	GameAI gKI(playerAI);
+	GameAI ai(playerAI);
 
 	gs.insertTokenIntoColumn(3);
 	gs.insertTokenIntoColumn(2);
@@ -104,9 +126,11 @@ BOOST_AUTO_TEST_CASE(MCTS_Test02)
 	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
 	gs.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = gKI.calculateNextTurn(gs);
+	int ACTUAL_COLUMN = ai.calculateNextTurn(gs);
 	int EXPECTED_COLUMN = 2;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
+
+	checkChildVisitsValuePlausibily(ai);
 }
 
 BOOST_AUTO_TEST_CASE(MCTS_Test03)
@@ -119,7 +143,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test03)
 	const int MAX_Y = 5;
 	GameState gs(MAX_X, MAX_Y);
 	gs.setTurnPlayer(playerAI); // set Player that needs to begin here
-	GameAI gKI(playerAI);
+	GameAI ai(playerAI);
 
 	gs.setTurnPlayer(playerAI);
 	gs.insertTokenIntoColumn(0);
@@ -153,9 +177,10 @@ BOOST_AUTO_TEST_CASE(MCTS_Test03)
 	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
 	gs.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = gKI.calculateNextTurn(gs);
+	int ACTUAL_COLUMN = ai.calculateNextTurn(gs);
 	int EXPECTED_COLUMN = 2;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
+	checkChildVisitsValuePlausibily(ai);
 }
 
 BOOST_AUTO_TEST_CASE(MCTS_Test04)
@@ -168,7 +193,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test04)
 	const int MAX_Y = 5;
 	GameState gs(MAX_X, MAX_Y);
 	gs.setTurnPlayer(playerAI); // set Player that needs to begin here
-	GameAI gKI(playerAI);
+	GameAI ai(playerAI);
 
 	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(5);
 	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(5);
@@ -192,9 +217,10 @@ BOOST_AUTO_TEST_CASE(MCTS_Test04)
 	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
 	gs.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = gKI.calculateNextTurn(gs);
+	int ACTUAL_COLUMN = ai.calculateNextTurn(gs);
 	int EXPECTED_COLUMN = 3;
-	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
+	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN); // is it really working always?
+	checkChildVisitsValuePlausibily(ai);
 }
 
 
@@ -208,7 +234,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test05)
 	const int MAX_Y = 5;
 	GameState gs(MAX_X, MAX_Y);
 	gs.setTurnPlayer(playerAI); // set Player that needs to begin here
-	GameAI gKI(playerAI);
+	GameAI ai(playerAI);
 
 	gs.insertTokenIntoColumn(6);
 	gs.insertTokenIntoColumn(3);
@@ -223,14 +249,15 @@ BOOST_AUTO_TEST_CASE(MCTS_Test05)
 	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
 	gs.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = gKI.calculateNextTurn(gs);
+	int ACTUAL_COLUMN = ai.calculateNextTurn(gs);
 	int EXPECTED_COLUMN = 2;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
+
+	checkChildVisitsValuePlausibily(ai);
 }
 
 BOOST_AUTO_TEST_CASE(MCTS_Test06)
 {
-	BOOST_TEST_CHECKPOINT("Starting MCTS_Test06");
 	BOOST_TEST_MESSAGE("MCTS_Test06");
 
 	Player playerYou = PLAYER_2;
@@ -238,9 +265,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test06)
 	const int MAX_X = 7;
 	const int MAX_Y = 5;
 	GameState gs(MAX_X, MAX_Y);
-	gs.setTurnPlayer(playerAI); // set Player that needs to begin here
-	GameAI gKI(playerAI);
-	GameAI gKI2(playerYou);
+	gs.setTurnPlayer(playerYou); // set Player that needs to begin here
+	GameAI ai(playerAI);
 
 	gs.insertTokenIntoColumn(3);
 	gs.insertTokenIntoColumn(2);
@@ -256,8 +282,37 @@ BOOST_AUTO_TEST_CASE(MCTS_Test06)
 	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
 	//gs.setTurnPlayer(playerYou);
-	int ACTUAL_COLUMN = gKI2.calculateNextTurn(gs);
+	int ACTUAL_COLUMN = ai.calculateNextTurn(gs);
 	int EXPECTED_COLUMN = 6;	// should be chosen to avoid circle from winning
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
-	BOOST_TEST_CHECKPOINT("Ending MCTS_Test06");
+
+	checkChildVisitsValuePlausibily(ai);
+}
+
+
+
+
+BOOST_AUTO_TEST_CASE(MCTS_Test07)
+{
+	BOOST_TEST_MESSAGE("MCTS_Test07");
+
+	Player playerYou = PLAYER_2;
+	Player playerAI = PLAYER_1;
+	const int MAX_X = 4;
+	const int MAX_Y = 4;
+	GameState	gs(MAX_X, MAX_Y);
+	GameAI		ai(playerAI);
+
+	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(0);
+	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(1);
+	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(2);
+	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(0);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+
+	gs.setTurnPlayer(playerAI);
+	int ACTUAL_COLUMN = ai.calculateNextTurn(gs);
+	int EXPECTED_COLUMN = 3;	// should be chosen to avoid cross from winning
+	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
+
+	checkChildVisitsValuePlausibily(ai);
 }

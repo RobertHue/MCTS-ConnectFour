@@ -123,6 +123,8 @@ int main(int argc, char* argv[]) {
         else {
             int col = gKI.calculateNextTurn(gp);
             col_err = gp.insertTokenIntoColumn(col);
+			Tree::printLevelOrder(gKI.getGameTree()->getRoot());
+			gKI.getGameTree()->printChildNodeInfo(gKI.getGameTree()->getRoot());
         }
         GameState::drawGameStateOnConsole(
 			gp.getGameData(), 
@@ -147,6 +149,8 @@ int main(int argc, char* argv[]) {
         }
 		//system("PAUSE");
     }
+	Tree::printLevelOrder(gKI.getGameTree()->getRoot());
+	gKI.getGameTree()->printChildNodeInfo(gKI.getGameTree()->getRoot()); 
 	system("PAUSE");
     return 0;
 }

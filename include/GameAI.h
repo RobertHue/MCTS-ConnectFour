@@ -9,20 +9,13 @@
 #include "Tree.h"
 
 
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/xml_parser.hpp>
-using boost::property_tree::ptree;
-
-
-
-
 /// @TODO more description here
 /// for more information on the mcts, see:
 ///		http://de.slideshare.net/ftgaic/mcts-ai
 ///		https://en.wikipedia.org/wiki/Monte_Carlo_tree_search
 class GameAI {
-private:
-	const size_t MAX_NUM_OF_ITERATIONS = 10000; 
+public:
+	const size_t MAX_NUM_OF_ITERATIONS = 15000; 
 	// the number of iterations 
 	// (each iteration resembles a simualation of one complete game)
 public:
@@ -35,14 +28,14 @@ public:
 	/// @return		the MCTS-based move for the AI
     int calculateNextTurn(const GameState &gPanel);
 
-	/// Saves the debug_settings structure to the specified XML file
-	void savePropertyTree(const std::string &filename) const;
+	/// gets the game tree used for MCTS
+	Tree* getGameTree() const;
+
 private:
     // const GameState &actualGameState;
     GameState simulatedGameState;
     Player AI_Player, OP_Player; // AI knows about opponent & user player token
     std::unique_ptr<Tree> m_pGameTree;	// the game tree
-	ptree m_pt; // @TODO future game tree ?
 
 	////////////////////////////////////////////////////////////////////////////
 	/// highly coupled methods depending on the kind of game (here connect four)
@@ -117,20 +110,25 @@ private:
 #define VALUE_TIE   0.5;
 #define VALUE_DRAW	VALUE_TIE;
 #define VALUE_LOOSE 0.0; 
-/*
-#define VALUE_WIN_IMM  3000.0;
-#define VALUE_LOOSE_IMM  0.0;
-#define VALUE_FULL_TIE  0.0;
-*/
 
-// curiousity of the algorithm (mostly squareroot of 2 is chosen)
+//#define VALUE_WIN_IMM	3.0;
+//#define VALUE_LOOSE_IMM 0.0;
+//#define VALUE_FULL_TIE  0.8;
+
+
+// curiousity of the algorithm (empirically set to 1.41421L)
 #define CURIOUSITY_FACTOR 1.41421L
 	/// use the result of the playout to update (backpropagate) information in 
 	/// the nodes (of the game tree) on the path from 
 	/// expanded node (C) to root node (R)
     void backpropagation(NodeType *expanded_node, double ratingToBeUpdated);
 
+
 	///////////////////////////////////////////////////////////////////////////
+
+	double calculateWinRatio(const NodeType & cur_node) const;
+	double calculateUCT(const NodeType & cur_node) const;
+	double calculateUCTB(const NodeType & cur_node) const;
 
 	/// selects the most visited child node from the game tree rootNode
     NodeType *selectMostVisitedChild(NodeType *rootNode);
