@@ -14,7 +14,7 @@ enum Player {
     NONE = 0, 
 	PLAYER_1 = 1, 
 	PLAYER_2 = 2, 
-	BOTH = 3	/// used for indicating a TIE
+	DRAW = 3	/// used for indicating a TIE
 };
 
 const int NO_VALID_MOVE = -1;

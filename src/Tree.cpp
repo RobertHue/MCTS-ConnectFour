@@ -98,7 +98,7 @@ void Tree::printLevelOrder(NodeType* rootNode) {
 			// Dequeue an item from queue and print it 
 			NodeType * p = q.front();
 			q.pop();
-			cout << setw(10) << p->value << " / " << p->visits << " ";
+			cout << setw(10) << p->chosenMoveThatLeadedToThisNode << "|" << p->value << " / " << p->visits << " ";
 
 			// Enqueue all children of the dequeued item 
 			for (int i = 0; i < p->childNodes.size(); i++)
@@ -121,7 +121,7 @@ void Tree::printChildNodeInfo(NodeType *n) {
 	for (auto& n : tmpNode->childNodes) {
 
 		cout << "[ Move:"
-			<< n->chosenTurnThatLeadedToThisNode
+			<< n->chosenMoveThatLeadedToThisNode
 			<< setw(firstTab) << "Wins:"		<< setw(secondTab) << n->value
 			<< setw(firstTab) << "Visits:"		<< setw(secondTab) << n->visits
 			<< setw(firstTab) << "UCTB:"		<< setw(secondTab) << n->UCTB
@@ -168,7 +168,7 @@ NodeType * Tree::copyTree(NodeType* parent, NodeType * other)
 	}
 
 	NodeType *newNode = createNewNode();
-	newNode->chosenTurnThatLeadedToThisNode = other->chosenTurnThatLeadedToThisNode;
+	newNode->chosenMoveThatLeadedToThisNode = other->chosenMoveThatLeadedToThisNode;
 	newNode->parent = other->parent;
 	newNode->sequenceThatLeadedToThisNode = other->sequenceThatLeadedToThisNode;
 	newNode->UCTB = other->UCTB;

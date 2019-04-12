@@ -210,7 +210,7 @@ Player GameState::hasSomeoneWon() {
 	// if number of free fields are 0,
 	if (numOfFreeFields == 0) {
 		// then there is a tie!
-		return BOTH;
+		return DRAW;
 	}
 
     return NONE; // noone has won yet!

@@ -15,7 +15,8 @@
 ///		https://en.wikipedia.org/wiki/Monte_Carlo_tree_search
 class GameAI {
 public:
-	const size_t MAX_NUM_OF_ITERATIONS = 15000; 
+	const size_t MAX_NUM_OF_ITERATIONS = 10000;
+	const size_t T = 10;
 	// the number of iterations 
 	// (each iteration resembles a simualation of one complete game)
 public:
@@ -78,11 +79,14 @@ private:
 	////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////
 
+private:
 	/// expands all child nodes of passed node (mostly used for root (R)) 
 	/// also initializes those created child nodes with a 
 	/// randomly assigned high UCTB-value
     void expandAllChildrenOf(NodeType *Node, const GameState & gp);
 	
+	NodeType * recursive_selection(NodeType * node);
+
 	/// recursively does the selection step of the mcts (arg node is the root)
 	NodeType *selection(NodeType *node);
 
@@ -107,9 +111,9 @@ private:
 	 */
     double simulation(NodeType *expanded_node);
 #define VALUE_WIN   1.0;
-#define VALUE_TIE   0.5;
+#define VALUE_TIE   0.0;
 #define VALUE_DRAW	VALUE_TIE;
-#define VALUE_LOOSE 0.0; 
+#define VALUE_LOOSE -1.0; 
 
 //#define VALUE_WIN_IMM	3.0;
 //#define VALUE_LOOSE_IMM 0.0;
@@ -126,10 +130,7 @@ private:
 
 	///////////////////////////////////////////////////////////////////////////
 
-	double calculateWinRatio(const NodeType & cur_node) const;
-	double calculateUCT(const NodeType & cur_node) const;
-	double calculateUCTB(const NodeType & cur_node) const;
-
+private:
 	/// selects the most visited child node from the game tree rootNode
     NodeType *selectMostVisitedChild(NodeType *rootNode);
 

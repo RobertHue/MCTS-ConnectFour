@@ -15,7 +15,7 @@ struct Node {
     int visits;             /// total amount of visits
 
 	/// the action/move that leaded to that node
-	int chosenTurnThatLeadedToThisNode; 
+	int chosenMoveThatLeadedToThisNode; 
 
 	// the sequence of actions that leaded to that node (from root)
 	std::string sequenceThatLeadedToThisNode;
