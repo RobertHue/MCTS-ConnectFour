@@ -11,7 +11,7 @@ struct Node {
     double UCTB;            /// UCTB rating -- used for selection
 	double winratio;        /// winratio -- used for exploitation
 	double uct;				/// uct -- used for exploration
-    double value;           /// accumulated reward value
+    double rating;           /// accumulated reward rating
     int visits;             /// total amount of visits
 
 	/// the action/move that leaded to that node

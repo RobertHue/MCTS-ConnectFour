@@ -16,9 +16,9 @@ void checkChildVisitsValuePlausibily(const GameAI& ai) {
 
 	double sumOfChildValues = 0.0;
 	for (auto& c : rootNode->childNodes) {
-		sumOfChildValues += c->value;
+		sumOfChildValues += c->rating;
 	}
-	BOOST_CHECK(rootNode->value == sumOfChildValues);
+	BOOST_CHECK(rootNode->rating == sumOfChildValues);
 
 
 	int sumOfChildVisits = 0;
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE( MCTS_Test01 )
 	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
 	gs.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = ai.calculateNextTurn(gs);
+	int ACTUAL_COLUMN = ai.findNextMove(gs);
 	int EXPECTED_COLUMN = 3;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test02)
 	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
 	gs.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = ai.calculateNextTurn(gs);
+	int ACTUAL_COLUMN = ai.findNextMove(gs);
 	int EXPECTED_COLUMN = 2;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test03)
 	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
 	gs.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = ai.calculateNextTurn(gs);
+	int ACTUAL_COLUMN = ai.findNextMove(gs);
 	int EXPECTED_COLUMN = 2;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 	checkChildVisitsValuePlausibily(ai);
@@ -217,7 +217,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test04)
 	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
 	gs.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = ai.calculateNextTurn(gs);
+	int ACTUAL_COLUMN = ai.findNextMove(gs);
 	int EXPECTED_COLUMN = 3;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN); // is it really working always?
 	checkChildVisitsValuePlausibily(ai);
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test05)
 	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
 	gs.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = ai.calculateNextTurn(gs);
+	int ACTUAL_COLUMN = ai.findNextMove(gs);
 	int EXPECTED_COLUMN = 2;
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
@@ -282,7 +282,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test06)
 	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
 	//gs.setTurnPlayer(playerYou);
-	int ACTUAL_COLUMN = ai.calculateNextTurn(gs);
+	int ACTUAL_COLUMN = ai.findNextMove(gs);
 	int EXPECTED_COLUMN = 6;	// should be chosen to avoid circle from winning
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
@@ -310,7 +310,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test07)
 	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
 
 	gs.setTurnPlayer(playerAI);
-	int ACTUAL_COLUMN = ai.calculateNextTurn(gs);
+	int ACTUAL_COLUMN = ai.findNextMove(gs);
 	int EXPECTED_COLUMN = 3;	// should be chosen to avoid cross from winning
 	BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 

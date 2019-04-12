@@ -27,7 +27,7 @@ public:
 
 	/// calculates the next move for the AI based on the MCTS-algorithm
 	/// @return		the MCTS-based move for the AI
-    int calculateNextTurn(const GameState &gPanel);
+    int findNextMove(const GameState &gPanel);
 
 	/// gets the game tree used for MCTS
 	Tree* getGameTree() const;
@@ -37,6 +37,68 @@ private:
     GameState simulatedGameState;
     Player AI_Player, OP_Player; // AI knows about opponent & user player token
     std::unique_ptr<Tree> m_pGameTree;	// the game tree
+	////////////////////////////////////////////////////////////////////////
+
+private:
+	/// expands all child nodes of passed node (mostly used for root (R)) 
+	/// also initializes those created child nodes with a 
+	/// randomly assigned high UCTB-value
+    //void expandAllChildrenOf(NodeType *Node, const GameState & gp);
+	
+	/// recursively does the selection step of the mcts (arg node is the root)
+	NodeType *selectPromisingNode(NodeType *node);
+
+	/// does the expansion step of the mcts
+    NodeType *expandNode(NodeType *leaf_node);
+
+
+	/**
+	 @brief		simulates a game from the expanded node (C) and 
+				updates the game tree (just one simulation per call)
+
+	 @note		the simulation is only needed to rate the expanded node (C) and 
+				the path to that expanded node
+
+	 @return	a double indicaing if the game was won by the AI
+
+	 * 1	- the game was won by the ai
+	 * 0.5	- the game was a draw
+	 * 0	- the game was lost by the ai
+	 * rewards/ratings taken from 
+	 *	http://www.tantrix.com/Tantrix/TRobot/MCTS%20Final%20Report.pdf
+	 */
+    double simulation(NodeType *expanded_node);
+#define VALUE_WIN   10.0;
+#define VALUE_DRAW	0.0;
+#define VALUE_LOOSE 0.0; 
+
+//#define VALUE_WIN_IMM	3.0;
+//#define VALUE_LOOSE_IMM 0.0;
+//#define VALUE_FULL_TIE  0.8;
+
+
+/*	C - curiousity of the algorithm (empirically set to 1.41421L)
+
+	constant C = CURIOUSITY_FACTOR = curiousity of the algorithm
+	small C => game tree gets deeper expanded
+					(only the best variation gets explored)
+	big C => game tree gets broader expanded
+					(nodes with lesser visits are prefered)
+*/
+#define CURIOUSITY_FACTOR 1.41421L
+	/// use the result of the playout to update (backpropagate) information in 
+	/// the nodes (of the game tree) on the path from 
+	/// expanded node (C) to root node (R)
+    void backpropagation(NodeType *expanded_node, double ratingToBeUpdated);
+
+
+	///////////////////////////////////////////////////////////////////////////
+
+private:
+	/// selects the most visited child node from the game tree rootNode
+    NodeType *selectMostVisitedChild(const NodeType *rootNode);
+	NodeType *findBestNodeWithUCT(NodeType *node);
+	double uctValue(NodeType* node);
 
 	////////////////////////////////////////////////////////////////////////////
 	/// highly coupled methods depending on the kind of game (here connect four)
@@ -74,64 +136,4 @@ private:
 	* @note		changes the passed GameState
 	*/
     int doRandomMove(GameState &gp);
-
-	////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////
-
-private:
-	/// expands all child nodes of passed node (mostly used for root (R)) 
-	/// also initializes those created child nodes with a 
-	/// randomly assigned high UCTB-value
-    void expandAllChildrenOf(NodeType *Node, const GameState & gp);
-	
-	NodeType * recursive_selection(NodeType * node);
-
-	/// recursively does the selection step of the mcts (arg node is the root)
-	NodeType *selection(NodeType *node);
-
-	/// does the expansion step of the mcts
-    NodeType *expansion(NodeType *leaf_node);
-
-
-	/**
-	 @brief		simulates a game from the expanded node (C) and 
-				updates the game tree (just one simulation per call)
-
-	 @note		the simulation is only needed to rate the expanded node (C) and 
-				the path to that expanded node
-
-	 @return	a double indicaing if the game was won by the AI
-
-	 * 1	- the game was won by the ai
-	 * 0.5	- the game was a draw
-	 * 0	- the game was lost by the ai
-	 * rewards/ratings taken from 
-	 *	http://www.tantrix.com/Tantrix/TRobot/MCTS%20Final%20Report.pdf
-	 */
-    double simulation(NodeType *expanded_node);
-#define VALUE_WIN   1.0;
-#define VALUE_TIE   0.0;
-#define VALUE_DRAW	VALUE_TIE;
-#define VALUE_LOOSE -1.0; 
-
-//#define VALUE_WIN_IMM	3.0;
-//#define VALUE_LOOSE_IMM 0.0;
-//#define VALUE_FULL_TIE  0.8;
-
-
-// curiousity of the algorithm (empirically set to 1.41421L)
-#define CURIOUSITY_FACTOR 1.41421L
-	/// use the result of the playout to update (backpropagate) information in 
-	/// the nodes (of the game tree) on the path from 
-	/// expanded node (C) to root node (R)
-    void backpropagation(NodeType *expanded_node, double ratingToBeUpdated);
-
-
-	///////////////////////////////////////////////////////////////////////////
-
-private:
-	/// selects the most visited child node from the game tree rootNode
-    NodeType *selectMostVisitedChild(NodeType *rootNode);
-
 };

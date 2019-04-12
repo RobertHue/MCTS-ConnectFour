@@ -63,10 +63,10 @@ NodeType * Tree::getRoot() {
 NodeType * Tree::createNewNode() {
     NodeType *newNode = new NodeType;
 
-	newNode->UCTB = rand() % 1000 + 10000;	// assign unvisited nodes with a very large UCTB-value
+	newNode->UCTB = rand() % 1000 + 10000;	// assign unvisited nodes with a very large UCTB-rating
 	newNode->winratio = 0.0;
 	newNode->uct = 0.0;
-	newNode->value = 0;
+	newNode->rating = 0;
 	newNode->visits = 0;
 	newNode->parent = nullptr;
 	++m_amountOfNodes;
@@ -98,7 +98,7 @@ void Tree::printLevelOrder(NodeType* rootNode) {
 			// Dequeue an item from queue and print it 
 			NodeType * p = q.front();
 			q.pop();
-			cout << setw(10) << p->chosenMoveThatLeadedToThisNode << "|" << p->value << " / " << p->visits << " ";
+			cout << setw(10) << p->chosenMoveThatLeadedToThisNode << "|" << p->rating << " / " << p->visits << " ";
 
 			// Enqueue all children of the dequeued item 
 			for (int i = 0; i < p->childNodes.size(); i++)
@@ -122,7 +122,7 @@ void Tree::printChildNodeInfo(NodeType *n) {
 
 		cout << "[ Move:"
 			<< n->chosenMoveThatLeadedToThisNode
-			<< setw(firstTab) << "Wins:"		<< setw(secondTab) << n->value
+			<< setw(firstTab) << "Wins:"		<< setw(secondTab) << n->rating
 			<< setw(firstTab) << "Visits:"		<< setw(secondTab) << n->visits
 			<< setw(firstTab) << "UCTB:"		<< setw(secondTab) << n->UCTB
 			<< setw(firstTab) << "winratio:"	<< setw(secondTab) << n->winratio
@@ -172,7 +172,7 @@ NodeType * Tree::copyTree(NodeType* parent, NodeType * other)
 	newNode->parent = other->parent;
 	newNode->sequenceThatLeadedToThisNode = other->sequenceThatLeadedToThisNode;
 	newNode->UCTB = other->UCTB;
-	newNode->value = other->value;
+	newNode->rating = other->rating;
 	newNode->visits = other->visits;
 	newNode->parent = parent;
 

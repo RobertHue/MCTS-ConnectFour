@@ -1,7 +1,8 @@
-#include "GameAI.h"
-
 ///////////////////////////////////////////////////////////////////////////
+#include "GameAI.h"
 #include <limits> // for numeric::limits to get the smallest double
+#include <stdexcept>
+
 
 GameAI::GameAI(Player tokenKI) : AI_Player(tokenKI) {
 	if (AI_Player == PLAYER_1)
@@ -9,8 +10,8 @@ GameAI::GameAI(Player tokenKI) : AI_Player(tokenKI) {
 	else
 		OP_Player = PLAYER_1;
 }
-// @todo findNextMove
-int GameAI::calculateNextTurn(const GameState &gameState) {
+
+int GameAI::findNextMove(const GameState &gameState) {
 	m_pGameTree.reset(new Tree());
 
 	std::cout << "Start of MCTS!" << std::endl;
@@ -18,10 +19,11 @@ int GameAI::calculateNextTurn(const GameState &gameState) {
 	NodeType *expanded_node;
 	double rating;
 
-	// make a mutable copy of the const GameState (deep copy)
-	simulatedGameState = gameState;
+	// @todo - make a mutable copy of the const GameState (deep copy)
+	// simulatedGameState = gameState;
 
-	expandAllChildrenOf(m_pGameTree->getRoot(), gameState);
+	// @todo - can be used but for testing purposes not currently being used:
+	// expandAllChildrenOf(m_pGameTree->getRoot(), gameState);
 	for (size_t i = 0; i < MAX_NUM_OF_ITERATIONS; ++i) {
 		// debug:
 		//Tree::printLevelOrder(m_pGameTree->getRoot());
@@ -38,9 +40,9 @@ int GameAI::calculateNextTurn(const GameState &gameState) {
 		///////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////
 
-		selected_node = selection(m_pGameTree->getRoot());
+		selected_node = selectPromisingNode(m_pGameTree->getRoot());
 
-		expanded_node = expansion(selected_node);
+		expanded_node = expandNode(selected_node);
 
 		rating = simulation(expanded_node);
 		
@@ -57,18 +59,18 @@ int GameAI::calculateNextTurn(const GameState &gameState) {
 		// system("PAUSE");
 	}
 	// debug:
-	//Tree::printLevelOrder(m_pGameTree->getRoot());
-	//Tree::printChildNodeInfo(m_pGameTree->getRoot());
+	Tree::printLevelOrder(m_pGameTree->getRoot());
+	Tree::printChildNodeInfo(m_pGameTree->getRoot());
 
-
+ 
 	std::cout << "End of MCTS!" << std::endl;
-	NodeType *chosen_node = selectMostVisitedChild(m_pGameTree->getRoot());
-	int chosenTurn = chosen_node->chosenMoveThatLeadedToThisNode;
-	return chosenTurn;
+	NodeType *chosenNode = selectMostVisitedChild(m_pGameTree->getRoot());
+	int chosenMove = chosenNode->chosenMoveThatLeadedToThisNode;
+	return chosenMove;
 }
 
 
-
+/*
 void GameAI::expandAllChildrenOf(NodeType *nodeToExpand, const GameState & gs) {
     // go through all possible moves:
 
@@ -110,113 +112,107 @@ void GameAI::expandAllChildrenOf(NodeType *nodeToExpand, const GameState & gs) {
 			}
         }
     }
+}*/
+
+NodeType* GameAI::findBestNodeWithUCT(NodeType* node) {
+	// go through all childNodes and choose the one with the highest UCTB
+	NodeType *nodeWithHighestUCT = nullptr;
+	
+	double max_uctb = -std::numeric_limits<double>::max();
+	for (auto& n : node->childNodes) {
+		if (max_uctb <= n->UCTB) {
+			max_uctb = n->UCTB;
+			nodeWithHighestUCT = n;
+		}
+	}
+	return nodeWithHighestUCT;
+}
+
+double GameAI::uctValue(NodeType* node) {
+	// protect against division by zero
+	if(node->visits == 0) {
+		return std::numeric_limits<double>::max();
+	}
+	
+	// ::: exploitation :::
+	node->winratio = node->rating / node->visits;
+
+	// ::: exploration :::
+	node->uct = CURIOUSITY_FACTOR * sqrt(	
+			log(node->parent->visits) / static_cast<double>(node->visits)
+	);
+
+	// calculate UCTB value
+	node->UCTB = node->winratio + node->uct;
+
+	return node->UCTB; 
 }
 
 /////////////////////////////////
 /// S E L E C T I O N ///
 /////////////////////////
-NodeType * GameAI::selection(NodeType *rootNode)
+NodeType * GameAI::selectPromisingNode(NodeType *rootNode)
 {
-	++(rootNode->visits);
-	NodeType *selectedNode = rootNode;
-
-	int level = 0;
-	// select nodes with the highest UCTB-value and 
-	// advance like that until a leaf node L is reached
-	while (!(selectedNode->childNodes.empty()))
+	NodeType* selectedNode = rootNode;
+	
+	while(!(selectedNode->childNodes.empty()))
 	{
-		++level;
-		// go through all childNodes and choose the one with the highest UCTB
-		NodeType *next = nullptr;
-		double max_uctb = -std::numeric_limits<double>::max();
-		for (size_t i = 0; i < (selectedNode->childNodes).size(); ++i) {
-			if (max_uctb <= (selectedNode->childNodes[i])->UCTB) {
-				max_uctb = (selectedNode->childNodes[i])->UCTB;
-				next = (selectedNode->childNodes[i]);
-			}
+		NodeType *nodeTemp = findBestNodeWithUCT(selectedNode);
+		
+		if(nodeTemp == nullptr) {
+			throw std::invalid_argument("nodeTemp is nullptr");
 		}
-		selectedNode = next; //advance selectedNode to one of its UCTB-children
-
-		/*
-		NodeType* tmp = selectedNode;
-		max_uctb = -std::numeric_limits<double>::max();
-		if (selectedNode == nullptr) {
-			for (size_t i = 0; i < (tmp->childNodes).size(); ++i) {
-				if (max_uctb <= (tmp->childNodes[i])->UCTB) {
-					max_uctb = (tmp->childNodes[i])->UCTB;
-				}
-			}
-		}*/
-
+		
+		selectedNode = nodeTemp;
+		
 		// replay what has been already analysed inside the game tree
 		simulatedGameState.insertTokenIntoColumn(
 			selectedNode->chosenMoveThatLeadedToThisNode
 		);
-
-		++(selectedNode->visits); 
-		if (selectedNode->visits >= T && level == 1) {
-			expandAllChildrenOf(selectedNode, simulatedGameState);
-		}
 	}
-	// leaf node L reached (termination condition reached)
+	
 	return selectedNode;
 }
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////
 /// E X P A N S I O N ///
 /////////////////////////	// L -> C
-NodeType * GameAI::expansion(NodeType *leaf_node)
+NodeType * GameAI::expandNode(NodeType *leaf_node)
 {
-    // e1.) Does the Leaf Node L node end the Game? (won/loss/tie)?
+	// e1.) Does the Leaf Node L node end the Game? (won/loss/tie)?
     Player hasWonSim = simulatedGameState.hasSomeoneWon();
     if (hasWonSim == PLAYER_1 || 
 		hasWonSim == PLAYER_2 || 
 		hasWonSim == DRAW) {
 		return leaf_node;  // if so, don't expand!
 	}
-
-	////////////////////////////////////////////////////
-	// Create one of L's child nodes
+	
 	// sim1.) choose a good move (columnChosen)
 	int columnChosen = pickBestMove(simulatedGameState);
 	if (columnChosen == -1) {
 		return leaf_node;  //if game panel is full => FULL_TIE & stop sim
 	}
+	
 	// sim2.) do the selected move (columnChosen)
 	simulatedGameState.insertTokenIntoColumn(columnChosen);
 
-	NodeType * nodeToBeChosen = nullptr;
-	bool isSafeToExpand = true;
-	std::vector<int> movesToExclude;
-	for (auto n : leaf_node->childNodes) {	// has children already
-		if (n->chosenMoveThatLeadedToThisNode == columnChosen) {
-			isSafeToExpand = false;
-			nodeToBeChosen = n;
-			break;
-		}
-	}
-
-	if (isSafeToExpand) {
-		// e2.) expansion: create a newNode
-		NodeType *newNodeC = m_pGameTree->createNewNode();
-		newNodeC->chosenMoveThatLeadedToThisNode = columnChosen;
-		newNodeC->sequenceThatLeadedToThisNode =
-			leaf_node->sequenceThatLeadedToThisNode + ".move"
-			+ std::to_string(columnChosen);
-
-		// e4.) add the newly created Node to the leaf node L
-		Tree::addNodeTo(newNodeC, leaf_node);
-		return newNodeC; // = expanded_node C
-	}
-	return nodeToBeChosen;
+	// e2.) expansion: create a newNode
+	NodeType *newNodeC = m_pGameTree->createNewNode();
+	newNodeC->chosenMoveThatLeadedToThisNode = columnChosen;
+	newNodeC->sequenceThatLeadedToThisNode =
+		leaf_node->sequenceThatLeadedToThisNode + ".move"
+		+ std::to_string(columnChosen);
+		
+	// e4.) add the newly created Node to the leaf node L
+	Tree::addNodeTo(newNodeC, leaf_node);
+	
+	return newNodeC; // return expanded_node C
 }
 
  /////////////////////////////////
  /// S I M U L A T I O N ///
  ///////////////////////////
 double GameAI::simulation(NodeType *expanded_node) {
-	++(expanded_node->visits);
-
     // has someone won?
     Player hasWonSim = simulatedGameState.hasSomeoneWon();
     if (hasWonSim == AI_Player) {
@@ -248,69 +244,27 @@ double GameAI::simulation(NodeType *expanded_node) {
             return VALUE_LOOSE; // OP has won => stop simulating
         }
     }
-    return VALUE_TIE;
+    return VALUE_DRAW;
 }
 
 ///////////////////////////////////////
 /// B A C K P R O P A G A T I O N ///
 /////////////////////////////////////
-void GameAI::backpropagation(NodeType *expanded_node,double ratingToBeUpdated){
+void GameAI::backpropagation(NodeType *expanded_node, double ratingToBeUpdated) {
 
-	/*
-	// b1.) backpropagate from expandednode (C) to Leaf Node (L) and 
-	//						other nodes on that way up to root node (R)
-    // b3.) update the rating (UCTS) of the nodes up to the root 
-	//						(excluding the root)
+	///////////////////////////////////////////////////////////////////////////
+	//update visit and rating values upwards from expanded node C to L to root
 	NodeType *cur_node = expanded_node;
-    do {
-        //-------------------------------------------------------------------
-		//b2.)increase the amount of visits of each node and add that to rating
-		cur_node->value += ratingToBeUpdated;
+	while (cur_node->parent != nullptr) {
+		cur_node->rating += ratingToBeUpdated;
 		++(cur_node->visits);
-        //-------------------------------------------------------------------
-        cur_node = cur_node->parent;	// advance upwards
-    } while (cur_node->parent != nullptr);
-
-	// ensure that root visit and rating are updated as well: 
-	// cur_node == rootNode here!
-	cur_node->value += ratingToBeUpdated;
-	++(cur_node->visits);
-	*/
-	///////////////////////////////////////////////////////////////
-	//update UCTB value
-	NodeType *cur_node = expanded_node;
-	do {
-		cur_node->value += ratingToBeUpdated;
-
-		if (cur_node->visits != 0) {	// protects against division by 0
-			/*
-				constant C = CURIOUSITY_FACTOR = curiousity of the algorithm
-				small C => game tree gets deeper expanded
-								(only the best variation gets explored)
-				big C => game tree gets broader expanded
-								(nodes with lesser visits are prefered)
-			*/
-
-			// ::: exploitation :::
-			cur_node->winratio = cur_node->value / cur_node->visits;
-
-			// ::: exploration :::
-			cur_node->uct = CURIOUSITY_FACTOR
-				* sqrt(		// +1 to save against ln(1) = 0 which will lead to unwanted behavior sometimes
-					static_cast<double>(log(cur_node->parent->visits+1))
-					/ static_cast<double>(cur_node->visits)
-				);
-
-			cur_node->UCTB = cur_node->winratio + cur_node->uct;
-
-		}
-		else {
-			std::cout << "cur node visits == 0 !!!! error!!!" << std::endl;
-		}
+		
 		//-------------------------------------------------------------------
 		cur_node = cur_node->parent;	// advance upwards
-	} while (cur_node->parent != nullptr);
-	cur_node->value += ratingToBeUpdated; // also for the root
+	}
+	// also update visits and rating for the root
+	cur_node->rating += ratingToBeUpdated;
+	++(cur_node->visits);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -318,20 +272,15 @@ void GameAI::backpropagation(NodeType *expanded_node,double ratingToBeUpdated){
 ///////////////////////////////////////////////////////////////////////////
 
 
-NodeType * GameAI::selectMostVisitedChild(NodeType *rootNode) {
+NodeType * GameAI::selectMostVisitedChild(const NodeType *rootNode) {
     NodeType *selected_node = nullptr;
     int max_visit_count = 0;
 
-    // von node aus alle kinder:
-    for (size_t i = 0; i < rootNode->childNodes.size(); ++i) //for all children
+    // inspect all children visits and store node with max visits
+    for (auto currentChildNode : rootNode->childNodes) //for all children
     {
-        // inspect all children
-        NodeType *currentChildNode = rootNode->childNodes[i];
-
-        double save_val = currentChildNode->visits;
-
-        if (max_visit_count <= save_val) { 
-            max_visit_count = save_val;
+        if (max_visit_count <= currentChildNode->visits) {
+            max_visit_count = currentChildNode->visits;
 			selected_node = currentChildNode;
         }
     }
