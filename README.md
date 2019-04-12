@@ -1,5 +1,5 @@
 # MCTS_ConnectFour
-implementation of an KI in the game ConnectFour using the MCTS algorithm
+Implementation of an Connect-Four AI using the MCTS algorithm.
 
 ## Installation
 
