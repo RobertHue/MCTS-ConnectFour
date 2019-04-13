@@ -21,7 +21,7 @@ using namespace std;
 const int MAX_X = 7;
 const int MAX_Y = 5;
 int main(int argc, char* argv[]) {
-	int col_err;
+	bool isValidMove;
 	GameState gp(MAX_X, MAX_Y);
 	GameState::drawGameStateOnConsole(
 		gp.getGameData(), 
@@ -81,12 +81,12 @@ int main(int argc, char* argv[]) {
 
         switch (input_char) {
             case 'x': case 'X':
-                playerYou = PLAYER_2;
-                playerAI = PLAYER_1;
+                playerYou = Player::PLAYER_2;
+                playerAI = Player::PLAYER_1;
                 break;
             case 'o': case 'O':
-                playerYou = PLAYER_1;
-                playerAI = PLAYER_2;
+                playerYou = Player::PLAYER_1;
+                playerAI = Player::PLAYER_2;
                 break;
             default:
                 cout << "Wrong input! Please choose again!";
@@ -115,18 +115,18 @@ int main(int argc, char* argv[]) {
                 cout << "Please choose COLUMN: ";
                 cin >> col;
 
-                col_err = gp.insertTokenIntoColumn(col);
-                if (col_err == ERROR) {
+                isValidMove = gp.insertTokenIntoColumn(col);
+                if (!isValidMove) {
                     cout << "Column is already full! Please chose again: \n";
                 }
-            } while (col < 0 || col >= gp.getMAX_X() || col_err);
+            } while (col < 0 || col >= gp.getMAX_X() || !isValidMove);
 			// if you want two AIs playing against each other
             ///int col = gKI.findNextMove(gp);
             ///col_err = gp.insertTokenIntoColumn(col);
         }
         else {
             int col = gKI.findNextMove(gp);
-            col_err = gp.insertTokenIntoColumn(col);
+			isValidMove = gp.insertTokenIntoColumn(col);
         }
         GameState::drawGameStateOnConsole(
 			gp.getGameData(), 

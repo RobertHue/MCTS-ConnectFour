@@ -3,16 +3,20 @@
 
 #include <vector>
 #include <string>
+#include "GameState.h"
 
 // forward declare NodeType so it can be used inside Node again
 typedef struct Node		NodeType;
 
 struct Node {
+	size_t level;	/// the level this nodes resides on in the game tree
     double UCTB;            /// UCTB rating -- used for selection
 	double winratio;        /// winratio -- used for exploitation
 	double uct;				/// uct -- used for exploration
     double rating;           /// accumulated reward rating
-    int visits;             /// total amount of visits
+    int visits;             /// total amount of visits also the simulation count
+	Player player;	// stores the player that did the move leading to this node
+	// for whom this rating also counts
 
 	/// the action/move that leaded to that node
 	int chosenMoveThatLeadedToThisNode; 

@@ -16,6 +16,7 @@
 		There are 6 main parameters which can be change:
 
 		* MAX_NUM_OF_ITERATIONS
+		* EXPAND_FULLY_ON_VISITS
 		* Value::WIN
 		* Value::DRAW
 		* Value::LOOSE
@@ -30,6 +31,7 @@ class GameAI {
 public:
 	/// the number of iterations(each iteration resembles a simualation of one complete game)
 	const size_t MAX_NUM_OF_ITERATIONS = 10000;
+	const size_t EXPAND_FULLY_ON_VISITS = 30; /// @todo currently not used because it is not passing the tests
 
 	class Value {
 	private:
@@ -117,6 +119,10 @@ private:
 	NodeType *findBestNodeWithUCT(NodeType *node);
 	double uctValue(NodeType* node);
 
+	int pickBestMoveFrom(std::vector<int>& possibleMoves, const GameState & gs);
+
+	int pickRandomMoveFrom(std::vector<int>& possibleMoves, const GameState & gs);
+
 	////////////////////////////////////////////////////////////////////////////
 	/// highly coupled methods depending on the kind of game (here connect four)
 	////////////////////////////////////////////////////////////////////////////
@@ -157,4 +163,6 @@ private:
 	* @note		changes the passed GameState
 	*/
     int doRandomMove(GameState &gp);
+
+	std::vector<int> setupPossibleMovesOf(NodeType *node, const GameState & gs);
 };

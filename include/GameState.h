@@ -10,15 +10,16 @@
 // see https://doc.qt.io/qt-5/model-view-programming.html#rows-and-columns
 
 
-enum Player {
+enum class Player {	//  underlying type is int (implicit conversions)
     NONE = 0, 
 	PLAYER_1 = 1, 
 	PLAYER_2 = 2, 
 	DRAW = 3	/// used for indicating a TIE
 };
 
-const int NO_VALID_MOVE = -1;
-const int VALID_MOVE = 0;
+
+const bool NO_VALID_MOVE	= false;
+const bool VALID_MOVE		= true;
 
 typedef struct {
     int x;
@@ -42,7 +43,7 @@ public:
     GameState(int x = 4, int y = 4) : MAX_X(x), MAX_Y(y) {
         gameData = std::vector<std::vector<int>> (MAX_X, std::vector<int> (MAX_Y, FREE_FIELD));
 
-        this->setTurnPlayer(PLAYER_1);
+        this->setTurnPlayer(Player::PLAYER_1);
         this->numOfFreeFields = MAX_X * MAX_Y;
         // hier evtl noch abprfen ob spielfeld gerade anzahl an feldern hat; d.h. fair ist...
     }
@@ -60,7 +61,7 @@ public:
 	  * if valid,	then this method inserts it into GamePanel and returns VALID_MOVE
 	  * otherwhise, returns NO_VALID_MOVE and does nothing
 	  */
-    int insertTokenIntoColumn(int column);
+    bool insertTokenIntoColumn(int column);
 
 	/** @brief		retun a player, that has won
 	 * returns NONE(0), if there is a tie or there is no winner yet 
@@ -69,6 +70,8 @@ public:
 
     Player isAboutToWin();
     void nextTurn();
+
+	std::vector<int> getPossibleMoves() const;
 
     static void drawGameStateOnConsole(std::vector<std::vector<int>> gameData, int max_x, int max_y);
 };

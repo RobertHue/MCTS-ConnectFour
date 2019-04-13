@@ -13,7 +13,7 @@ using namespace std;
 Tree::Tree() : m_amountOfNodes(0) {
 	//cout << "constructor called " << endl;
     root = createNewNode();
-	root->sequenceThatLeadedToThisNode = "root";
+	root->sequenceThatLeadedToThisNode = "r";	/// r stands for root
 }
 Tree::~Tree() {
 	//cout << "destructor called " << endl;
@@ -64,6 +64,7 @@ NodeType * Tree::getRoot() {
 NodeType * Tree::createNewNode() {
     NodeType *newNode = new NodeType;
 
+	newNode->level = 0;
 	newNode->UCTB = rand() % 1000 + 10000;	// assign unvisited nodes with a very large UCTB-rating
 	newNode->winratio = 0.0;
 	newNode->uct = 0.0;
@@ -99,7 +100,7 @@ void Tree::printLevelOrder(NodeType* rootNode) {
 			// Dequeue an item from queue and print it 
 			NodeType * p = q.front();
 			q.pop();
-			cout << setw(10) << p->chosenMoveThatLeadedToThisNode << "|" << p->rating << " / " << p->visits << " ";
+			cout << setw(10) << p->sequenceThatLeadedToThisNode << " | " << p->rating << "/" << p->visits << " ";
 
 			// Enqueue all children of the dequeued item 
 			for (int i = 0; i < p->childNodes.size(); i++)

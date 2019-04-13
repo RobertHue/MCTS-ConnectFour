@@ -2,13 +2,13 @@
 #include "GameAI.h"
 #include <limits> // for numeric::limits to get the smallest double
 #include <stdexcept>
-
+#include <iterator> // for std::advance
 
 GameAI::GameAI(Player tokenKI) : AI_Player(tokenKI) {
-	if (AI_Player == PLAYER_1)
-		OP_Player = PLAYER_2;
+	if (AI_Player == Player::PLAYER_1)
+		OP_Player = Player::PLAYER_2;
 	else
-		OP_Player = PLAYER_1;
+		OP_Player = Player::PLAYER_1;
 }
 
 int GameAI::findNextMove(const GameState &gameState) {
@@ -40,12 +40,12 @@ int GameAI::findNextMove(const GameState &gameState) {
 		///////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////
 
-		selected_node = selectPromisingNode(m_pGameTree->getRoot());
+ 		selected_node = selectPromisingNode(m_pGameTree->getRoot());
 
-		expanded_node = expandNode(selected_node);
+		expanded_node = expandNode(selected_node);	// expansion can also be performed after the simulation..
 		
 		rating = simulation(expanded_node);
-	
+
 		backpropagation(expanded_node, rating);
 
 		///////////////////////////////////////////////////////////////////
@@ -71,46 +71,31 @@ int GameAI::findNextMove(const GameState &gameState) {
 
 
 void GameAI::expandAllChildrenOf(NodeType *nodeToExpand, const GameState & gs) {
-    // go through all possible moves:
+	std::vector<int> possibleMoves = setupPossibleMovesOf(nodeToExpand, gs);
 
-	std::vector<int> movesToExclude;
-	for (auto n : nodeToExpand->childNodes) {	// has children already
-		movesToExclude.push_back(n->chosenMoveThatLeadedToThisNode);
-	}
+	GameState tmpState;
+    for (int pmove : possibleMoves) {
+		tmpState = gs;	// reset of game state
 
+		// try to insert into a column inside the game state
+		int columnChosen = pmove;
+		Player currentPlayer = tmpState.getTurnPlayer();
+		bool isValidMove = tmpState.insertTokenIntoColumn(columnChosen);
 
-	GameState tmpState;	// @todo bad performance to copy over all again
-    for (int col = 0; col < tmpState.getMAX_X(); ++col) {
-		bool isSaveToExpand = true;
+		// update the game tree to hold expanded nodes
+		// @todo has to check whether node is already expanded...
+		if (isValidMove) {
+				NodeType *newNode = m_pGameTree->createNewNode();
+				newNode->UCTB = rand() % 1000 + 10000;
+				newNode->chosenMoveThatLeadedToThisNode = columnChosen;
+				newNode->sequenceThatLeadedToThisNode = 
+					nodeToExpand->sequenceThatLeadedToThisNode + "."
+					+ std::to_string(newNode->chosenMoveThatLeadedToThisNode);
+				newNode->level = nodeToExpand->level + 1;
+				newNode->player = currentPlayer;
 
-		// go through movesToExlude to avoid double expanding:
-		for (auto & m : movesToExclude) {
-			if (m == col) {
-				isSaveToExpand = false;
-				break;	// break free out of loop and continue
-			}
+				Tree::addNodeTo(newNode, nodeToExpand);
 		}
-
-		if (isSaveToExpand) {
-			tmpState = gs;	// reset of game state
-
-			// try to insert into a column inside the game state
-			int columnChosen = col;
-			int col_err = tmpState.insertTokenIntoColumn(columnChosen);
-
-			// update the game tree to hold expanded nodes
-			// @todo has to check whether node is already expanded...
-			if (col_err != NO_VALID_MOVE) {
-					NodeType *newNode = m_pGameTree->createNewNode();
-					newNode->UCTB = rand() % 1000 + 10000;
-					newNode->chosenMoveThatLeadedToThisNode = columnChosen;
-					newNode->sequenceThatLeadedToThisNode = 
-						nodeToExpand->sequenceThatLeadedToThisNode + ".move"
-						+ std::to_string(newNode->chosenMoveThatLeadedToThisNode);
-
-					Tree::addNodeTo(newNode, nodeToExpand);
-			}
-        }
     }
 }
 
@@ -170,8 +155,15 @@ NodeType * GameAI::selectPromisingNode(NodeType *rootNode)
 		simulatedGameState.insertTokenIntoColumn(
 			selectedNode->chosenMoveThatLeadedToThisNode
 		);
+
+		// if at level 1 the visit count of EXPAND_FULLY_ON_VISITS is reached
+		// then expand all of this nodes childs
+		//if (selectedNode->visits == EXPAND_FULLY_ON_VISITS && selectedNode->level == 1) {
+		//	expandAllChildrenOf(selectedNode, simulatedGameState);
+		//}
 	}
-	
+
+
 	return selectedNode;
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -182,31 +174,38 @@ NodeType * GameAI::expandNode(NodeType *leaf_node)
 {
 	// e1.) Does the Leaf Node L node end the Game? (won/loss/tie)?
     Player hasWonSim = simulatedGameState.hasSomeoneWon();
-    if (hasWonSim == PLAYER_1 || 
-		hasWonSim == PLAYER_2 || 
-		hasWonSim == DRAW) {
+    if (hasWonSim == Player::PLAYER_1 ||
+		hasWonSim == Player::PLAYER_2 ||
+		hasWonSim == Player::DRAW) {
 		return leaf_node;  // if so, don't expand!
 	}
+
+
+	std::vector<int> possibleMoves = setupPossibleMovesOf(leaf_node, simulatedGameState);
 	
-	// sim1.) choose a good move (columnChosen)
-	int columnChosen = pickBestMove(simulatedGameState);
+	// sim1.) choose a good move from the movePossibilites (columnChosen)
+	// int columnChosen = pickRandomMoveFrom(possibleMoves, simulatedGameState);
+	int columnChosen = pickBestMoveFrom(possibleMoves, simulatedGameState);
 	if (columnChosen == -1) {
 		return leaf_node;  //if game panel is full => FULL_TIE & stop sim
 	}
-	
+
 	// sim2.) do the selected move (columnChosen)
+	Player currentPlayer = simulatedGameState.getTurnPlayer();
 	simulatedGameState.insertTokenIntoColumn(columnChosen);
 
 	// e2.) expansion: create a newNode
 	NodeType *newNodeC = m_pGameTree->createNewNode();
 	newNodeC->chosenMoveThatLeadedToThisNode = columnChosen;
 	newNodeC->sequenceThatLeadedToThisNode =
-		leaf_node->sequenceThatLeadedToThisNode + ".move"
+		leaf_node->sequenceThatLeadedToThisNode + "."
 		+ std::to_string(columnChosen);
-		
+	newNodeC->level = leaf_node->level + 1;
+	newNodeC->player = currentPlayer;
+
 	// e4.) add the newly created Node to the leaf node L
 	Tree::addNodeTo(newNodeC, leaf_node);
-	
+
 	return newNodeC; // return expanded_node C
 }
 
@@ -220,7 +219,7 @@ double GameAI::simulation(NodeType *expanded_node) {
         return Value::WIN; // AI has won immediately => stop simulating
 	} else if (hasWonSim == OP_Player) {
 		return Value::LOOSE; // OP has won immediately => stop simulating
-	} else if (hasWonSim == DRAW) {
+	} else if (hasWonSim == Player::DRAW) {
         return Value::DRAW;
     }
 
@@ -245,7 +244,10 @@ double GameAI::simulation(NodeType *expanded_node) {
             return Value::WIN; // AI has won => stop simulating
         } else if (hasWonSim == OP_Player) {
             return Value::LOOSE; // OP has won => stop simulating
-        }
+        } else if (hasWonSim == Player::DRAW) {
+			return Value::DRAW;
+		}
+	
     }
     return Value::DRAW;
 }
@@ -254,18 +256,27 @@ double GameAI::simulation(NodeType *expanded_node) {
 /// B A C K P R O P A G A T I O N ///
 /////////////////////////////////////
 void GameAI::backpropagation(NodeType *expanded_node, Value ratingToBeUpdated) {
-	bool toggleTurn = true;
+	bool toggleRating = true;
+	// if rating is a draw then add it to every node upwards
+	if (ratingToBeUpdated == Value::DRAW) {
+		toggleRating = false;
+	}
+
+	if (expanded_node->player == OP_Player && ratingToBeUpdated == Value::WIN) {
+		ratingToBeUpdated = Value::LOOSE;
+	} else if (expanded_node->player == OP_Player && ratingToBeUpdated == Value::LOOSE) {
+		ratingToBeUpdated = Value::WIN;
+	}
+	
 	///////////////////////////////////////////////////////////////////////////
 	//update visit and rating values upwards from expanded node C to L to root
 	NodeType *cur_node = expanded_node;
 	while (cur_node != nullptr) {
-		if (ratingToBeUpdated == Value::DRAW) {	// if rating is a draw then add it to every node upwards
-			cur_node->rating += ratingToBeUpdated;
-			toggleTurn = false;
-		}
-		else if (toggleTurn) {	// add rating to every 2nd node
-			cur_node->rating += ratingToBeUpdated;
-			toggleTurn = !toggleTurn;
+		cur_node->rating += ratingToBeUpdated;
+
+		// toggle rating for next node upwards
+		if (toggleRating) {
+			ratingToBeUpdated = (ratingToBeUpdated == Value::WIN) ? Value::LOOSE : Value::WIN;
 		}
 
 		//-------------------------------------------------------------------
@@ -295,6 +306,63 @@ NodeType * GameAI::selectMostVisitedChild(const NodeType *rootNode) {
 }
 
 ///////////////////////////////////////////////////////////////////////////
+
+int GameAI::pickBestMoveFrom(std::vector<int>& possibleMoves, const GameState &gs) {
+	Player currentPlayer = gs.getTurnPlayer();
+	Player OtherPlayer = gs.getOtherPlayer();
+
+	// try to look for a winning move for current player
+	for (int i = 0; i < possibleMoves.size(); ++i) {
+		GameState tmpState = gs;  // make a mutable copy of the const GameState
+		tmpState.insertTokenIntoColumn(possibleMoves[i]); // make the move on the copy
+
+		Player playerThatJustWon = tmpState.hasSomeoneWon();
+		if (playerThatJustWon == currentPlayer) {
+			return possibleMoves[i]; // the currentPlayer should do this move to win!
+		}
+	}
+
+	// try to look for a move that hinders the OtherPlayer from winning
+	for (int i = 0; i < possibleMoves.size(); ++i) {
+		GameState tmpState = gs;  // make mutable copy of the const GameState
+		tmpState.setTurnPlayer(OtherPlayer);	// simulate a turn of the opponent
+		tmpState.insertTokenIntoColumn(possibleMoves[i]); // make the move on the copy
+
+		Player playerThatJustWon = tmpState.hasSomeoneWon();
+		if (playerThatJustWon == OtherPlayer) {
+			return possibleMoves[i];
+			// OtherPlayer will probably make this move to win in his turn, 
+			// so hinder him on doing that!
+		}
+	}
+
+	// here: No winning move found or hindering needed, so pick a random move
+	return pickRandomMoveFrom(possibleMoves, gs);
+}
+
+int GameAI::pickRandomMoveFrom(std::vector<int>& possibleMoves, const GameState &gs) {
+	/*
+	std::vector<std::vector<int>> gameData = gs.getGameData();
+	// collect every column, where a token can be put into:
+	std::vector<int> possibleColumns;
+	for (int i = 0; i < gs.getMAX_X(); ++i) {
+		if (gameData[i][0] == FREE_FIELD) {
+			possibleColumns.push_back(i);
+		}
+	}
+	if (possibleColumns.empty()) { return -1; } // all columns are already full
+	*/
+	/* initialize random seed: */
+	time_t t;
+	time(&t);
+	srand((unsigned int)t);
+
+	/* generate secret number between 1 and MAX_X: */
+	int iRand = rand() % possibleMoves.size() + 0;
+
+	int randomColumn = possibleMoves[iRand];
+	return randomColumn;
+}
 
 int GameAI::pickBestMove(const GameState &gs) {
 	int col_move;
@@ -330,7 +398,6 @@ int GameAI::pickBestMove(const GameState &gs) {
 	col_move = pickRandomMove(gs);
 	return col_move;
 }
-
 
 int GameAI::pickRandomMove(const GameState &gs) {
 	std::vector<std::vector<int>> gameData = gs.getGameData();
@@ -392,8 +459,25 @@ NodeType * GameAI::pickRandomChild(NodeType *node) {
 
 int GameAI::doRandomMove(GameState &gs) {
 	int pickedColumn = pickRandomMove(gs);
-	if (pickedColumn != -1) gs.insertTokenIntoColumn(pickedColumn);
+	if (pickedColumn != -1) { gs.insertTokenIntoColumn(pickedColumn); }
 	return pickedColumn;
+}
+
+std::vector<int> GameAI::setupPossibleMovesOf(NodeType * node, const GameState & gs)
+{
+	// setup the possible moves:
+	std::vector<int> possibleMoves = simulatedGameState.getPossibleMoves();
+	for (auto& n : node->childNodes) {
+		std::vector<int>::const_iterator citer = possibleMoves.cbegin();
+		for (auto & p : possibleMoves) {
+			if (p == n->chosenMoveThatLeadedToThisNode) {
+				possibleMoves.erase(citer);
+				break;	// break out of possibleMoves loop
+			}
+			++citer;
+		}
+	}
+	return possibleMoves;
 }
 
 ///////////////////////////////////////////////////////////////////////////

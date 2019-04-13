@@ -26,13 +26,33 @@ Player GameState::getOtherPlayer() const {
 }
 
 void GameState::nextTurn() {
-    if (turnPlayer == PLAYER_1) {
-        turnPlayer = PLAYER_2;
-        otherPlayer = PLAYER_1;
+    if (turnPlayer == Player::PLAYER_1) {
+        turnPlayer = Player::PLAYER_2;
+        otherPlayer = Player::PLAYER_1;
     } else {
-        turnPlayer = PLAYER_1;
-        otherPlayer = PLAYER_2;
+        turnPlayer = Player::PLAYER_1;
+        otherPlayer = Player::PLAYER_2;
     }
+}
+
+std::vector<int> GameState::getPossibleMoves() const
+{
+	// stores the cols which can be made as possible moves
+	std::vector<int> possibleMoves;
+
+	int row, col;
+	for (col = 0; col < MAX_X; ++col) {
+		for (row = MAX_Y - 1; row >= 0; --row) {
+
+			// check whether insertion cell is still free
+			if (gameData[col][row] == FREE_FIELD) {
+				possibleMoves.push_back(col);
+				break;	// break out of rows loop
+			}
+		}
+	}
+
+	return possibleMoves;
 }
 
 /*
@@ -53,12 +73,12 @@ Player GameState::isAboutToWin() {
 
     // wer hat dieses Token berhaupt platziert
     Player tokenPlacedByPlayer, otherPlayer;
-    if (gameData[x_placed][y_placed] == PLAYER_1) {
-        tokenPlacedByPlayer = PLAYER_1;
-        otherPlayer = PLAYER_2;
+    if (gameData[x_placed][y_placed] == static_cast<int>(Player::PLAYER_1)) {
+        tokenPlacedByPlayer = Player::PLAYER_1;
+        otherPlayer = Player::PLAYER_2;
     } else {
-        tokenPlacedByPlayer = PLAYER_2;
-        otherPlayer = PLAYER_1;
+        tokenPlacedByPlayer = Player::PLAYER_2;
+        otherPlayer = Player::PLAYER_1;
     }
 
     // immer mitz�hlen wieviel tokens in einer Reihe:
@@ -110,7 +130,7 @@ Player GameState::isAboutToWin() {
         if (x_check < 0 || x_check >= MAX_X) continue;
         if (y_check < 0 || y_check >= MAX_Y) continue;
 
-        if (this->gameData[x_check][y_check] == tokenPlacedByPlayer) {
+        if (this->gameData[x_check][y_check] == static_cast<int>(tokenPlacedByPlayer)) {
             ++num_of_tokens_in_row;
         } else if (this->gameData[x_check][y_check] == FREE_FIELD) {
             // falls zum zweiten mal ein freies Feld kam, setzte die zahl zur�ck
@@ -119,7 +139,7 @@ Player GameState::isAboutToWin() {
                 continue;
             }
             closeFreeField = true;
-        } else if (this->gameData[x_check][y_check] == otherPlayer) { // auf Position befindet sich ein gegnerischer Spielstein (Token)
+        } else if (this->gameData[x_check][y_check] == static_cast<int>(otherPlayer)) { // auf Position befindet sich ein gegnerischer Spielstein (Token)
             num_of_tokens_in_row = 0;
             closeFreeField = false;
             continue;
@@ -131,10 +151,8 @@ Player GameState::isAboutToWin() {
     }
 
 
-    return NONE; // der turnPlayer hat keine 3er-Reihe mit offenem Feld
+    return Player::NONE; // der turnPlayer hat keine 3er-Reihe mit offenem Feld
 }
-
-
 
 Player GameState::hasSomeoneWon() {
     int x_placed = positionOfLastPlacedToken.x;
@@ -191,10 +209,10 @@ Player GameState::hasSomeoneWon() {
         if (y_check < 0 || y_check >= MAX_Y) continue;
 
 
-        if (this->gameData[x_check][y_check] == PLAYER_1) {
+        if (this->gameData[x_check][y_check] == static_cast<int>(Player::PLAYER_1)) {
             num_of_tokens_p2_in_row = 0;
             ++num_of_tokens_p1_in_row;
-        } else if (this->gameData[x_check][y_check] == PLAYER_2) {
+        } else if (this->gameData[x_check][y_check] == static_cast<int>(Player::PLAYER_2)) {
             num_of_tokens_p1_in_row = 0;
             ++num_of_tokens_p2_in_row;
         } else if (this->gameData[x_check][y_check] == FREE_FIELD) {
@@ -203,17 +221,17 @@ Player GameState::hasSomeoneWon() {
         }
 
         // has someone won?
-        if (num_of_tokens_p1_in_row >= 4) return PLAYER_1;
-        else if (num_of_tokens_p2_in_row >= 4) return PLAYER_2;
+        if (num_of_tokens_p1_in_row >= 4) return Player::PLAYER_1;
+        else if (num_of_tokens_p2_in_row >= 4) return Player::PLAYER_2;
     }
 
 	// if number of free fields are 0,
 	if (numOfFreeFields == 0) {
 		// then there is a tie!
-		return DRAW;
+		return Player::DRAW;
 	}
 
-    return NONE; // noone has won yet!
+    return Player::NONE; // noone has won yet!
 }
 
 void GameState::drawGameStateOnConsole(std::vector<std::vector<int>> gameData, int MAX_X, int MAX_Y) {
@@ -241,10 +259,10 @@ void GameState::drawGameStateOnConsole(std::vector<std::vector<int>> gameData, i
                 case FREE_FIELD:
 					std::cout << " "; // freier Platz
                     break;
-                case PLAYER_1:
+                case Player::PLAYER_1:
 					std::cout << "O";
                     break;
-                case PLAYER_2:
+                case Player::PLAYER_2:
 					std::cout << "X";
                     break;
                 default:
@@ -261,15 +279,14 @@ void GameState::drawGameStateOnConsole(std::vector<std::vector<int>> gameData, i
 	std::cout << "\n";
 }
 
-
-int GameState::insertTokenIntoColumn(int column) {
+bool GameState::insertTokenIntoColumn(int column) {
     int row;
     for (row = MAX_Y - 1; row >= 0; --row) {
 
 		// check whether insertion cell is still free
         if (gameData[column][row] == FREE_FIELD) {
             // insert token into the cell, which is free:
-            gameData[column][row] = this->turnPlayer;
+            gameData[column][row] = static_cast<int>(this->turnPlayer);
 
             // remember the position of the last placed token
             positionOfLastPlacedToken.x = column;
