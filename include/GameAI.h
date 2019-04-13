@@ -9,16 +9,47 @@
 #include "Tree.h"
 
 
-/// @TODO more description here
-/// for more information on the mcts, see:
-///		http://de.slideshare.net/ftgaic/mcts-ai
-///		https://en.wikipedia.org/wiki/Monte_Carlo_tree_search
+/**
+@brief	this class is responsible for finding the next move for the AI in ConnectFour
+		It does this by applying the Monte Carlo Tree Search (MCTS).
+
+		There are 6 main parameters which can be change:
+
+		* MAX_NUM_OF_ITERATIONS
+		* Value::WIN
+		* Value::DRAW
+		* Value::LOOSE
+		* CURIOUSITY_FACTOR
+		
+	for more information on the mcts, see:
+	http://de.slideshare.net/ftgaic/mcts-ai
+	https://en.wikipedia.org/wiki/Monte_Carlo_tree_search
+	http://www.tantrix.com/Tantrix/TRobot/MCTS%20Final%20Report.pdf
+*/
 class GameAI {
 public:
+	/// the number of iterations(each iteration resembles a simualation of one complete game)
 	const size_t MAX_NUM_OF_ITERATIONS = 10000;
-	const size_t T = 10;
-	// the number of iterations 
-	// (each iteration resembles a simualation of one complete game)
+
+	class Value {
+	private:
+		double f;
+	public:
+		Value(double f) : f(f) {}
+	public:
+		static constexpr double WIN		= 1.0;
+		static constexpr double DRAW	= 0.5;
+		static constexpr double LOOSE	= 0.0;
+	};
+	/*	C - curiousity of the algorithm (empirically set to 1.41421L)
+
+		constant C = CURIOUSITY_FACTOR = curiousity of the algorithm
+		small C => game tree gets deeper expanded
+						(only the best variation gets explored)
+		big C => game tree gets broader expanded
+						(nodes with lesser visits are prefered)
+	*/
+	const double CURIOUSITY_FACTOR = 1.41421L;
 public:
 
 	/// construct a GameAI for the given Player and let it take control over him
@@ -61,31 +92,12 @@ private:
 
 	 @return	a double indicaing if the game was won by the AI
 
-	 * 1	- the game was won by the ai
-	 * 0.5	- the game was a draw
-	 * 0	- the game was lost by the ai
 	 * rewards/ratings taken from 
 	 *	http://www.tantrix.com/Tantrix/TRobot/MCTS%20Final%20Report.pdf
 	 */
     double simulation(NodeType *expanded_node);
-#define VALUE_WIN   1.0;
-#define VALUE_DRAW	0.5;
-#define VALUE_LOOSE 0.0; 
-
-//#define VALUE_WIN_IMM	3.0;
-//#define VALUE_LOOSE_IMM 0.0;
-//#define VALUE_FULL_TIE  0.8;
 
 
-/*	C - curiousity of the algorithm (empirically set to 1.41421L)
-
-	constant C = CURIOUSITY_FACTOR = curiousity of the algorithm
-	small C => game tree gets deeper expanded
-					(only the best variation gets explored)
-	big C => game tree gets broader expanded
-					(nodes with lesser visits are prefered)
-*/
-#define CURIOUSITY_FACTOR 1.41421L
 	/// use the result of the playout to update (backpropagate) information in 
 	/// the nodes (of the game tree) on the path from 
 	/// expanded node (C) to root node (R)

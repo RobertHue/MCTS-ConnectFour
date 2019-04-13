@@ -48,15 +48,15 @@ int GameAI::findNextMove(const GameState &gameState) {
 		double ratingINbetween = 0;
 		bool toggle = false;
 		if (hasWonSim == AI_Player) {
-			VALUE_WIN; // AI has won immediately => stop simulating
+			Value::WIN; // AI has won immediately => stop simulating
 			ratingINbetween = toggle = true;
 		}
 		else if (hasWonSim == OP_Player) {
-			 VALUE_LOOSE; // OP has won immediately => stop simulating
+			Value::LOOSE; // OP has won immediately => stop simulating
 			 ratingINbetween = toggle = true;
 		}
 		else if(hasWonSim == DRAW) {
-			VALUE_LOOSE; // OP has won immediately => stop simulating
+			Value::DRAW; // OP has won immediately => stop simulating
 			ratingINbetween = toggle = true;
 		}
 
@@ -247,9 +247,9 @@ double GameAI::simulation(NodeType *expanded_node) {
     // has someone won?
     Player hasWonSim = simulatedGameState.hasSomeoneWon();
     if (hasWonSim == AI_Player) {
-        return VALUE_WIN; // AI has won immediately => stop simulating
+        return Value::WIN; // AI has won immediately => stop simulating
     } else if (hasWonSim == OP_Player) {
-        return VALUE_LOOSE; // OP has won immediately => stop simulating
+        return Value::LOOSE; // OP has won immediately => stop simulating
     }
 
     // for (int i = 0; i < NUM_OF_SIMULATION_FRAMES; ++i)
@@ -262,7 +262,7 @@ double GameAI::simulation(NodeType *expanded_node) {
 		// int columnChosen = pickRandomMove(simulatedGameState);
 		int columnChosen = pickBestMove(simulatedGameState);
         if (columnChosen == -1) {
-            return VALUE_DRAW; // if game panel is full => FULL_TIE & stop sim
+            return Value::DRAW; // if game panel is full => FULL_TIE & stop sim
         }
         // sim2.) chose a move
         simulatedGameState.insertTokenIntoColumn(columnChosen);
@@ -270,12 +270,12 @@ double GameAI::simulation(NodeType *expanded_node) {
         // has someone won?
         Player hasWonSim = simulatedGameState.hasSomeoneWon();
         if (hasWonSim == AI_Player) {
-            return VALUE_WIN; // AI has won => stop simulating
+            return Value::WIN; // AI has won => stop simulating
         } else if (hasWonSim == OP_Player) {
-            return VALUE_LOOSE; // OP has won => stop simulating
+            return Value::LOOSE; // OP has won => stop simulating
         }
     }
-    return VALUE_DRAW;
+    return Value::DRAW;
 }
 
 ///////////////////////////////////////
