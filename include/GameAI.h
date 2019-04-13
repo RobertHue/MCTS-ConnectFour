@@ -43,7 +43,7 @@ private:
 	/// expands all child nodes of passed node (mostly used for root (R)) 
 	/// also initializes those created child nodes with a 
 	/// randomly assigned high UCTB-value
-    //void expandAllChildrenOf(NodeType *Node, const GameState & gp);
+    void expandAllChildrenOf(NodeType *Node, const GameState & gp);
 	
 	/// recursively does the selection step of the mcts (arg node is the root)
 	NodeType *selectPromisingNode(NodeType *node);
@@ -68,8 +68,8 @@ private:
 	 *	http://www.tantrix.com/Tantrix/TRobot/MCTS%20Final%20Report.pdf
 	 */
     double simulation(NodeType *expanded_node);
-#define VALUE_WIN   10.0;
-#define VALUE_DRAW	0.0;
+#define VALUE_WIN   1.0;
+#define VALUE_DRAW	0.5;
 #define VALUE_LOOSE 0.0; 
 
 //#define VALUE_WIN_IMM	3.0;
@@ -127,6 +127,10 @@ private:
 	 *		returns -1 when every column is already full
 	 */
     int pickRandomMove(const GameState &gp);
+
+	NodeType * pickBestChild(NodeType * node, const GameState & gs);
+
+	NodeType * pickRandomChild(NodeType * node);
 
 	// macht einen zuflligen spielzug und ndert gameDataH
 	// es wird die position des Spielsteins zurckgegeben

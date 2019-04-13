@@ -104,7 +104,8 @@ int main(int argc, char* argv[]) {
     //*** Player-Move-Choice ****
     //***************************
     gp.setTurnPlayer(playerAI); // set Player that needs to begin here
-    GameAI gKI(playerAI);
+	GameAI gKI(playerAI);
+	///GameAI gKI2(playerYou);	// if you want two AIs playing against each other
 
 
     while (1) {
@@ -119,12 +120,13 @@ int main(int argc, char* argv[]) {
                     cout << "Column is already full! Please chose again: \n";
                 }
             } while (col < 0 || col >= gp.getMAX_X() || col_err);
+			// if you want two AIs playing against each other
+            ///int col = gKI.findNextMove(gp);
+            ///col_err = gp.insertTokenIntoColumn(col);
         }
         else {
-            int col = gKI.calculateNextTurn(gp);
+            int col = gKI.findNextMove(gp);
             col_err = gp.insertTokenIntoColumn(col);
-			Tree::printLevelOrder(gKI.getGameTree()->getRoot());
-			gKI.getGameTree()->printChildNodeInfo(gKI.getGameTree()->getRoot());
         }
         GameState::drawGameStateOnConsole(
 			gp.getGameData(), 
@@ -149,8 +151,5 @@ int main(int argc, char* argv[]) {
         }
 		//system("PAUSE");
     }
-	Tree::printLevelOrder(gKI.getGameTree()->getRoot());
-	gKI.getGameTree()->printChildNodeInfo(gKI.getGameTree()->getRoot()); 
-	system("PAUSE");
     return 0;
 }

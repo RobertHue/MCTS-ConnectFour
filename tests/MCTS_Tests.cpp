@@ -14,13 +14,17 @@
 void checkChildVisitsValuePlausibily(const GameAI& ai) {
 	NodeType* rootNode = ai.getGameTree()->getRoot();
 
-	double sumOfChildValues = 0.0;
-	for (auto& c : rootNode->childNodes) {
-		sumOfChildValues += c->rating;
+	// test whether root.rating (level0) is equals to the sum of ratings on level2
+	// level1 is the opponent's rating
+	double sumOfChildRatings = 0.0;
+	for (auto& c1 : rootNode->childNodes) {
+		for (auto& c2 : c1->childNodes) {
+			sumOfChildRatings += c2->rating;
+		}
 	}
-	BOOST_CHECK(rootNode->rating == sumOfChildValues);
+	BOOST_CHECK(rootNode->rating == sumOfChildRatings);
 
-
+	// test whether root.visits are equals to the sum of visits on level1
 	int sumOfChildVisits = 0;
 	for (auto& c : rootNode->childNodes) {
 		sumOfChildVisits += c->visits;

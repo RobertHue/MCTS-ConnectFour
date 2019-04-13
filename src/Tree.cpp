@@ -13,6 +13,7 @@ using namespace std;
 Tree::Tree() : m_amountOfNodes(0) {
 	//cout << "constructor called " << endl;
     root = createNewNode();
+	root->sequenceThatLeadedToThisNode = "root";
 }
 Tree::~Tree() {
 	//cout << "destructor called " << endl;

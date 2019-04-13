@@ -42,24 +42,54 @@ int GameAI::findNextMove(const GameState &gameState) {
 
 		selected_node = selectPromisingNode(m_pGameTree->getRoot());
 
-		expanded_node = expandNode(selected_node);
+		// check whether selected_node_L is win/loose/draw:
+		// has someone won?
+		Player hasWonSim = simulatedGameState.hasSomeoneWon();
+		double ratingINbetween = 0;
+		bool toggle = false;
+		if (hasWonSim == AI_Player) {
+			VALUE_WIN; // AI has won immediately => stop simulating
+			ratingINbetween = toggle = true;
+		}
+		else if (hasWonSim == OP_Player) {
+			 VALUE_LOOSE; // OP has won immediately => stop simulating
+			 ratingINbetween = toggle = true;
+		}
+		else if(hasWonSim == DRAW) {
+			VALUE_LOOSE; // OP has won immediately => stop simulating
+			ratingINbetween = toggle = true;
+		}
 
-		rating = simulation(expanded_node);
+		if (!toggle) {
+			//expanded_node = expandNode(selected_node);
+			expandAllChildrenOf(selected_node, simulatedGameState);
+			expanded_node = pickBestChild(selected_node, simulatedGameState);
+			if (expanded_node == nullptr) { expanded_node = selected_node; }
+			else {
+				simulatedGameState.insertTokenIntoColumn(expanded_node->chosenMoveThatLeadedToThisNode);
+			}
+
+			rating = simulation(expanded_node);
+		}
+		else {
+			expanded_node = selected_node;
+			rating = ratingINbetween;
+		}
 		
 		backpropagation(expanded_node, rating);
 
 		///////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////
-
+		//@todo getAvailablePositions, getEmptyPosition, 
 		// debug:
 		// Tree::levelOrder(m_pGameTree->getRoot());
 		// GameState::drawGameStateOnConsole(simulatedGameState.getGameData(), 
 		// simulatedGameState.getMAX_X(), simulatedGameState.getMAX_Y());
 		// system("PAUSE");
-	}
+	} 
 	// debug:
-	Tree::printLevelOrder(m_pGameTree->getRoot());
+	//Tree::printLevelOrder(m_pGameTree->getRoot());
 	Tree::printChildNodeInfo(m_pGameTree->getRoot());
 
  
@@ -70,7 +100,6 @@ int GameAI::findNextMove(const GameState &gameState) {
 }
 
 
-/*
 void GameAI::expandAllChildrenOf(NodeType *nodeToExpand, const GameState & gs) {
     // go through all possible moves:
 
@@ -105,14 +134,15 @@ void GameAI::expandAllChildrenOf(NodeType *nodeToExpand, const GameState & gs) {
 					NodeType *newNode = m_pGameTree->createNewNode();
 					newNode->UCTB = rand() % 1000 + 10000;
 					newNode->chosenMoveThatLeadedToThisNode = columnChosen;
-					newNode->sequenceThatLeadedToThisNode = "root.move"
+					newNode->sequenceThatLeadedToThisNode = 
+						nodeToExpand->sequenceThatLeadedToThisNode + ".move"
 						+ std::to_string(newNode->chosenMoveThatLeadedToThisNode);
 
 					Tree::addNodeTo(newNode, nodeToExpand);
 			}
         }
     }
-}*/
+}
 
 NodeType* GameAI::findBestNodeWithUCT(NodeType* node) {
 	// go through all childNodes and choose the one with the highest UCTB
@@ -120,8 +150,9 @@ NodeType* GameAI::findBestNodeWithUCT(NodeType* node) {
 	
 	double max_uctb = -std::numeric_limits<double>::max();
 	for (auto& n : node->childNodes) {
-		if (max_uctb <= n->UCTB) {
-			max_uctb = n->UCTB;
+		double curUCTB = uctValue(n);
+		if (max_uctb <= curUCTB) {
+			max_uctb = curUCTB;
 			nodeWithHighestUCT = n;
 		}
 	}
@@ -139,7 +170,7 @@ double GameAI::uctValue(NodeType* node) {
 
 	// ::: exploration :::
 	node->uct = CURIOUSITY_FACTOR * sqrt(	
-			log(node->parent->visits) / static_cast<double>(node->visits)
+		static_cast<double>(log(node->parent->visits)) / static_cast<double>(node->visits)
 	);
 
 	// calculate UCTB value
@@ -228,8 +259,8 @@ double GameAI::simulation(NodeType *expanded_node) {
         //system("PAUSE");
 
         // choose a move
-		int columnChosen = pickRandomMove(simulatedGameState);
-		//int columnChosen = pickBestMove(simulatedGameState);
+		// int columnChosen = pickRandomMove(simulatedGameState);
+		int columnChosen = pickBestMove(simulatedGameState);
         if (columnChosen == -1) {
             return VALUE_DRAW; // if game panel is full => FULL_TIE & stop sim
         }
@@ -251,20 +282,25 @@ double GameAI::simulation(NodeType *expanded_node) {
 /// B A C K P R O P A G A T I O N ///
 /////////////////////////////////////
 void GameAI::backpropagation(NodeType *expanded_node, double ratingToBeUpdated) {
-
+	bool toggleTurn = true;
 	///////////////////////////////////////////////////////////////////////////
 	//update visit and rating values upwards from expanded node C to L to root
 	NodeType *cur_node = expanded_node;
-	while (cur_node->parent != nullptr) {
-		cur_node->rating += ratingToBeUpdated;
-		++(cur_node->visits);
+	while (cur_node != nullptr) {
+		if (0.5 == (ratingToBeUpdated)) {	// if rating is a draw then add it to every node upwards
+			cur_node->rating += ratingToBeUpdated;
+			toggleTurn = false;
+		} 
 		
+		if (toggleTurn) {	// add rating to every 2nd node
+			cur_node->rating += ratingToBeUpdated;
+		}
+
+		++(cur_node->visits);		
 		//-------------------------------------------------------------------
+		toggleTurn = !toggleTurn;
 		cur_node = cur_node->parent;	// advance upwards
 	}
-	// also update visits and rating for the root
-	cur_node->rating += ratingToBeUpdated;
-	++(cur_node->visits);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -324,6 +360,7 @@ int GameAI::pickBestMove(const GameState &gs) {
 	return col_move;
 }
 
+
 int GameAI::pickRandomMove(const GameState &gs) {
 	std::vector<std::vector<int>> gameData = gs.getGameData();
 
@@ -346,6 +383,40 @@ int GameAI::pickRandomMove(const GameState &gs) {
 
 	int randomColumn = possibleColumns[iRand];
 	return randomColumn;
+}
+
+NodeType * GameAI::pickBestChild(NodeType *node, const GameState &gs) {
+	GameState tmpState = gs;  // make mutable copy of the const GameState
+
+	int columnChosen = pickBestMove(tmpState);
+	if (columnChosen == -1) {
+		return pickRandomChild(node); // if game panel is full => pick random child
+	}
+
+	NodeType *bestChild = nullptr;
+	for (auto& n : node->childNodes) {
+		if (n->chosenMoveThatLeadedToThisNode == columnChosen) {
+			bestChild = n;
+		}
+	}
+
+	if(bestChild == nullptr) { return pickRandomChild(node); }
+	return bestChild;
+}
+NodeType * GameAI::pickRandomChild(NodeType *node) {
+	if (node->childNodes.size() > 0) {
+		/* initialize random seed: */
+		time_t t;
+		time(&t);
+		srand((unsigned int)t);
+
+		/* generate secret number between 1 and MAX_X: */
+		int iRand = rand() % node->childNodes.size() + 0;
+
+		NodeType *randomNode = node->childNodes[iRand];
+		return randomNode;
+	}
+	return nullptr;
 }
 
 int GameAI::doRandomMove(GameState &gs) {
