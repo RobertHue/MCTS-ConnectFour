@@ -31,7 +31,7 @@ class GameAI {
 public:
 	/// the number of iterations(each iteration resembles a simualation of one complete game)
 	const size_t MAX_NUM_OF_ITERATIONS = 10000;
-	const size_t EXPAND_FULLY_ON_VISITS = 30; /// @todo currently not used because it is not passing the tests
+	const size_t EXPAND_FULLY_ON_VISITS = 10; /// @todo currently not used because it is not passing the tests
 
 	class Value {
 	private:
@@ -77,7 +77,7 @@ private:
 	/// expands all child nodes of passed node (mostly used for root (R)) 
 	/// also initializes those created child nodes with a 
 	/// randomly assigned high UCTB-value
-    void expandAllChildrenOf(NodeType *Node, const GameState & gp);
+    void expandAllChildrenOf(NodeType *Node);
 	
 	/// Selects the most promising child node and therefore the most promising move
 	/// until a leaf node L is reached.
@@ -164,5 +164,5 @@ private:
 	*/
     int doRandomMove(GameState &gp);
 
-	std::vector<int> setupPossibleMovesOf(NodeType *node, const GameState & gs);
+	std::vector<int> setupPossibleMovesOf(NodeType *node);
 };

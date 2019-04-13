@@ -23,11 +23,8 @@ int GameAI::findNextMove(const GameState &gameState) {
 	simulatedGameState = gameState;
 
 	// @todo - can be used but for testing purposes not currently being used:
-	expandAllChildrenOf(m_pGameTree->getRoot(), gameState);
+	expandAllChildrenOf(m_pGameTree->getRoot());
 	for (size_t i = 0; i < MAX_NUM_OF_ITERATIONS; ++i) {
-		// debug:
-		//Tree::printLevelOrder(m_pGameTree->getRoot());
-		//Tree::printChildNodeInfo(m_pGameTree->getRoot());
 
 		// reset the simulated GameState
 		// make a mutable copy of the const GameState (deep copy)
@@ -39,11 +36,11 @@ int GameAI::findNextMove(const GameState &gameState) {
 		///////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////
 		///////////////////////////////////////////////////////////////////
-
+		
  		selected_node = selectPromisingNode(m_pGameTree->getRoot());
 
 		expanded_node = expandNode(selected_node);	// expansion can also be performed after the simulation..
-		
+
 		rating = simulation(expanded_node);
 
 		backpropagation(expanded_node, rating);
@@ -70,32 +67,25 @@ int GameAI::findNextMove(const GameState &gameState) {
 }
 
 
-void GameAI::expandAllChildrenOf(NodeType *nodeToExpand, const GameState & gs) {
-	std::vector<int> possibleMoves = setupPossibleMovesOf(nodeToExpand, gs);
+void GameAI::expandAllChildrenOf(NodeType *nodeToExpand) {
+	std::vector<int> possibleMoves = setupPossibleMovesOf(nodeToExpand);
 
-	GameState tmpState;
     for (int pmove : possibleMoves) {
-		tmpState = gs;	// reset of game state
 
-		// try to insert into a column inside the game state
-		int columnChosen = pmove;
-		Player currentPlayer = tmpState.getTurnPlayer();
-		bool isValidMove = tmpState.insertTokenIntoColumn(columnChosen);
+		Player currentPlayer = (nodeToExpand->player == Player::PLAYER_1) 
+			? Player::PLAYER_2 : Player::PLAYER_1;
 
 		// update the game tree to hold expanded nodes
-		// @todo has to check whether node is already expanded...
-		if (isValidMove) {
-				NodeType *newNode = m_pGameTree->createNewNode();
-				newNode->UCTB = rand() % 1000 + 10000;
-				newNode->chosenMoveThatLeadedToThisNode = columnChosen;
-				newNode->sequenceThatLeadedToThisNode = 
-					nodeToExpand->sequenceThatLeadedToThisNode + "."
-					+ std::to_string(newNode->chosenMoveThatLeadedToThisNode);
-				newNode->level = nodeToExpand->level + 1;
-				newNode->player = currentPlayer;
+		NodeType *newNode = m_pGameTree->createNewNode();
+		newNode->UCTB = rand() % 1000 + 10000;
+		newNode->chosenMoveThatLeadedToThisNode = pmove;
+		newNode->sequenceThatLeadedToThisNode = 
+			nodeToExpand->sequenceThatLeadedToThisNode + "."
+			+ std::to_string(newNode->chosenMoveThatLeadedToThisNode);
+		newNode->level = nodeToExpand->level + 1;
+		newNode->player = currentPlayer;
 
-				Tree::addNodeTo(newNode, nodeToExpand);
-		}
+		Tree::addNodeTo(newNode, nodeToExpand);
     }
 }
 
@@ -143,24 +133,16 @@ NodeType * GameAI::selectPromisingNode(NodeType *rootNode)
 	
 	while(!(selectedNode->childNodes.empty()))
 	{
-		NodeType *nodeTemp = findBestNodeWithUCT(selectedNode);
+		selectedNode = findBestNodeWithUCT(selectedNode);
 		
-		if(nodeTemp == nullptr) {
+		if(selectedNode == nullptr) {
 			throw std::invalid_argument("nodeTemp is nullptr");
 		}
-		
-		selectedNode = nodeTemp;
 		
 		// replay what has been already analysed inside the game tree
 		simulatedGameState.insertTokenIntoColumn(
 			selectedNode->chosenMoveThatLeadedToThisNode
 		);
-
-		// if at level 1 the visit count of EXPAND_FULLY_ON_VISITS is reached
-		// then expand all of this nodes childs
-		//if (selectedNode->visits == EXPAND_FULLY_ON_VISITS && selectedNode->level == 1) {
-		//	expandAllChildrenOf(selectedNode, simulatedGameState);
-		//}
 	}
 
 
@@ -172,6 +154,12 @@ NodeType * GameAI::selectPromisingNode(NodeType *rootNode)
 /////////////////////////	// L -> C
 NodeType * GameAI::expandNode(NodeType *leaf_node)
 {
+	// if a level node having 10 visits at depth level of 1,
+	// then expand all of its child nodes
+	if ((leaf_node->visits + 1) >= EXPAND_FULLY_ON_VISITS && leaf_node->level >= 0) {
+		expandAllChildrenOf(leaf_node);
+	}
+
 	// e1.) Does the Leaf Node L node end the Game? (won/loss/tie)?
     Player hasWonSim = simulatedGameState.hasSomeoneWon();
     if (hasWonSim == Player::PLAYER_1 ||
@@ -181,7 +169,8 @@ NodeType * GameAI::expandNode(NodeType *leaf_node)
 	}
 
 
-	std::vector<int> possibleMoves = setupPossibleMovesOf(leaf_node, simulatedGameState);
+
+	std::vector<int> possibleMoves = setupPossibleMovesOf(leaf_node);
 	
 	// sim1.) choose a good move from the movePossibilites (columnChosen)
 	// int columnChosen = pickRandomMoveFrom(possibleMoves, simulatedGameState);
@@ -463,10 +452,12 @@ int GameAI::doRandomMove(GameState &gs) {
 	return pickedColumn;
 }
 
-std::vector<int> GameAI::setupPossibleMovesOf(NodeType * node, const GameState & gs)
-{
+std::vector<int> GameAI::setupPossibleMovesOf(NodeType * node) {
+	// make a deep copy of the simulatedGameState
+	GameState tmpState = simulatedGameState;
+
 	// setup the possible moves:
-	std::vector<int> possibleMoves = simulatedGameState.getPossibleMoves();
+	std::vector<int> possibleMoves = tmpState.getPossibleMoves();
 	for (auto& n : node->childNodes) {
 		std::vector<int>::const_iterator citer = possibleMoves.cbegin();
 		for (auto & p : possibleMoves) {
