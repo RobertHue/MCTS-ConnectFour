@@ -320,3 +320,28 @@ BOOST_AUTO_TEST_CASE(MCTS_Test07)
 
 	checkChildVisitsValuePlausibily(ai);
 }
+
+/// tests whether the AI places the first token in the middle of the board
+/// on an empty board. there is the highest probabily to win :)
+BOOST_AUTO_TEST_CASE(MCTS_Test08)
+{
+	BOOST_TEST_MESSAGE("MCTS_Test08");
+
+	for (int i = 0; i < 1; ++i) {
+		Player playerYou = PLAYER_2;
+		Player playerAI = PLAYER_1;
+		const int MAX_X = 7;
+		const int MAX_Y = 5;
+		GameState	gs(MAX_X, MAX_Y);
+		GameAI		ai(playerAI);
+
+		GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+
+		gs.setTurnPlayer(playerAI);
+		int ACTUAL_COLUMN = ai.findNextMove(gs);
+		int EXPECTED_COLUMN = 3;	// should be chosen to avoid cross from winning
+		BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
+
+		checkChildVisitsValuePlausibily(ai);
+	}
+}
