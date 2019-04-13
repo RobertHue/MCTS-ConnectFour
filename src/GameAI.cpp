@@ -17,13 +17,13 @@ int GameAI::findNextMove(const GameState &gameState) {
 	std::cout << "Start of MCTS!" << std::endl;
 	NodeType *selected_node;
 	NodeType *expanded_node;
-	double rating;
+	Value rating;
 
 	// @todo - make a mutable copy of the const GameState (deep copy)
-	// simulatedGameState = gameState;
+	simulatedGameState = gameState;
 
 	// @todo - can be used but for testing purposes not currently being used:
-	// expandAllChildrenOf(m_pGameTree->getRoot(), gameState);
+	expandAllChildrenOf(m_pGameTree->getRoot(), gameState);
 	for (size_t i = 0; i < MAX_NUM_OF_ITERATIONS; ++i) {
 		// debug:
 		//Tree::printLevelOrder(m_pGameTree->getRoot());
@@ -42,40 +42,10 @@ int GameAI::findNextMove(const GameState &gameState) {
 
 		selected_node = selectPromisingNode(m_pGameTree->getRoot());
 
-		// check whether selected_node_L is win/loose/draw:
-		// has someone won?
-		Player hasWonSim = simulatedGameState.hasSomeoneWon();
-		double ratingINbetween = 0;
-		bool toggle = false;
-		if (hasWonSim == AI_Player) {
-			Value::WIN; // AI has won immediately => stop simulating
-			ratingINbetween = toggle = true;
-		}
-		else if (hasWonSim == OP_Player) {
-			Value::LOOSE; // OP has won immediately => stop simulating
-			 ratingINbetween = toggle = true;
-		}
-		else if(hasWonSim == DRAW) {
-			Value::DRAW; // OP has won immediately => stop simulating
-			ratingINbetween = toggle = true;
-		}
-
-		if (!toggle) {
-			//expanded_node = expandNode(selected_node);
-			expandAllChildrenOf(selected_node, simulatedGameState);
-			expanded_node = pickBestChild(selected_node, simulatedGameState);
-			if (expanded_node == nullptr) { expanded_node = selected_node; }
-			else {
-				simulatedGameState.insertTokenIntoColumn(expanded_node->chosenMoveThatLeadedToThisNode);
-			}
-
-			rating = simulation(expanded_node);
-		}
-		else {
-			expanded_node = selected_node;
-			rating = ratingINbetween;
-		}
+		expanded_node = expandNode(selected_node);
 		
+		rating = simulation(expanded_node);
+	
 		backpropagation(expanded_node, rating);
 
 		///////////////////////////////////////////////////////////////////
@@ -89,7 +59,7 @@ int GameAI::findNextMove(const GameState &gameState) {
 		// system("PAUSE");
 	} 
 	// debug:
-	//Tree::printLevelOrder(m_pGameTree->getRoot());
+	Tree::printLevelOrder(m_pGameTree->getRoot());
 	Tree::printChildNodeInfo(m_pGameTree->getRoot());
 
  
@@ -248,8 +218,10 @@ double GameAI::simulation(NodeType *expanded_node) {
     Player hasWonSim = simulatedGameState.hasSomeoneWon();
     if (hasWonSim == AI_Player) {
         return Value::WIN; // AI has won immediately => stop simulating
-    } else if (hasWonSim == OP_Player) {
-        return Value::LOOSE; // OP has won immediately => stop simulating
+	} else if (hasWonSim == OP_Player) {
+		return Value::LOOSE; // OP has won immediately => stop simulating
+	} else if (hasWonSim == DRAW) {
+        return Value::DRAW;
     }
 
     // for (int i = 0; i < NUM_OF_SIMULATION_FRAMES; ++i)
@@ -281,24 +253,23 @@ double GameAI::simulation(NodeType *expanded_node) {
 ///////////////////////////////////////
 /// B A C K P R O P A G A T I O N ///
 /////////////////////////////////////
-void GameAI::backpropagation(NodeType *expanded_node, double ratingToBeUpdated) {
+void GameAI::backpropagation(NodeType *expanded_node, Value ratingToBeUpdated) {
 	bool toggleTurn = true;
 	///////////////////////////////////////////////////////////////////////////
 	//update visit and rating values upwards from expanded node C to L to root
 	NodeType *cur_node = expanded_node;
 	while (cur_node != nullptr) {
-		if (0.5 == (ratingToBeUpdated)) {	// if rating is a draw then add it to every node upwards
+		if (ratingToBeUpdated == Value::DRAW) {	// if rating is a draw then add it to every node upwards
 			cur_node->rating += ratingToBeUpdated;
 			toggleTurn = false;
-		} 
-		
-		if (toggleTurn) {	// add rating to every 2nd node
+		}
+		else if (toggleTurn) {	// add rating to every 2nd node
 			cur_node->rating += ratingToBeUpdated;
+			toggleTurn = !toggleTurn;
 		}
 
-		++(cur_node->visits);		
 		//-------------------------------------------------------------------
-		toggleTurn = !toggleTurn;
+		++(cur_node->visits);			// increase the visits of every node
 		cur_node = cur_node->parent;	// advance upwards
 	}
 }

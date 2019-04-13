@@ -35,19 +35,20 @@ public:
 	private:
 		double f;
 	public:
-		Value(double f) : f(f) {}
+		Value() : f(0.0) {}						// default constructor
+		Value(double f) : f(f) {}				// argument constructor
+		operator double() const { return f; }	// user-defined conversion (implicit)
 	public:
 		static constexpr double WIN		= 1.0;
 		static constexpr double DRAW	= 0.5;
 		static constexpr double LOOSE	= 0.0;
 	};
-	/*	C - curiousity of the algorithm (empirically set to 1.41421L)
+	/**	
+		C - curiousity of the algorithm (empirically set to 1.41421L)
 
 		constant C = CURIOUSITY_FACTOR = curiousity of the algorithm
-		small C => game tree gets deeper expanded
-						(only the best variation gets explored)
-		big C => game tree gets broader expanded
-						(nodes with lesser visits are prefered)
+		small C => game tree gets deeper  expanded (only the best variation gets explored)
+		big C   => game tree gets broader expanded (nodes with lesser visits are prefered)
 	*/
 	const double CURIOUSITY_FACTOR = 1.41421L;
 public:
@@ -76,10 +77,17 @@ private:
 	/// randomly assigned high UCTB-value
     void expandAllChildrenOf(NodeType *Node, const GameState & gp);
 	
-	/// recursively does the selection step of the mcts (arg node is the root)
-	NodeType *selectPromisingNode(NodeType *node);
+	/// Selects the most promising child node and therefore the most promising move
+	/// until a leaf node L is reached.
+	/// @note	L is a node from which no simulation (playout) has yet been initiated.
+	/// @note	changes the simulatedGameState of this class
+	NodeType *selectPromisingNode(NodeType *rootNode);
 
-	/// does the expansion step of the mcts
+	/// expands the give leaf_node
+	/// @return	expanded node, otherwhise if it wasnt possible to expand the leaf_node L again
+	/// @note	first checks whether L ends the game in WIN/DRAW/LOOSE for either player
+	///			2nd if thats not the case, then create one/more child nodes and choose node C from one of them
+	///			child nodes are valid moves from the game position defined by leaf_node L
     NodeType *expandNode(NodeType *leaf_node);
 
 
@@ -91,17 +99,14 @@ private:
 				the path to that expanded node
 
 	 @return	a double indicaing if the game was won by the AI
-
-	 * rewards/ratings taken from 
-	 *	http://www.tantrix.com/Tantrix/TRobot/MCTS%20Final%20Report.pdf
 	 */
     double simulation(NodeType *expanded_node);
 
 
-	/// use the result of the playout to update (backpropagate) information in 
+	/// use the result of the simulation (playout) to update (backpropagate) information in 
 	/// the nodes (of the game tree) on the path from 
 	/// expanded node (C) to root node (R)
-    void backpropagation(NodeType *expanded_node, double ratingToBeUpdated);
+    void backpropagation(NodeType *expanded_node, Value ratingToBeUpdated);
 
 
 	///////////////////////////////////////////////////////////////////////////
