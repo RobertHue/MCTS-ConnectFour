@@ -4,7 +4,6 @@
 #include <iostream>
 #include <stdlib.h>
 
-#define FREE_FIELD 0
 
 
 // see https://doc.qt.io/qt-5/model-view-programming.html#rows-and-columns
@@ -27,6 +26,8 @@ typedef struct {
 } Position;
 
 class GameState {
+public:
+	typedef std::vector<std::vector<int>> GameDataType;
 private:
     // smallest size: 4x4
     // biggest size: 8x8
@@ -39,15 +40,11 @@ private:
     int numOfFreeFields;	///num of free fields on the game field
 
 public:
+	GameState(int x = 4, int y = 4);	// constructor with arguments
 
-    GameState(int x = 4, int y = 4) : MAX_X(x), MAX_Y(y) {
-        gameData = std::vector<std::vector<int>> (MAX_X, std::vector<int> (MAX_Y, FREE_FIELD));
-
-        this->setTurnPlayer(Player::PLAYER_1);
-        this->numOfFreeFields = MAX_X * MAX_Y;
-        // hier evtl noch abprfen ob spielfeld gerade anzahl an feldern hat; d.h. fair ist...
-    }
-    void setTurnPlayer(Player turnPlayer); 
+	///////////////////////////////
+	//// GETTER  //////
+	///////////////////
 
     Position getPositionOfLastPlacedToken() const;
     int getMAX_X() const;
@@ -55,7 +52,12 @@ public:
     int getNumOfFreeFields() const;
     Player getTurnPlayer() const;
     Player getOtherPlayer() const;
-    std::vector<std::vector<int>> getGameData() const;
+	GameDataType getGameData() const;
+	std::vector<int> getPossibleMoves() const;
+
+	///////////////////////////////
+	//// SETTER  //////
+	///////////////////
 
 	/** @brief		checks whether the move into column is valid 
 	  * if valid,	then this method inserts it into GamePanel and returns VALID_MOVE
@@ -67,11 +69,13 @@ public:
 	 * returns NONE(0), if there is a tie or there is no winner yet 
 	 */
     Player hasSomeoneWon();
-
     Player isAboutToWin();
     void nextTurn();
+	void setTurnPlayer(Player turnPlayer);
 
-	std::vector<int> getPossibleMoves() const;
+	///////////////////////////////
+	//// VISUALIZE  //////
+	//////////////////////
 
-    static void drawGameStateOnConsole(std::vector<std::vector<int>> gameData, int max_x, int max_y);
+    static void drawGameStateOnConsole(GameDataType gameData, int max_x, int max_y);
 };

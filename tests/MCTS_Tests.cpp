@@ -10,6 +10,120 @@
 #include "GameAI.h"
 #include "Tree.h"
 
+BOOST_AUTO_TEST_CASE(TestGameState)
+{
+	bool isMoveValid = false;
+	// player_1 = O
+	// player_2 = X
+	const int MAX_X = 7;
+	const int MAX_Y = 5;
+	GameState gs(MAX_X, MAX_Y);
+	
+	BOOST_CHECK(gs.getMAX_X(), MAX_X);
+	BOOST_CHECK(gs.getMAX_Y(), MAX_Y);
+	BOOST_CHECK(gs.getNumOfFreeFields(), MAX_X * MAX_Y);
+	
+	GameState::GameDataType gameData = gs.getGameData();
+	for (int i = 0; i < gs.getMAX_X(); ++i) {
+		for (int j = 0; j < gs.getMAX_Y(); ++j) {
+			BOOST_CHECK(gameData[i][j] == static_cast<int>(Player::NONE));
+		}
+	}
+	isMoveValid = gs.insertTokenIntoColumn(6);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	isMoveValid = gs.insertTokenIntoColumn(1);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	isMoveValid = gs.insertTokenIntoColumn(4);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	isMoveValid = gs.insertTokenIntoColumn(2);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	isMoveValid = gs.insertTokenIntoColumn(4);
+	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	isMoveValid = gs.insertTokenIntoColumn(2);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	isMoveValid = gs.insertTokenIntoColumn(5);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	isMoveValid = gs.insertTokenIntoColumn(3);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	isMoveValid = gs.insertTokenIntoColumn(3);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	isMoveValid = gs.insertTokenIntoColumn(3);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	isMoveValid = gs.insertTokenIntoColumn(6);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	isMoveValid = gs.insertTokenIntoColumn(5);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	isMoveValid = gs.insertTokenIntoColumn(4);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	isMoveValid = gs.insertTokenIntoColumn(6);
+	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	BOOST_CHECK(gs.getNumOfFreeFields() == ((MAX_X*MAX_Y)-14));
+
+	GameState tmpGS = gs;
+	tmpGS.setTurnPlayer(Player::PLAYER_1);
+	isMoveValid = tmpGS.insertTokenIntoColumn(4);
+	BOOST_CHECK(tmpGS.hasSomeoneWon() == Player::PLAYER_1);
+	BOOST_CHECK(isMoveValid == true);
+
+	GameState tmpGS2 = gs;
+	tmpGS2.setTurnPlayer(Player::PLAYER_2);
+	isMoveValid = tmpGS2.insertTokenIntoColumn(4);
+	BOOST_CHECK(tmpGS2.hasSomeoneWon() == Player::PLAYER_2);
+	BOOST_CHECK(isMoveValid == true);
+
+	GameState tmpGS4 = gs;
+	tmpGS4.setTurnPlayer(Player::PLAYER_2);
+	isMoveValid = tmpGS4.insertTokenIntoColumn(3);
+	BOOST_CHECK(tmpGS4.hasSomeoneWon() == Player::NONE);
+	BOOST_CHECK(isMoveValid == true);
+
+	GameState tmpGS5 = gs;
+	tmpGS5.setTurnPlayer(Player::PLAYER_2);
+	isMoveValid = tmpGS5.insertTokenIntoColumn(0);
+	BOOST_CHECK(tmpGS5.hasSomeoneWon() == Player::PLAYER_2);
+	BOOST_CHECK(isMoveValid == true);
+}
 
 
 /// tests whether the nodes child node size is <= MAX_X

@@ -1,6 +1,8 @@
 
 #include "GameState.h"
 
+///////////////////////////////////////////////
+
 int GameState::getNumOfFreeFields() const {
     return this->numOfFreeFields;
 }
@@ -11,6 +13,15 @@ Position GameState::getPositionOfLastPlacedToken() const {
 
 std::vector<std::vector<int>> GameState::getGameData() const {
     return gameData;
+}
+
+GameState::GameState(int x, int y) : MAX_X(x), MAX_Y(y)
+{
+	gameData = std::vector<std::vector<int>>(MAX_X, std::vector<int>(MAX_Y, static_cast<int>(Player::NONE)));
+
+	this->setTurnPlayer(Player::PLAYER_1);
+	this->numOfFreeFields = MAX_X * MAX_Y;
+	// hier evtl noch abprfen ob spielfeld gerade anzahl an feldern hat; d.h. fair ist...
 }
 
 void GameState::setTurnPlayer(Player turnPlayer) {
@@ -45,7 +56,7 @@ std::vector<int> GameState::getPossibleMoves() const
 		for (row = MAX_Y - 1; row >= 0; --row) {
 
 			// check whether insertion cell is still free
-			if (gameData[col][row] == FREE_FIELD) {
+			if (gameData[col][row] == static_cast<int>(Player::NONE)) {
 				possibleMoves.push_back(col);
 				break;	// break out of rows loop
 			}
@@ -65,6 +76,8 @@ Falls es keine solche 3er-Reihe gibt, wird NONE zurckgegeben
 Beispiele:
         "X,X,X,O" => NONE;  "X,X,X,_" oder "X,_,X,X" oder "O,X,X,_,X" => Player X
         "_,_,X,_,X,_,X,_,X,X"
+
+		@TODO currently not used - keep it or remove?
  */
 Player GameState::isAboutToWin() {
     bool closeFreeField = false;
@@ -132,7 +145,7 @@ Player GameState::isAboutToWin() {
 
         if (this->gameData[x_check][y_check] == static_cast<int>(tokenPlacedByPlayer)) {
             ++num_of_tokens_in_row;
-        } else if (this->gameData[x_check][y_check] == FREE_FIELD) {
+        } else if (this->gameData[x_check][y_check] == static_cast<int>(Player::NONE)) {
             // falls zum zweiten mal ein freies Feld kam, setzte die zahl zur�ck
             if (closeFreeField == true) {
                 num_of_tokens_in_row = 0;
@@ -147,7 +160,7 @@ Player GameState::isAboutToWin() {
 
         // hat der turnPlayer eine 3er-Reihe (wird nur �berpr�ft falls ein FREE_FIELD vorkam!)
         if (closeFreeField == true && num_of_tokens_in_row >= 3)
-            return turnPlayer;
+            return tokenPlacedByPlayer;
     }
 
 
@@ -215,7 +228,7 @@ Player GameState::hasSomeoneWon() {
         } else if (this->gameData[x_check][y_check] == static_cast<int>(Player::PLAYER_2)) {
             num_of_tokens_p1_in_row = 0;
             ++num_of_tokens_p2_in_row;
-        } else if (this->gameData[x_check][y_check] == FREE_FIELD) {
+        } else if (this->gameData[x_check][y_check] == static_cast<int>(Player::NONE)) {
             num_of_tokens_p1_in_row = 0;
             num_of_tokens_p2_in_row = 0;
         }
@@ -234,7 +247,7 @@ Player GameState::hasSomeoneWon() {
     return Player::NONE; // noone has won yet!
 }
 
-void GameState::drawGameStateOnConsole(std::vector<std::vector<int>> gameData, int MAX_X, int MAX_Y) {
+void GameState::drawGameStateOnConsole(GameState::GameDataType gameData, int MAX_X, int MAX_Y) {
     // system("cls");
 	std::cout << "Connect-Four (" << MAX_Y << "x" << MAX_X << "):\n\n\n";
 	std::cout << "  ";
@@ -256,13 +269,13 @@ void GameState::drawGameStateOnConsole(std::vector<std::vector<int>> gameData, i
 			std::cout << "|";
 
             switch (gameData[x][y]) {
-                case FREE_FIELD:
+                case static_cast<int>(Player::NONE) :
 					std::cout << " "; // freier Platz
                     break;
-                case Player::PLAYER_1:
+                case static_cast<int>(Player::PLAYER_1):
 					std::cout << "O";
                     break;
-                case Player::PLAYER_2:
+                case static_cast<int>(Player::PLAYER_2):
 					std::cout << "X";
                     break;
                 default:
@@ -284,7 +297,7 @@ bool GameState::insertTokenIntoColumn(int column) {
     for (row = MAX_Y - 1; row >= 0; --row) {
 
 		// check whether insertion cell is still free
-        if (gameData[column][row] == FREE_FIELD) {
+        if (gameData[column][row] == static_cast<int>(Player::NONE)) {
             // insert token into the cell, which is free:
             gameData[column][row] = static_cast<int>(this->turnPlayer);
 

@@ -394,7 +394,7 @@ int GameAI::pickRandomMove(const GameState &gs) {
 	// collect every column, where a token can be put into:
 	std::vector<int> possibleColumns;
 	for (int i = 0; i < gs.getMAX_X(); ++i) {
-		if (gameData[i][0] == FREE_FIELD) {
+		if (gameData[i][0] == static_cast<int>(Player::NONE)) {
 			possibleColumns.push_back(i);
 		}
 	}
