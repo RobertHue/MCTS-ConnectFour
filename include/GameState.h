@@ -32,7 +32,7 @@ private:
     // smallest size: 4x4
     // biggest size: 8x8
     int MAX_X, MAX_Y;
-    std::vector<std::vector<int>> gameData; /// stores the data needed for the game field
+	GameDataType gameData; /// stores the data needed for the game field
 
     Player turnPlayer;	/// Player whose turn it is to move
     Player otherPlayer; /// Player who does not move next
