@@ -46,18 +46,24 @@ public:
 	//// GETTER  //////
 	///////////////////
 
-    Position getPositionOfLastPlacedToken() const;
     int getMAX_X() const;
     int getMAX_Y() const;
     int getNumOfFreeFields() const;
+
     Player getTurnPlayer() const;
     Player getOtherPlayer() const;
+
 	GameDataType getGameData() const;
+	Position getPositionOfLastPlacedToken() const;
 	std::vector<int> getPossibleMoves() const;
 
 	///////////////////////////////
 	//// SETTER  //////
 	///////////////////
+
+	void setTurnPlayer(Player turnPlayer);
+
+	void nextTurn();
 
 	/** @brief		checks whether the move into column is valid 
 	  * if valid,	then this method inserts it into GamePanel and returns VALID_MOVE
@@ -69,9 +75,6 @@ public:
 	 * returns NONE(0), if there is a tie or there is no winner yet 
 	 */
     Player hasSomeoneWon();
-    Player isAboutToWin();
-    void nextTurn();
-	void setTurnPlayer(Player turnPlayer);
 
 	///////////////////////////////
 	//// VISUALIZE  //////
