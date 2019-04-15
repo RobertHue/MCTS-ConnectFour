@@ -10,6 +10,16 @@
 #include "GameAI.h"
 #include "Tree.h"
 
+BOOST_AUTO_TEST_CASE(TreeTest00)
+{
+	BOOST_TEST_MESSAGE("TreeTest00");
+
+	Tree<int> tree;
+
+	//BOOST_CHECK(tree.size() == tree2.size());
+}
+
+
 BOOST_AUTO_TEST_CASE(TestGameState)
 {
 	bool isMoveValid = false;
@@ -19,9 +29,9 @@ BOOST_AUTO_TEST_CASE(TestGameState)
 	const int MAX_Y = 5;
 	GameState gs(MAX_X, MAX_Y);
 	
-	BOOST_CHECK(gs.getMAX_X(), MAX_X);
-	BOOST_CHECK(gs.getMAX_Y(), MAX_Y);
-	BOOST_CHECK(gs.getNumOfFreeFields(), MAX_X * MAX_Y);
+	BOOST_CHECK(gs.getMAX_X() == MAX_X);
+	BOOST_CHECK(gs.getMAX_Y() == MAX_Y);
+	BOOST_CHECK(gs.getNumOfFreeFields() == MAX_X * MAX_Y);
 	
 	GameState::GameDataType gameData = gs.getGameData();
 	for (int i = 0; i < gs.getMAX_X(); ++i) {
@@ -99,7 +109,24 @@ BOOST_AUTO_TEST_CASE(TestGameState)
 	BOOST_CHECK(isMoveValid == true);
 
 	BOOST_CHECK(gs.getNumOfFreeFields() == ((MAX_X*MAX_Y)-14));
+	BOOST_CHECK(gs.getTurnPlayer() == Player::PLAYER_1);
+	BOOST_CHECK(gs.getOtherPlayer() == Player::PLAYER_2);
+	gs.nextTurn();
+	BOOST_CHECK(gs.getTurnPlayer() == Player::PLAYER_2);
+	BOOST_CHECK(gs.getOtherPlayer() == Player::PLAYER_1);
+	gs.setTurnPlayer(Player::PLAYER_1);
+	BOOST_CHECK(gs.getTurnPlayer() == Player::PLAYER_1);
+	BOOST_CHECK(gs.getOtherPlayer() == Player::PLAYER_2);
 
+	BOOST_CHECK(gs.getPositionOfLastPlacedToken() == Position(6,2));
+
+	std::vector<int> possibleMoves = gs.getPossibleMoves();
+	int m = 0;
+	for (auto& pm : possibleMoves) {
+		BOOST_CHECK(pm == m++);
+	}
+	BOOST_CHECK(possibleMoves.size() == MAX_X);
+	 
 	GameState tmpGS = gs;
 	tmpGS.setTurnPlayer(Player::PLAYER_1);
 	isMoveValid = tmpGS.insertTokenIntoColumn(4);
@@ -131,10 +158,10 @@ void checkChildCountIteratively(NodeType * node, const int MAX_X)
 {
 	if (node == nullptr) { return; }
 	
-	BOOST_CHECK(node->childNodes.size() <= MAX_X);
+	BOOST_CHECK(node->childNodes.size() <= static_cast<std::size_t>(MAX_X));
 
 	/* first delete all subtrees (from left to right) */
-	for (int i = 0; i < node->childNodes.size(); ++i) {
+	for (std::size_t i = 0; i < node->childNodes.size(); ++i) {
 		checkChildCountIteratively(node->childNodes[i], MAX_X);
 	}
 
@@ -149,17 +176,17 @@ void checkChildVisitsValuePlausibily(const GameAI& ai) {
 	double sumOfChildRatings = 0.0;
 	for (auto& c1 : rootNode->childNodes) {
 		for (auto& c2 : c1->childNodes) {
-			sumOfChildRatings += c2->rating;
+			sumOfChildRatings += c2->data.rating;
 		}
 	}
-	BOOST_CHECK(rootNode->rating == sumOfChildRatings);
+	BOOST_CHECK(rootNode->data.rating == sumOfChildRatings);
 
 	// test whether root.visits are equals to the sum of visits on level1
 	int sumOfChildVisits = 0;
 	for (auto& c : rootNode->childNodes) {
-		sumOfChildVisits += c->visits;
+		sumOfChildVisits += c->data.visits;
 	}
-	BOOST_CHECK(rootNode->visits == sumOfChildVisits);
+	BOOST_CHECK(rootNode->data.visits == sumOfChildVisits);
 }
 
 
@@ -169,44 +196,39 @@ BOOST_AUTO_TEST_CASE(TreeTest01)
 	int ACTUAL, EXPECTED;
 	BOOST_TEST_MESSAGE("TreeTest01");
 
-	Tree tree = Tree();
-
-	{
-		NodeType *newNode0 = tree.createNewNode();
-		tree.addNodeTo(newNode0, tree.getRoot());
-		NodeType *newNode1 = tree.createNewNode();
-		tree.addNodeTo(newNode1, tree.getRoot());
-		NodeType *newNode2 = tree.createNewNode();
-		tree.addNodeTo(newNode2, tree.getRoot());
-		Tree::printLevelOrder(tree.getRoot());
-	}
-
-	Tree tree2 = tree;
-	Tree::printLevelOrder(tree.getRoot());
-
-	Tree *ptree3 = new Tree;
-	{
-		NodeType *newNode0 = ptree3->createNewNode();
-		ptree3->addNodeTo(newNode0, ptree3->getRoot());
-		NodeType *newNode1 = ptree3->createNewNode();
-		ptree3->addNodeTo(newNode1, ptree3->getRoot());
-		NodeType *newNode2 = ptree3->createNewNode();
-		ptree3->addNodeTo(newNode2, ptree3->getRoot());
-		Tree::printLevelOrder(ptree3->getRoot());
-	}
-
-	ACTUAL = tree.getAmountOfNodes();
+	Tree<NodeData> tree = Tree<NodeData>();
+	tree.getRoot()->data.sequenceThatLeadedToThisNode = "root1";
+	NodeType *newNode0 = tree.createNewNode(tree.getRoot());
+	newNode0->data.sequenceThatLeadedToThisNode = "newNode0";
+	NodeType *newNode1 = tree.createNewNode(tree.getRoot());
+	newNode1->data.sequenceThatLeadedToThisNode = "newNode1";
+	NodeType *newNode2 = tree.createNewNode(tree.getRoot());
+	newNode2->data.sequenceThatLeadedToThisNode = "newNode2";
+	tree.printLevelOrder();
+	ACTUAL = tree.size();
 	EXPECTED = 4;
 	BOOST_CHECK(ACTUAL == EXPECTED);
 
-	ACTUAL = tree2.getAmountOfNodes();
+	Tree<NodeData> tree2 = tree;
+	tree2.getRoot()->data.sequenceThatLeadedToThisNode = "root2";
+	Tree<NodeData>::printLevelOrder(tree.getRoot());
+
+	Tree<NodeData> *ptree3 = new Tree<NodeData>;
+	ptree3->getRoot()->data.sequenceThatLeadedToThisNode = "root3";
+	NodeType *newNode3 = ptree3->createNewNode(ptree3->getRoot());
+	newNode3->data.sequenceThatLeadedToThisNode = "newNode3";
+	NodeType *newNode4 = ptree3->createNewNode(ptree3->getRoot());
+	newNode4->data.sequenceThatLeadedToThisNode = "newNode4";
+	NodeType *newNode5 = ptree3->createNewNode(ptree3->getRoot());
+	newNode5->data.sequenceThatLeadedToThisNode = "newNode5";
+	Tree<NodeData>::printLevelOrder(ptree3->getRoot());
+	ACTUAL = tree2.size();
 	EXPECTED = 4;
 	BOOST_CHECK(ACTUAL == EXPECTED);
+	BOOST_CHECK(tree.size() == tree2.size());
 
-	BOOST_CHECK(tree.getAmountOfNodes() == tree2.getAmountOfNodes());
 	delete ptree3;
 }
-
 
 BOOST_AUTO_TEST_CASE( MCTS_Test01 )
 {

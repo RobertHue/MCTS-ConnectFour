@@ -9,6 +9,9 @@
 // see https://doc.qt.io/qt-5/model-view-programming.html#rows-and-columns
 
 
+const bool NO_VALID_MOVE = false;
+const bool VALID_MOVE = true;
+
 enum class Player {	//  underlying type is int (implicit conversions)
     NONE = 0, 
 	PLAYER_1 = 1, 
@@ -16,14 +19,20 @@ enum class Player {	//  underlying type is int (implicit conversions)
 	DRAW = 3	/// used for indicating a TIE
 };
 
-
-const bool NO_VALID_MOVE	= false;
-const bool VALID_MOVE		= true;
-
-typedef struct {
+struct Position {
+	Position() : x(0), y(0) {}
+	Position(int x, int y) : x(x), y(y) {}
     int x;
     int y;
-} Position;
+	bool Position::operator ==(const Position &b) const {
+		if (this->x == b.x && this->y == b.y) { return true; }
+		return false;
+	}
+	bool Position::operator !=(const Position &b) const {
+		if (*this == b) { return false; }
+		return true;
+	}
+};
 
 class GameState {
 public:

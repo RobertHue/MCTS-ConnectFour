@@ -5,7 +5,7 @@
 
 GameState::GameState(int x, int y) : MAX_X(x), MAX_Y(y)
 {
-	gameData = std::vector<std::vector<int>>(MAX_X, std::vector<int>(MAX_Y, static_cast<int>(Player::NONE)));
+	gameData = GameState::GameDataType(MAX_X, std::vector<int>(MAX_Y, static_cast<int>(Player::NONE)));
 
 	this->setTurnPlayer(Player::PLAYER_1);
 	this->numOfFreeFields = MAX_X * MAX_Y;
@@ -73,7 +73,16 @@ std::vector<int> GameState::getPossibleMoves() const
 ///////////////////
 
 void GameState::setTurnPlayer(Player turnPlayer) {
+	// protection against wrong parameters:
+	if (turnPlayer != Player::PLAYER_1 &&
+		turnPlayer != Player::PLAYER_2) {
+		return;
+	}
+
+	// set the turnPlayer and assign opposite player to otherPlayer
     this->turnPlayer = turnPlayer;
+	this->otherPlayer = (this->turnPlayer == Player::PLAYER_1) ? 
+		Player::PLAYER_2 : Player::PLAYER_1;
 }
 
 

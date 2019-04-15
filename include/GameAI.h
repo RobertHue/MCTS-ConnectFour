@@ -8,7 +8,45 @@
 #include "GameState.h"
 #include "Tree.h"
 
+// nodedata is used for the gametree
+//struct NodeData;	// struct declaration (can be used to forward declare)
+typedef struct NodeData {	// struct definition
+	NodeData() : 
+		level(0), 
+		UCTB(0.0),
+		winratio(0.0), 
+		uct(0.0), 
+		rating(0.0), 
+		visits(0), 
+		player(Player::NONE), 
+		chosenMoveThatLeadedToThisNode(-1), 
+		sequenceThatLeadedToThisNode("root") 
+	{}
 
+	size_t	level;		/// the level this nodes resides on in the game tree
+	double	UCTB;       /// UCTB rating -- used for selection
+	double	winratio;   /// winratio -- used for exploitation
+	double	uct;		/// uct -- used for exploration
+	double	rating;     /// accumulated reward rating
+	int		visits;     /// total amount of visits also the simulation count
+	Player	player;		/// stores the player that did the move leading to this node (used for the rating)
+
+	/// the action/move that leaded to that node
+	int chosenMoveThatLeadedToThisNode; // todo LEADED => LEAD
+
+	// the sequence of actions that leaded to that node (from root)
+	std::string sequenceThatLeadedToThisNode;
+} NodeDataType;
+
+std::ostream& operator<<(std::ostream& os, const NodeDataType& node);
+
+using TreeType = Tree<NodeDataType>;
+using NodeType = TreeType::NodeType;
+
+void printChildNodeInfo(const NodeType * node);
+
+
+ 
 /**
 @brief	this class is responsible for finding the next move for the AI in ConnectFour
 		It does this by applying the Monte Carlo Tree Search (MCTS).
@@ -64,13 +102,13 @@ public:
     int findNextMove(const GameState &gPanel);
 
 	/// gets the game tree used for MCTS
-	Tree* getGameTree() const;
+	TreeType* getGameTree() const;
 
 private:
     // const GameState &actualGameState;
     GameState simulatedGameState;
     Player AI_Player, OP_Player; // AI knows about opponent & user player token
-    std::unique_ptr<Tree> m_pGameTree;	// the game tree
+    std::unique_ptr<TreeType> m_pGameTree;	// the game tree
 	////////////////////////////////////////////////////////////////////////
 
 private:
@@ -108,7 +146,7 @@ private:
 	/// use the result of the simulation (playout) to update (backpropagate) information in 
 	/// the nodes (of the game tree) on the path from 
 	/// expanded node (C) to root node (R)
-    void backpropagation(NodeType *expanded_node, Value ratingToBeUpdated);
+    void backpropagation(NodeType *expanded_node, const Value ratingToBeUpdated);
 
 
 	///////////////////////////////////////////////////////////////////////////
