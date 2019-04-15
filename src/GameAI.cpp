@@ -354,10 +354,10 @@ int GameAI::pickBestMoveFrom(std::vector<int>& possibleMoves, const GameState &g
 
 	// try to look for a winning move for current player
 	for (std::size_t i = 0; i < possibleMoves.size(); ++i) {
-		GameState tmpState = gs;  // make a mutable copy of the const GameState
-		tmpState.insertTokenIntoColumn(possibleMoves[i]); // make the move on the copy
+		//GameState tmpState = gs;  // make a mutable copy of the const GameState
+		//tmpState.insertTokenIntoColumn(possibleMoves[i]); // make the move on the copy
 
-		Player playerThatJustWon = tmpState.hasSomeoneWon();
+		Player playerThatJustWon = gs.wouldSomeoneWin(possibleMoves[i]);
 		if (playerThatJustWon == currentPlayer) {
 			return possibleMoves[i]; // the currentPlayer should do this move to win!
 		}
@@ -365,11 +365,11 @@ int GameAI::pickBestMoveFrom(std::vector<int>& possibleMoves, const GameState &g
 
 	// try to look for a move that hinders the OtherPlayer from winning
 	for (std::size_t i = 0; i < possibleMoves.size(); ++i) {
-		GameState tmpState = gs;  // make mutable copy of the const GameState
-		tmpState.setTurnPlayer(OtherPlayer);	// simulate a turn of the opponent
-		tmpState.insertTokenIntoColumn(possibleMoves[i]); // make the move on the copy
+		//GameState tmpState = gs;  // make mutable copy of the const GameState
+		//tmpState.setTurnPlayer(OtherPlayer);	// simulate a turn of the opponent
+		//tmpState.insertTokenIntoColumn(possibleMoves[i]); // make the move on the copy
 
-		Player playerThatJustWon = tmpState.hasSomeoneWon();
+		Player playerThatJustWon = gs.wouldSomeoneWin(possibleMoves[i]);
 		if (playerThatJustWon == OtherPlayer) {
 			return possibleMoves[i];
 			// OtherPlayer will probably make this move to win in his turn, 
@@ -412,10 +412,10 @@ int GameAI::pickBestMove(const GameState &gs) {
 
 	// try to look for a winning move for current player
 	for (col_move = 0; col_move < gs.getMAX_X(); ++col_move) {
-		GameState tmpState = gs;  // make a mutable copy of the const GameState
-		tmpState.insertTokenIntoColumn(col_move); // make the move on the copy
+		//GameState tmpState = gs;  // make a mutable copy of the const GameState
+		//tmpState.insertTokenIntoColumn(col_move); // make the move on the copy
 
-		Player playerThatJustWon = tmpState.hasSomeoneWon();
+		Player playerThatJustWon = gs.wouldSomeoneWin(col_move);
 		if (playerThatJustWon == currentPlayer) {
 			return col_move; // the currentPlayer should do this move to win!
 		}
@@ -423,11 +423,11 @@ int GameAI::pickBestMove(const GameState &gs) {
 
 	// try to look for a move that hinders the OtherPlayer from winning
 	for (col_move = 0; col_move < gs.getMAX_X(); ++col_move) {
-		GameState tmpState = gs;  // make mutable copy of the const GameState
-		tmpState.setTurnPlayer(OtherPlayer);	// simulate a turn of the opponent
-		tmpState.insertTokenIntoColumn(col_move); // make the move on the copy
+		//GameState tmpState = gs;  // make mutable copy of the const GameState
+		//tmpState.setTurnPlayer(OtherPlayer);	// simulate a turn of the opponent
+		//tmpState.insertTokenIntoColumn(col_move); // make the move on the copy
 
-		Player playerThatJustWon = tmpState.hasSomeoneWon();
+		Player playerThatJustWon = gs.wouldSomeoneWin(col_move);
 		if (playerThatJustWon == OtherPlayer) {
 			return col_move;
 			// OtherPlayer will probably make this move to win in his turn, 

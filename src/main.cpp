@@ -67,9 +67,9 @@ int main(int argc, char* argv[]) {
 	widget->show();
 	*/
 
-    //*************************
-    //*** Spieler-Auwahl ******
-    //*************************
+    //***************************
+    //*** Player-Selection ******
+	//***************************
     Player playerYou, playerAI;
 	char input_char;
     do {
@@ -105,24 +105,14 @@ int main(int argc, char* argv[]) {
     //***************************
     gp.setTurnPlayer(playerAI); // set Player that needs to begin here
 	GameAI gKI(playerAI);
-	///GameAI gKI2(playerYou);	// if you want two AIs playing against each other
+	GameAI gKI2(playerYou);	// if you want two AIs playing against each other
 
 
     while (1) {
         if (gp.getTurnPlayer() == playerYou) {
-            int col;
-            do {
-                cout << "Please choose COLUMN: ";
-                cin >> col;
-
-                isValidMove = gp.insertTokenIntoColumn(col);
-                if (!isValidMove) {
-                    cout << "Column is already full! Please chose again: \n";
-                }
-            } while (col < 0 || col >= gp.getMAX_X() || !isValidMove);
 			// if you want two AIs playing against each other
-            ///int col = gKI.findNextMove(gp);
-            ///col_err = gp.insertTokenIntoColumn(col);
+            int col = gKI2.findNextMove(gp);
+			isValidMove = gp.insertTokenIntoColumn(col);
         }
         else {
             int col = gKI.findNextMove(gp);
@@ -135,7 +125,7 @@ int main(int argc, char* argv[]) {
 		);
 
 
-        Player hasWon = gp.hasSomeoneWon();
+        Player hasWon  = gp.hasSomeoneWon();
         if (hasWon == playerYou) {
             cout << "Congratulations!!! You have won!!! :)\n";
             break;
