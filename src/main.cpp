@@ -12,6 +12,11 @@
 #include <QGridLayout>
 #include <QPushButton>
 #include <QObject>
+#include <QAbstractItemModel>
+#include <QStringListModel>
+#include <QListView>
+#include <QAbstractTableModel>
+#include <QTableView>
 
 
 #define OK   0
@@ -21,13 +26,31 @@ using namespace std;
 const int MAX_X = 7;
 const int MAX_Y = 5;
 int main(int argc, char* argv[]) {
-	bool isValidMove;
-	GameState gp(MAX_X, MAX_Y);
-	GameState::drawGameStateOnConsole(
-		gp.getGameData(), 
-		gp.getMAX_X(), 
-		gp.getMAX_Y()
-	);
+	QApplication app(argc, argv);
+
+	/// setup the model
+	QStringList numbers;
+	numbers << "One" << "Two" << "Three" << "Four" << "Five";
+	QAbstractItemModel *model = new QStringListModel(numbers);
+
+	/// construct the view, set the model and show
+	QListView *listView = new QListView;
+	listView->setModel(model);
+	listView->show();
+
+	/// construct the view, set the model and show
+	QTableView *firstTableView = new QTableView;
+	firstTableView->setModel(model);
+	firstTableView->show();
+
+	/// construct the view, set the model and show
+	QTableView *secondTableView = new QTableView;
+	secondTableView->setModel(model);
+	secondTableView->show();
+
+	return app.exec();
+
+
 	/*
 	QApplication app(argc, argv);
 
@@ -45,7 +68,7 @@ int main(int argc, char* argv[]) {
 				QString::fromStdString(
 					std::to_string(i).append(" , ").append(std::to_string(j))
 			));
-			buttons[i][j]->setIcon(iconBackCross); 
+			buttons[i][j]->setIcon(iconBackCross);
 			buttons[i][j]->setIconSize(QSize(65, 65));
 			layout->addWidget(buttons[i][j], i, j);
 		}
@@ -66,6 +89,17 @@ int main(int argc, char* argv[]) {
 	widget->setWindowTitle(QString(windowTitle.str().c_str()));
 	widget->show();
 	*/
+
+	//****************
+	//*** Setup ******
+	//****************
+	bool isValidMove;
+	GameState gp(MAX_X, MAX_Y);
+	GameState::drawGameStateOnConsole(
+		gp.getGameData(),
+		gp.getMAX_X(),
+		gp.getMAX_Y()
+	);
 
     //***************************
     //*** Player-Selection ******

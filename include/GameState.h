@@ -6,6 +6,7 @@
 
 
 
+
 // see https://doc.qt.io/qt-5/model-view-programming.html#rows-and-columns
 
 
@@ -62,7 +63,7 @@ public:
     Player getTurnPlayer() const;
     Player getOtherPlayer() const;
 
-	GameDataType getGameData() const;
+	GameDataType& getGameData() const; // gets a reference to the GameState's GameData
 	Position getPositionOfLastPlacedToken() const;
 	std::vector<int> getPossibleMoves() const;
 
@@ -93,5 +94,5 @@ public:
 	//// VISUALIZE  //////
 	//////////////////////
 
-    static void drawGameStateOnConsole(GameDataType gameData, int max_x, int max_y);
+    void drawGameStateOnConsole();
 };

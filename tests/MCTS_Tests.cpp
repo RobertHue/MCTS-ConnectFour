@@ -40,22 +40,22 @@ BOOST_AUTO_TEST_CASE(TestGameState)
 		}
 	}
 	isMoveValid = gs.insertTokenIntoColumn(6);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
 	BOOST_CHECK(isMoveValid == true);
 
 	isMoveValid = gs.insertTokenIntoColumn(1);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
 	BOOST_CHECK(isMoveValid == true);
 
 	isMoveValid = gs.insertTokenIntoColumn(4);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
 	BOOST_CHECK(isMoveValid == true);
 
 	isMoveValid = gs.insertTokenIntoColumn(2);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
 	BOOST_CHECK(isMoveValid == true);
 
@@ -64,47 +64,47 @@ BOOST_AUTO_TEST_CASE(TestGameState)
 	BOOST_CHECK(isMoveValid == true);
 
 	isMoveValid = gs.insertTokenIntoColumn(2);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
 	BOOST_CHECK(isMoveValid == true);
 
 	isMoveValid = gs.insertTokenIntoColumn(5);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
 	BOOST_CHECK(isMoveValid == true);
 
 	isMoveValid = gs.insertTokenIntoColumn(3);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
 	BOOST_CHECK(isMoveValid == true);
 
 	isMoveValid = gs.insertTokenIntoColumn(3);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
 	BOOST_CHECK(isMoveValid == true);
 
 	isMoveValid = gs.insertTokenIntoColumn(3);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
 	BOOST_CHECK(isMoveValid == true);
 
 	isMoveValid = gs.insertTokenIntoColumn(6);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
 	BOOST_CHECK(isMoveValid == true);
 
 	isMoveValid = gs.insertTokenIntoColumn(5);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
 	BOOST_CHECK(isMoveValid == true);
 
 	isMoveValid = gs.insertTokenIntoColumn(4);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
 	BOOST_CHECK(isMoveValid == true);
 
 	isMoveValid = gs.insertTokenIntoColumn(6);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 	BOOST_CHECK(gs.hasSomeoneWon() == Player::NONE);
 	BOOST_CHECK(isMoveValid == true);
 
@@ -248,7 +248,7 @@ BOOST_AUTO_TEST_CASE( MCTS_Test01 )
 	gs.insertTokenIntoColumn(3);
 	gs.insertTokenIntoColumn(4);
 	gs.insertTokenIntoColumn(3);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 
 	gs.setTurnPlayer(playerAI);
 	int ACTUAL_COLUMN = ai.findNextMove(gs);
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test02)
 	gs.insertTokenIntoColumn(6);
 	gs.insertTokenIntoColumn(2);
 	//-> KI has to place in col2 now
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 
 	gs.setTurnPlayer(playerAI);
 	int ACTUAL_COLUMN = ai.findNextMove(gs);
@@ -332,7 +332,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test03)
 	gs.insertTokenIntoColumn(2);
 	gs.insertTokenIntoColumn(3);
 	gs.insertTokenIntoColumn(2);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 
 	gs.setTurnPlayer(playerAI);
 	int ACTUAL_COLUMN = ai.findNextMove(gs);
@@ -374,7 +374,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test04)
 	gs.setTurnPlayer(playerAI); gs.insertTokenIntoColumn(3);
 	gs.setTurnPlayer(playerAI); gs.insertTokenIntoColumn(6);
 	gs.setTurnPlayer(playerAI); gs.insertTokenIntoColumn(6);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 
 	gs.setTurnPlayer(playerAI);
 	int ACTUAL_COLUMN = ai.findNextMove(gs);
@@ -408,7 +408,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test05)
 	gs.insertTokenIntoColumn(2);
 	gs.insertTokenIntoColumn(6);
 	gs.insertTokenIntoColumn(2);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 
 	gs.setTurnPlayer(playerAI);
 	int ACTUAL_COLUMN = ai.findNextMove(gs);
@@ -442,7 +442,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test06)
 	gs.insertTokenIntoColumn(6);
 	gs.insertTokenIntoColumn(5);
 	gs.insertTokenIntoColumn(6); // here circle is about to win...
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 
 	//gs.setTurnPlayer(playerYou);
 	int ACTUAL_COLUMN = ai.findNextMove(gs);
@@ -471,7 +471,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test07)
 	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(1);
 	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(2);
 	gs.setTurnPlayer(playerYou); gs.insertTokenIntoColumn(0);
-	GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+	gs.drawGameStateOnConsole();
 
 	gs.setTurnPlayer(playerAI);
 	int ACTUAL_COLUMN = ai.findNextMove(gs);
@@ -496,7 +496,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test08)
 		GameState	gs(MAX_X, MAX_Y);
 		GameAI		ai(playerAI);
 
-		GameState::drawGameStateOnConsole(gs.getGameData(), gs.getMAX_X(), gs.getMAX_Y());
+		gs.drawGameStateOnConsole();
 
 		gs.setTurnPlayer(playerAI);
 		int ACTUAL_COLUMN = ai.findNextMove(gs);

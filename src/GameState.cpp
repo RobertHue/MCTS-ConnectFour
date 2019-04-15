@@ -303,7 +303,7 @@ Player GameState::hasSomeoneWon() {
 //// VISUALIZE  //////
 //////////////////////
 
-void GameState::drawGameStateOnConsole(GameState::GameDataType gameData, int MAX_X, int MAX_Y) {
+void GameState::drawGameStateOnConsole() {
     // system("cls");
 	std::cout << "Connect-Four (" << MAX_Y << "x" << MAX_X << "):\n\n\n";
 	std::cout << "  ";
