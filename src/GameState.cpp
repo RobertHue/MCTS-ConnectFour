@@ -122,6 +122,103 @@ bool GameState::insertTokenIntoColumn(int column) {
 	return NO_VALID_MOVE;
 }
 
+Player GameState::wouldSomeoneWin(int column) const {
+	bool wouldMoveBeValid = NO_VALID_MOVE;
+	int x_placed = -1;
+	int y_placed = -1;
+	int row;
+	for (row = MAX_Y - 1; row >= 0; --row) {
+
+		// check whether insertion cell is still free
+		if (gameData[column][row] == static_cast<int>(Player::NONE)) {
+
+			// remember the position of the last placed token
+			x_placed = column;
+			y_placed = row;
+
+			wouldMoveBeValid = VALID_MOVE;
+			// break out of loop
+			break;
+		}
+	}
+	// token couldn't be placed at column. Please choose again!
+	// Reason: Column is already full
+	if (wouldMoveBeValid == NO_VALID_MOVE)	{ return Player::NONE; }
+
+	// count how many tokens there are in each row:
+	int num_of_tokens_p1_in_row = 0;
+	int num_of_tokens_p2_in_row = 0;
+
+	int offsets[][2] = {
+		{ -3, 0},
+		{ -2, 0},
+		{ -1, 0},
+		{ 1, 0},
+		{ 2, 0},
+		{ 3, 0}, // horizontal
+		{ 0, -3},
+		{ 0, -2},
+		{ 0, -1},
+		{ 0, 1},
+		{ 0, 2},
+		{ 0, 3}, // vertical
+		{ -3, -3},
+		{ -2, -2},
+		{ -1, -1},
+		{ 1, 1},
+		{ 2, 2},
+		{ 3, 3}, // diagonal1
+		{ -3, 3},
+		{ -2, 2},
+		{ -1, 1},
+		{ 1, -1},
+		{ 2, -2},
+		{ 3, -3} // diagonal2
+	};
+	// cout << sizeof(offsets) << endl;
+
+	// check all 8 directions on the current placed token, and count the number of tokens in each of those directions
+	for (size_t i = 0; i < ((sizeof(offsets) / sizeof(int)) / 2); ++i) {
+		// new line inside the offset_Matrix => new check of number of tokens in each of the 8 directions
+		if ((i % 7) == 0) {
+			num_of_tokens_p1_in_row = 0;
+			num_of_tokens_p2_in_row = 0;
+		}
+		int x_check = x_placed + offsets[i][0];
+		int y_check = y_placed + offsets[i][1];
+
+		// check whether bounds are reached in those directions:
+		if (x_check < 0 || x_check >= MAX_X) continue;
+		if (y_check < 0 || y_check >= MAX_Y) continue;
+
+
+		if (this->gameData[x_check][y_check] == static_cast<int>(Player::PLAYER_1)) {
+			num_of_tokens_p2_in_row = 0;
+			++num_of_tokens_p1_in_row;
+		}
+		else if (this->gameData[x_check][y_check] == static_cast<int>(Player::PLAYER_2)) {
+			num_of_tokens_p1_in_row = 0;
+			++num_of_tokens_p2_in_row;
+		}
+		else if (this->gameData[x_check][y_check] == static_cast<int>(Player::NONE)) {
+			num_of_tokens_p1_in_row = 0;
+			num_of_tokens_p2_in_row = 0;
+		}
+
+		// has someone won?
+		if (num_of_tokens_p1_in_row >= 3) return Player::PLAYER_1;
+		else if (num_of_tokens_p2_in_row >= 3) return Player::PLAYER_2;
+	}
+
+	// if number of free fields are 0,
+	if (numOfFreeFields == 0) {
+		// then there is a tie!
+		return Player::DRAW;
+	}
+
+	return Player::NONE; // noone has won yet!
+}
+
 Player GameState::hasSomeoneWon() {
     int x_placed = positionOfLastPlacedToken.x;
     int y_placed = positionOfLastPlacedToken.y;

@@ -80,6 +80,10 @@ public:
 	  */
     bool insertTokenIntoColumn(int column);
 
+
+	/// test whether turnPlayer would win in column xy; does not alter anything to gamestate; hence the const-qualifier
+	Player wouldSomeoneWin(int column) const;
+
 	/** @brief		retun a player, that has won
 	 * returns NONE(0), if there is a tie or there is no winner yet 
 	 */

@@ -3,10 +3,14 @@
 #include <limits> // for numeric::limits to get the smallest double
 #include <stdexcept>
 #include <iterator> // for std::advance
+#include <chrono>  // for high_resolution_clock
 
-std::ostream & operator<<(std::ostream & os, const NodeDataType & node)
+std::ostream & operator<<(std::ostream & os, const NodeDataType & nodeData)
 {
-	os << node.sequenceThatLeadedToThisNode << " | " << node.rating << "/" << node.visits << '\t';
+	os	<< nodeData.sequenceThatLeadedToThisNode << "::"
+		<< static_cast<int>(nodeData.UCTB) << " | " 
+		<< nodeData.rating << "/" << nodeData.visits << '\t';
+
 	return os;	// enables concatenation of ostreams with <<
 }
 
@@ -37,17 +41,22 @@ GameAI::GameAI(Player tokenKI) : AI_Player(tokenKI) {
 
 int GameAI::findNextMove(const GameState &gameState) {
 	m_pGameTree.reset(new TreeType());
+	// set root of the game tree to be owned by the opponent player
+	m_pGameTree->getRoot()->data.player = OP_Player;
 
 	std::cout << "Start of MCTS!" << std::endl;
 	NodeType *selected_node;
 	NodeType *expanded_node;
-	Value rating;
+	Value rating; 
 
-	// @todo - make a mutable copy of the const GameState (deep copy)
+	// Record start time
+	auto start = std::chrono::high_resolution_clock::now();
+
+	// make a mutable copy of the const GameState (deep copy)
 	simulatedGameState = gameState;
-
-	// @todo - can be used but for testing purposes not currently being used:
+	// expand all adjacent child nodes at once from the root node:
 	expandAllChildrenOf(m_pGameTree->getRoot());
+
 	for (size_t i = 0; i < MAX_NUM_OF_ITERATIONS; ++i) {
 
 		// reset the simulated GameState
@@ -63,9 +72,20 @@ int GameAI::findNextMove(const GameState &gameState) {
 		
  		selected_node = selectPromisingNode(m_pGameTree->getRoot());
 
+		
+		//m_pGameTree->printLevelOrder();
+		//printChildNodeInfo(m_pGameTree->getRoot());
+		
+
 		expanded_node = expandNode(selected_node);	// expansion can also be performed after the simulation..
 
 		rating = simulation(expanded_node);
+
+		/*
+		if (rating == Value::WIN) { std::cout << "\nSIMULATION: AI has won in the simulation :D" << std::endl; }
+		if (rating == Value::DRAW) { std::cout << "\nSIMULATION: draw" << std::endl; }
+		if (rating == Value::LOOSE) { std::cout << "\nSIMULATION:  AI has lost in the simulation :(" << std::endl; }
+		*/
 
 		backpropagation(expanded_node, rating);
 
@@ -79,11 +99,17 @@ int GameAI::findNextMove(const GameState &gameState) {
 		// simulatedGameState.getMAX_X(), simulatedGameState.getMAX_Y());
 		// system("PAUSE");
 	} 
+
+	// Record end time
+	auto finish = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> elapsed = finish - start;
+
 	// debug:
 	//TreeType::printLevelOrder(m_pGameTree->getRoot());
 	m_pGameTree->printLevelOrder();
 	printChildNodeInfo(m_pGameTree->getRoot());
- 
+
+	std::cout << "Elapsed time: " << elapsed.count() << " s\n";
 	std::cout << "End of MCTS!" << std::endl;
 	NodeType *chosenNode = selectMostVisitedChild(m_pGameTree->getRoot());
 	int chosenMove = chosenNode->data.chosenMoveThatLeadedToThisNode;
@@ -154,6 +180,7 @@ NodeType * GameAI::selectPromisingNode(NodeType *rootNode)
 	
 	while(!(selectedNode->childNodes.empty()))
 	{
+		NodeType *tmpNode = selectedNode;
 		selectedNode = findBestNodeWithUCT(selectedNode);
 		
 		if(selectedNode == nullptr) {
@@ -164,6 +191,12 @@ NodeType * GameAI::selectPromisingNode(NodeType *rootNode)
 		simulatedGameState.insertTokenIntoColumn(
 			selectedNode->data.chosenMoveThatLeadedToThisNode
 		);
+
+		// if a level node having 10 visits at depth level of 1,
+		// then expand all of its child nodes
+		if ((tmpNode->data.visits) == EXPAND_FULLY_ON_VISITS && tmpNode->data.level >= 1) {
+			expandAllChildrenOf(tmpNode); 
+		}
 	}
 
 	return selectedNode;
@@ -174,12 +207,6 @@ NodeType * GameAI::selectPromisingNode(NodeType *rootNode)
 /////////////////////////	// L -> C
 NodeType * GameAI::expandNode(NodeType *leaf_node)
 {
-	// if a level node having 10 visits at depth level of 1,
-	// then expand all of its child nodes
-	//if ((leaf_node->visits + 1) >= EXPAND_FULLY_ON_VISITS && leaf_node->level >= 0) {
-	//	expandAllChildrenOf(leaf_node);
-	//}
-
 	// e1.) Does the Leaf Node L node end the Game? (won/loss/tie)?
     Player hasWonSim = simulatedGameState.hasSomeoneWon();
     if (hasWonSim == Player::PLAYER_1 ||
@@ -193,7 +220,7 @@ NodeType * GameAI::expandNode(NodeType *leaf_node)
 	std::vector<int> possibleMoves = setupPossibleMovesOf(leaf_node);
 	
 	// sim1.) choose a good move from the movePossibilites (columnChosen)
-	// int columnChosen = pickRandomMoveFrom(possibleMoves, simulatedGameState);
+	// int columnChosen = pickRandomMoveFrom(possibleMoves, simulatedGameState); 
 	int columnChosen = pickBestMoveFrom(possibleMoves, simulatedGameState);
 	if (columnChosen == -1) {
 		return leaf_node;  //if game panel is full => FULL_TIE & stop sim
@@ -205,6 +232,7 @@ NodeType * GameAI::expandNode(NodeType *leaf_node)
 
 	// e2.) expansion: create a newNode
 	NodeType *newNodeC = m_pGameTree->createNewNode(leaf_node);
+	newNodeC->data.UCTB = rand() % 1000 + 10000;
 	newNodeC->data.chosenMoveThatLeadedToThisNode = columnChosen;
 	newNodeC->data.sequenceThatLeadedToThisNode =
 		leaf_node->data.sequenceThatLeadedToThisNode + "."
@@ -217,7 +245,7 @@ NodeType * GameAI::expandNode(NodeType *leaf_node)
 
  /////////////////////////////////
  /// S I M U L A T I O N ///
- ///////////////////////////
+ /////////////////////////// 
 double GameAI::simulation(NodeType *expanded_node) {
     // has someone won?
     Player hasWonSim = simulatedGameState.hasSomeoneWon();
@@ -231,9 +259,14 @@ double GameAI::simulation(NodeType *expanded_node) {
 
     // for (int i = 0; i < NUM_OF_SIMULATION_FRAMES; ++i)
     while (1) {
-        //GameState::drawGameStateOnConsole(simulatedGameState.getGameData(), 
-		//		simulatedGameState.getMAX_X(), simulatedGameState.getMAX_Y());
-        //system("PAUSE");
+		/*
+		if (simulatedGameState.getTurnPlayer() == AI_Player) { std::cout << "AI's turn:" << std::endl; }
+		if (simulatedGameState.getTurnPlayer() == OP_Player) { std::cout << "OP's turn:" << std::endl; }
+
+		system("PAUSE");
+        GameState::drawGameStateOnConsole(simulatedGameState.getGameData(), 
+				simulatedGameState.getMAX_X(), simulatedGameState.getMAX_Y());
+		*/
 
         // choose a move
 		// int columnChosen = pickRandomMove(simulatedGameState);
@@ -277,7 +310,8 @@ void GameAI::backpropagation(NodeType *expanded_node, const Value ratingToBeUpda
 	///////////////////////////////////////////////////////////////////////////
 	//update visit and rating values upwards from expanded node C to L to root
 	NodeType *cur_node = expanded_node;
-	while (cur_node != nullptr) { 
+	while (cur_node != nullptr) {
+
 		if (switchSameRating) {
 			cur_node->data.rating += ratingToBeUpdated;
 		}
@@ -299,7 +333,7 @@ void GameAI::backpropagation(NodeType *expanded_node, const Value ratingToBeUpda
 
 NodeType * GameAI::selectMostVisitedChild(const NodeType *rootNode) {
     NodeType *selected_node = nullptr;
-    int max_visit_count = 0;
+    std::size_t max_visit_count = 0;
 
     // inspect all children visits and store node with max visits
     for (auto currentChildNode : rootNode->childNodes) //for all children

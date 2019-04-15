@@ -20,7 +20,7 @@ typedef struct NodeData {	// struct definition
 		visits(0), 
 		player(Player::NONE), 
 		chosenMoveThatLeadedToThisNode(-1), 
-		sequenceThatLeadedToThisNode("root") 
+		sequenceThatLeadedToThisNode("r") 
 	{}
 
 	size_t	level;		/// the level this nodes resides on in the game tree
@@ -28,7 +28,7 @@ typedef struct NodeData {	// struct definition
 	double	winratio;   /// winratio -- used for exploitation
 	double	uct;		/// uct -- used for exploration
 	double	rating;     /// accumulated reward rating
-	int		visits;     /// total amount of visits also the simulation count
+	std::size_t		visits;     /// total amount of visits also the simulation count
 	Player	player;		/// stores the player that did the move leading to this node (used for the rating)
 
 	/// the action/move that leaded to that node
@@ -38,7 +38,7 @@ typedef struct NodeData {	// struct definition
 	std::string sequenceThatLeadedToThisNode;
 } NodeDataType;
 
-std::ostream& operator<<(std::ostream& os, const NodeDataType& node);
+std::ostream& operator<<(std::ostream& os, const NodeDataType& nodeData);
 
 using TreeType = Tree<NodeDataType>;
 using NodeType = TreeType::NodeType;
