@@ -33,10 +33,10 @@ BOOST_AUTO_TEST_CASE(TestGameState)
 	BOOST_CHECK(gs.getMAX_Y() == MAX_Y);
 	BOOST_CHECK(gs.getNumOfFreeFields() == MAX_X * MAX_Y);
 	
-	GameState::GameDataType gameData = gs.getGameData();
+	GameState::GameDataType m_gameData = gs.getGameData();
 	for (int i = 0; i < gs.getMAX_X(); ++i) {
 		for (int j = 0; j < gs.getMAX_Y(); ++j) {
-			BOOST_CHECK(gameData[i][j] == static_cast<int>(Player::NONE));
+			BOOST_CHECK(m_gameData[i][j] == static_cast<int>(Player::NONE));
 		}
 	}
 	isMoveValid = gs.insertTokenIntoColumn(6);

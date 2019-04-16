@@ -5,8 +5,6 @@
 #include <stdlib.h>
 
 
-
-
 // see https://doc.qt.io/qt-5/model-view-programming.html#rows-and-columns
 
 
@@ -41,8 +39,9 @@ public:
 private:
     // smallest size: 4x4
     // biggest size: 8x8
-    int MAX_X, MAX_Y;
-	GameDataType gameData; /// stores the data needed for the game field
+	int MAX_X;	/// the number of cols
+	int MAX_Y;	/// the number of rows
+	GameDataType m_gameData; /// stores the data needed for the game field
 
     Player turnPlayer;	/// Player whose turn it is to move
     Player otherPlayer; /// Player who does not move next
@@ -56,14 +55,16 @@ public:
 	//// GETTER  //////
 	///////////////////
 
-    int getMAX_X() const;
-    int getMAX_Y() const;
+    int getMAX_X() const;	/// returns the number of cols
+    int getMAX_Y() const;	/// returns the number of rows
     int getNumOfFreeFields() const;
+
+	int getGameDataAt(int x, int y) const;
 
     Player getTurnPlayer() const;
     Player getOtherPlayer() const;
 
-	GameDataType& getGameData() const; // gets a reference to the GameState's GameData
+	const GameDataType& getGameData() const; // gets a const reference to the GameState's GameData
 	Position getPositionOfLastPlacedToken() const;
 	std::vector<int> getPossibleMoves() const;
 

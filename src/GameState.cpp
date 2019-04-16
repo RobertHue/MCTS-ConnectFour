@@ -3,13 +3,14 @@
 
 ///////////////////////////////////////////////
 
+
+///////////////////////////////////////////////
+
 GameState::GameState(int x, int y) : MAX_X(x), MAX_Y(y)
 {
-	gameData = GameState::GameDataType(MAX_X, std::vector<int>(MAX_Y, static_cast<int>(Player::NONE)));
-
+	m_gameData = GameState::GameDataType(MAX_X, std::vector<int>(MAX_Y, static_cast<int>(Player::NONE)));
 	this->setTurnPlayer(Player::PLAYER_1);
 	this->numOfFreeFields = MAX_X * MAX_Y;
-	// hier evtl noch abprfen ob spielfeld gerade anzahl an feldern hat; d.h. fair ist...
 }
 
 ///////////////////////////////
@@ -25,31 +26,41 @@ int GameState::getMAX_Y() const {
 }
 
 int GameState::getNumOfFreeFields() const {
+	
     return this->numOfFreeFields;
+}
+
+int GameState::getGameDataAt(int x, int y) const {
+	
+	return m_gameData[x][y];
 }
 
 ////////////////////////////////////////////
 
 Player GameState::getTurnPlayer() const {
+	
 	return this->turnPlayer;
 }
 
 Player GameState::getOtherPlayer() const {
+	
 	return this->otherPlayer;
 }
 
 ////////////////////////////////////////////
 
-GameState::GameDataType GameState::getGameData() const {
-	return gameData;
+const GameState::GameDataType& GameState::getGameData() const {
+	
+	return m_gameData;
 }
 
 Position GameState::getPositionOfLastPlacedToken() const {
+	
     return this->positionOfLastPlacedToken;
 }
 
-std::vector<int> GameState::getPossibleMoves() const
-{
+std::vector<int> GameState::getPossibleMoves() const {
+	
 	// stores the cols which can be made as possible moves
 	std::vector<int> possibleMoves;
 
@@ -58,7 +69,7 @@ std::vector<int> GameState::getPossibleMoves() const
 		for (row = MAX_Y - 1; row >= 0; --row) {
 
 			// check whether insertion cell is still free
-			if (gameData[col][row] == static_cast<int>(Player::NONE)) {
+			if (m_gameData[col][row] == static_cast<int>(Player::NONE)) {
 				possibleMoves.push_back(col);
 				break;	// break out of rows loop
 			}
@@ -73,6 +84,8 @@ std::vector<int> GameState::getPossibleMoves() const
 ///////////////////
 
 void GameState::setTurnPlayer(Player turnPlayer) {
+	
+
 	// protection against wrong parameters:
 	if (turnPlayer != Player::PLAYER_1 &&
 		turnPlayer != Player::PLAYER_2) {
@@ -87,6 +100,7 @@ void GameState::setTurnPlayer(Player turnPlayer) {
 
 
 void GameState::nextTurn() {
+	
     if (turnPlayer == Player::PLAYER_1) {
         turnPlayer = Player::PLAYER_2;
         otherPlayer = Player::PLAYER_1;
@@ -97,13 +111,14 @@ void GameState::nextTurn() {
 }
 
 bool GameState::insertTokenIntoColumn(int column) {
+	
 	int row;
 	for (row = MAX_Y - 1; row >= 0; --row) {
 
 		// check whether insertion cell is still free
-		if (gameData[column][row] == static_cast<int>(Player::NONE)) {
+		if (m_gameData[column][row] == static_cast<int>(Player::NONE)) {
 			// insert token into the cell, which is free:
-			gameData[column][row] = static_cast<int>(this->turnPlayer);
+			m_gameData[column][row] = static_cast<int>(this->turnPlayer);
 
 			// remember the position of the last placed token
 			positionOfLastPlacedToken.x = column;
@@ -123,6 +138,7 @@ bool GameState::insertTokenIntoColumn(int column) {
 }
 
 Player GameState::wouldSomeoneWin(int column) const {
+	
 	bool wouldMoveBeValid = NO_VALID_MOVE;
 	int x_placed = -1;
 	int y_placed = -1;
@@ -130,7 +146,7 @@ Player GameState::wouldSomeoneWin(int column) const {
 	for (row = MAX_Y - 1; row >= 0; --row) {
 
 		// check whether insertion cell is still free
-		if (gameData[column][row] == static_cast<int>(Player::NONE)) {
+		if (m_gameData[column][row] == static_cast<int>(Player::NONE)) {
 
 			// remember the position of the last placed token
 			x_placed = column;
@@ -192,15 +208,15 @@ Player GameState::wouldSomeoneWin(int column) const {
 		if (y_check < 0 || y_check >= MAX_Y) continue;
 
 
-		if (this->gameData[x_check][y_check] == static_cast<int>(Player::PLAYER_1)) {
+		if (this->m_gameData[x_check][y_check] == static_cast<int>(Player::PLAYER_1)) {
 			num_of_tokens_p2_in_row = 0;
 			++num_of_tokens_p1_in_row;
 		}
-		else if (this->gameData[x_check][y_check] == static_cast<int>(Player::PLAYER_2)) {
+		else if (this->m_gameData[x_check][y_check] == static_cast<int>(Player::PLAYER_2)) {
 			num_of_tokens_p1_in_row = 0;
 			++num_of_tokens_p2_in_row;
 		}
-		else if (this->gameData[x_check][y_check] == static_cast<int>(Player::NONE)) {
+		else if (this->m_gameData[x_check][y_check] == static_cast<int>(Player::NONE)) {
 			num_of_tokens_p1_in_row = 0;
 			num_of_tokens_p2_in_row = 0;
 		}
@@ -220,6 +236,7 @@ Player GameState::wouldSomeoneWin(int column) const {
 }
 
 Player GameState::hasSomeoneWon() {
+	
     int x_placed = positionOfLastPlacedToken.x;
     int y_placed = positionOfLastPlacedToken.y;
 
@@ -274,13 +291,13 @@ Player GameState::hasSomeoneWon() {
         if (y_check < 0 || y_check >= MAX_Y) continue;
 
 
-        if (this->gameData[x_check][y_check] == static_cast<int>(Player::PLAYER_1)) {
+        if (this->m_gameData[x_check][y_check] == static_cast<int>(Player::PLAYER_1)) {
             num_of_tokens_p2_in_row = 0;
             ++num_of_tokens_p1_in_row;
-        } else if (this->gameData[x_check][y_check] == static_cast<int>(Player::PLAYER_2)) {
+        } else if (this->m_gameData[x_check][y_check] == static_cast<int>(Player::PLAYER_2)) {
             num_of_tokens_p1_in_row = 0;
             ++num_of_tokens_p2_in_row;
-        } else if (this->gameData[x_check][y_check] == static_cast<int>(Player::NONE)) {
+        } else if (this->m_gameData[x_check][y_check] == static_cast<int>(Player::NONE)) {
             num_of_tokens_p1_in_row = 0;
             num_of_tokens_p2_in_row = 0;
         }
@@ -304,6 +321,7 @@ Player GameState::hasSomeoneWon() {
 //////////////////////
 
 void GameState::drawGameStateOnConsole() {
+
     // system("cls");
 	std::cout << "Connect-Four (" << MAX_Y << "x" << MAX_X << "):\n\n\n";
 	std::cout << "  ";
@@ -324,7 +342,7 @@ void GameState::drawGameStateOnConsole() {
         for (int x = 0; x < MAX_X; ++x) {
 			std::cout << "|";
 
-            switch (gameData[x][y]) {
+            switch (m_gameData[x][y]) {
                 case static_cast<int>(Player::NONE) :
 					std::cout << " "; // freier Platz
                     break;

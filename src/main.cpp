@@ -4,20 +4,27 @@
 #include <sstream>
 #include <cstdio>
 
-#include "GameState.h"
-#include "GameAI.h"
 
+////////////// Qt-related includes
 #include <QApplication>
 #include <QWidget>
-#include <QGridLayout>
-#include <QPushButton>
 #include <QObject>
+
+#include <QGridLayout>
+
+#include <QPushButton>
+
 #include <QAbstractItemModel>
 #include <QStringListModel>
-#include <QListView>
 #include <QAbstractTableModel>
+
+#include <QListView>
 #include <QTableView>
 
+#include <qheaderview.h>
+////////////// 
+#include "QGameStateModel.h"
+#include "GameAI_Thread.h"
 
 #define OK   0
 #define ERROR -1
@@ -28,152 +35,33 @@ const int MAX_Y = 5;
 int main(int argc, char* argv[]) {
 	QApplication app(argc, argv);
 
-	/// setup the model
-	QStringList numbers;
-	numbers << "One" << "Two" << "Three" << "Four" << "Five";
-	QAbstractItemModel *model = new QStringListModel(numbers);
+	//**********************
+	//*** Setup Model ******
+	//**********************
+	QGameStateModel gameStateModel(Player::PLAYER_1, MAX_X, MAX_Y);
 
+	//********************
+	//*** Setup AI *******
+	//********************
+	GameAI_Thread gameAI_Thread(gameStateModel, Player::PLAYER_2);
+
+	QObject::connect(&gameAI_Thread, &QThread::started, &gameStateModel, &QGameStateModel::doWork);
+	QObject::connect(&gameStateModel, &QGameStateModel::workDone, &gameAI_Thread, &QThread::quit);
+
+	//*********************
+	//*** Setup View ******
+	//*********************
 	/// construct the view, set the model and show
-	QListView *listView = new QListView;
-	listView->setModel(model);
-	listView->show();
+	QTableView *tableView = new QTableView;
+	tableView->setModel(&gameStateModel);
+	tableView->show();
+	tableView->setWindowTitle("Connect-Four");
+	tableView->resize(460, 280);
+	tableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	tableView->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	tableView->setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
+	tableView->show();
 
-	/// construct the view, set the model and show
-	QTableView *firstTableView = new QTableView;
-	firstTableView->setModel(model);
-	firstTableView->show();
-
-	/// construct the view, set the model and show
-	QTableView *secondTableView = new QTableView;
-	secondTableView->setModel(model);
-	secondTableView->show();
-
-	return app.exec();
-
-
-	/*
-	QApplication app(argc, argv);
-
-	QPixmap pixmap_cross("../../resources/cross.jpg");
-	QPixmap pixmap_circle("../../resources/circle.jpg");
-	QIcon iconBackCross(pixmap_cross);
-	QIcon iconBackCircle(pixmap_circle);
-
-	QPushButton *buttons[MAX_X][MAX_Y];
-	QGridLayout *layout = new QGridLayout();
-	for (int i = 0; i < gp.getMAX_X(); ++i) {
-		for (int j = 0; j < gp.getMAX_Y(); ++j) {
-
-			buttons[i][j] = new QPushButton(
-				QString::fromStdString(
-					std::to_string(i).append(" , ").append(std::to_string(j))
-			));
-			buttons[i][j]->setIcon(iconBackCross);
-			buttons[i][j]->setIconSize(QSize(65, 65));
-			layout->addWidget(buttons[i][j], i, j);
-		}
-	}
-	QModelIndex indexA = model->index(0, 0, QModelIndex());
-	QModelIndex indexB = model->index(1, 1, QModelIndex());
-	QModelIndex indexC = model->index(2, 1, QModelIndex());
-
-
-	QWidget *widget = new QWidget();
-	widget->setLayout(layout);
-	ostringstream windowTitle;
-	windowTitle << "Connect 4 ( "
-		<< std::to_string(gp.getMAX_X())
-		<< " x "
-		<< std::to_string(gp.getMAX_Y())
-		<< " )";
-	widget->setWindowTitle(QString(windowTitle.str().c_str()));
-	widget->show();
-	*/
-
-	//****************
-	//*** Setup ******
-	//****************
-	bool isValidMove;
-	GameState gp(MAX_X, MAX_Y);
-	GameState::drawGameStateOnConsole(
-		gp.getGameData(),
-		gp.getMAX_X(),
-		gp.getMAX_Y()
-	);
-
-    //***************************
-    //*** Player-Selection ******
-	//***************************
-    Player playerYou, playerAI;
-	char input_char;
-    do {
-        cout << "Choose Player (xX / oO): ";
-        //cin.getline(&input_char, 256);
-		//cin >> input_char;
-		input_char = getchar();  //'x'; // 
-        cout << "Input successful!\n";
-
-        switch (input_char) {
-            case 'x': case 'X':
-                playerYou = Player::PLAYER_2;
-                playerAI = Player::PLAYER_1;
-                break;
-            case 'o': case 'O':
-                playerYou = Player::PLAYER_1;
-                playerAI = Player::PLAYER_2;
-                break;
-            default:
-                cout << "Wrong input! Please choose again!";
-        }
-    } while (
-		input_char != 'x' && 
-		input_char != 'X' && 
-		input_char != 'o' && 
-		input_char != 'O'
-	);
-
-
-
-    //***************************
-    //*** Player-Move-Choice ****
-    //***************************
-    gp.setTurnPlayer(playerAI); // set Player that needs to begin here
-	GameAI gKI(playerAI);
-	GameAI gKI2(playerYou);	// if you want two AIs playing against each other
-
-
-    while (1) {
-        if (gp.getTurnPlayer() == playerYou) {
-			// if you want two AIs playing against each other
-            int col = gKI2.findNextMove(gp);
-			isValidMove = gp.insertTokenIntoColumn(col);
-        }
-        else {
-            int col = gKI.findNextMove(gp);
-			isValidMove = gp.insertTokenIntoColumn(col);
-        }
-        GameState::drawGameStateOnConsole(
-			gp.getGameData(), 
-			gp.getMAX_X(), 
-			gp.getMAX_Y()
-		);
-
-
-        Player hasWon  = gp.hasSomeoneWon();
-        if (hasWon == playerYou) {
-            cout << "Congratulations!!! You have won!!! :)\n";
-            break;
-        } else if (hasWon == playerAI) {
-            cout << "Unfortunately the KI has won... :(\n";
-            break;
-        }
-
-        if (gp.getNumOfFreeFields() <= 0) {
-            cout << "Game is over. You did well!."
-					"No more cells are free on the Game!\n";
-            break;
-        }
-		//system("PAUSE");
-    }
-    return 0;
+	return app.exec();	// start event loop of QApplication to notify all its QObjects about events
 }
