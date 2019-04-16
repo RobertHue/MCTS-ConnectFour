@@ -107,17 +107,16 @@ bool QGameStateModel::setData(const QModelIndex & index, const QVariant & value,
 		index.column() >= m_gameState.getMAX_X() || index.column() < 0) {
 		return false;
 	}
-
 	if (role == Qt::EditRole) {
 
-		//if (m_gameState.getTurnPlayer() == Player::PLAYER_1) {	// player 1 has control over the gui todo maybe some pattern that ensure it
-		m_gameState.insertTokenIntoColumn(index.column());			// and not hardcoded like here...
 
-
-
-		checkWinner();
-		return true;
-		//}
+		if (m_gameState.getTurnPlayer() == Player::PLAYER_1) {	// player 1 has control over the gui todo maybe some pattern that ensure it
+			
+			m_gameState.insertTokenIntoColumn(index.column());
+			checkWinner();
+			emit playerTurnDone(m_gameState.getTurnPlayer());
+			return true;
+		}
 	}
 	return false;
 }
@@ -145,13 +144,17 @@ const GameState & QGameStateModel::getGameState() const {
 	return m_gameState;
 }
 
-//std::condition_variable& QGameStateModel::getCVBusyGame() const {
-//	return m_cvBusyGame;
-//}
-//
-//std::unique_lock<std::mutex> & QGameStateModel::getMutexLockGame() const {
-//	return m_mutexLock;
-//}
+void QGameStateModel::insertTokenIntoColumn(int col)
+{
+	bool isValidMove;
+	isValidMove = m_gameState.insertTokenIntoColumn(col);
+	Position pos = m_gameState.getPositionOfLastPlacedToken();
+	QModelIndex topLeftIdx = this->index(pos.x, pos.y);
+	QModelIndex bottomRightIdx = this->index(pos.x+1, pos.y+1);
+	//Try to force the view(s) to redraw at certain cell:
+	emit QAbstractItemModel::dataChanged(topLeftIdx, bottomRightIdx);
+	checkWinner();	// has someone won?
+}
 
 bool QGameStateModel::checkWinner() {
 
@@ -171,9 +174,4 @@ bool QGameStateModel::checkWinner() {
 		return true;
 	}
 	return false;
-}
-
-void QGameStateModel::doWork() 
-{
-	std::cout << "do some work" << std::endl;
 }

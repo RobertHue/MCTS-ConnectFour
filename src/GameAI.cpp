@@ -44,7 +44,7 @@ int GameAI::findNextMove(const GameState &gameState) {
 	// set root of the game tree to be owned by the opponent player
 	m_pGameTree->getRoot()->data.player = OP_Player;
 
-	std::cout << "Start of MCTS!" << std::endl;
+	std::cout << "Start of MCTS!\n";
 	NodeType *selected_node;
 	NodeType *expanded_node;
 	Value rating; 
@@ -82,9 +82,9 @@ int GameAI::findNextMove(const GameState &gameState) {
 		rating = simulation(expanded_node);
 
 		/*
-		if (rating == Value::WIN) { std::cout << "\nSIMULATION: AI has won in the simulation :D" << std::endl; }
-		if (rating == Value::DRAW) { std::cout << "\nSIMULATION: draw" << std::endl; }
-		if (rating == Value::LOOSE) { std::cout << "\nSIMULATION:  AI has lost in the simulation :(" << std::endl; }
+		if (rating == Value::WIN) { std::cout << "\nSIMULATION: AI has won in the simulation :D\n"; }
+		if (rating == Value::DRAW) { std::cout << "\nSIMULATION: draw\n"; }
+		if (rating == Value::LOOSE) { std::cout << "\nSIMULATION:  AI has lost in the simulation :(\n"; }
 		*/
 
 		backpropagation(expanded_node, rating);
@@ -106,13 +106,18 @@ int GameAI::findNextMove(const GameState &gameState) {
 
 	// debug:
 	//TreeType::printLevelOrder(m_pGameTree->getRoot());
-	m_pGameTree->printLevelOrder();
-	printChildNodeInfo(m_pGameTree->getRoot());
+	//m_pGameTree->printLevelOrder();
+	//printChildNodeInfo(m_pGameTree->getRoot());
 
 	std::cout << "Elapsed time: " << elapsed.count() << " s\n";
-	std::cout << "End of MCTS!" << std::endl;
+	std::cout << "End of MCTS!\n";
 	NodeType *chosenNode = selectMostVisitedChild(m_pGameTree->getRoot());
+	if (chosenNode == nullptr) {
+		std::cout << "AI could not choose a column. Possible reason: board is full.\n"; 
+		return -1;
+	}
 	int chosenMove = chosenNode->data.chosenMoveThatLeadedToThisNode;
+	std::cout << "AI has chosen the column : " << chosenMove << "\n";
 	return chosenMove;
 }
 
@@ -260,8 +265,8 @@ double GameAI::simulation(NodeType *expanded_node) {
     // for (int i = 0; i < NUM_OF_SIMULATION_FRAMES; ++i)
     while (1) {
 		/*
-		if (simulatedGameState.getTurnPlayer() == AI_Player) { std::cout << "AI's turn:" << std::endl; }
-		if (simulatedGameState.getTurnPlayer() == OP_Player) { std::cout << "OP's turn:" << std::endl; }
+		if (simulatedGameState.getTurnPlayer() == AI_Player) { std::cout << "AI's turn:\n"; }
+		if (simulatedGameState.getTurnPlayer() == OP_Player) { std::cout << "OP's turn:\n"; }
 
 		system("PAUSE");
         GameState::drawGameStateOnConsole(simulatedGameState.getGameData(), 
@@ -528,6 +533,11 @@ std::vector<int> GameAI::setupPossibleMovesOf(NodeType * node) {
 TreeType* GameAI::getGameTree() const
 {
 	return m_pGameTree.get();
+}
+
+Player GameAI::getPlayer() const
+{
+	return AI_Player;
 }
 
 ///////////////////////////////////////////////////////////////////////////

@@ -89,13 +89,13 @@ std::ostream& operator<<(std::ostream&, const Node<_DataType>& node);	// friend 
 
 template <typename _DataType>
 Tree<_DataType>::Tree() : m_amountOfNodes(0) {
-	//cout << "constructor called " << endl;
+	//cout << "constructor called \n";
 	m_root = createNewNode(nullptr);
 }
 
 template <typename _DataType>
 Tree<_DataType>::~Tree() {
-	//cout << "destructor called " << endl;
+	//cout << "destructor called \n";
 	//std::cout << "before call to clear: " << m_amountOfNodes << "\n";
 	clear(m_root);
 	//std::cout << "after call to clear: " << m_amountOfNodes << "\n";
@@ -103,7 +103,7 @@ Tree<_DataType>::~Tree() {
 
 template <typename _DataType>
 Tree<_DataType>::Tree(const Tree<_DataType> &src) {
-	//cout << "copy constructor called " << endl;
+	//cout << "copy constructor called \n";
 	// check for self-assignment
 	if (this == &src) {
 		return;
@@ -116,7 +116,7 @@ Tree<_DataType>::Tree(const Tree<_DataType> &src) {
 
 template <typename _DataType>
 Tree<_DataType> & Tree<_DataType>::operator=(const Tree<_DataType> &rhs) {
-	//cout << "copy assignment constructor called " << endl;
+	//cout << "copy assignment constructor called \n";
 
 	// check for self-assignment
 	if (this == &rhs) {

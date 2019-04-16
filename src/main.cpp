@@ -22,13 +22,11 @@
 #include <QTableView>
 
 #include <qheaderview.h>
+#include <QStandardItem>
 ////////////// 
 #include "QGameStateModel.h"
 #include "GameAI_Thread.h"
-
-#define OK   0
-#define ERROR -1
-using namespace std;
+#include "Delegate.h"
 
 const int MAX_X = 7;
 const int MAX_Y = 5;
@@ -45,8 +43,26 @@ int main(int argc, char* argv[]) {
 	//********************
 	GameAI_Thread gameAI_Thread(gameStateModel, Player::PLAYER_2);
 
-	QObject::connect(&gameAI_Thread, &QThread::started, &gameStateModel, &QGameStateModel::doWork);
-	QObject::connect(&gameStateModel, &QGameStateModel::workDone, &gameAI_Thread, &QThread::quit);
+	// setup a connection between signal playerturndone(you) and doturn (ai),
+	// so that the ai can start its turn when you are done (emit playerTurnDone)
+	// The connection is automatically disconnected if either the sender or the receiver becomes deleted.
+	QObject::connect(
+		&gameStateModel,		// object which emits the signal - the sender
+		&QGameStateModel::playerTurnDone, // pointer to a member function - the signal
+		&gameAI_Thread,			// hook it up to the listener - the receiver
+		&GameAI_Thread::doTurn	// pointer to a member function - the slot
+	);
+
+	// ai responds with the move he made in col for the model to update
+	QObject::connect(
+		&gameAI_Thread,							// object which emits the signal - the sender
+		&GameAI_Thread::aiMoveChosen,			// pointer to a member function - the signal
+		&gameStateModel,							// hook it up to the listener - the receiver
+		&QGameStateModel::insertTokenIntoColumn		// pointer to a member function - the slot
+	);
+
+	gameStateModel.dumpObjectInfo();
+	gameAI_Thread.dumpObjectInfo();
 
 	//*********************
 	//*** Setup View ******

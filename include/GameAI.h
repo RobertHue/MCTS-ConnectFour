@@ -105,6 +105,9 @@ public:
 	/// gets the game tree used for MCTS
 	TreeType* getGameTree() const;
 
+	/// gets the ai player:
+	Player getPlayer() const;
+
 private:
     // const GameState &actualGameState;
     GameState simulatedGameState;

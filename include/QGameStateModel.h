@@ -50,29 +50,21 @@ public:	/// implement pure virtual from QAbstractTableModel
 	bool insertColumns(int position, int columns, const QModelIndex &parent = QModelIndex()) override;
 	bool removeColumns(int position, int columns, const QModelIndex &parent = QModelIndex()) override;
 
+
+
+	/////////////////////////////////////
 	// return of const game state because its protected by the mutex here in this adapter (no changes should happen to it)
 	const GameState& getGameState() const;
-	//std::condition_variable& getCVBusyGame() const;
-	//std::unique_lock<std::mutex>& getMutexLockGame() const;
-
+	
 	bool checkWinner();
 
 public slots:
-	void doWork();
-
+	void insertTokenIntoColumn(int col);
+	
 signals:
-	void workDone();
+	void playerTurnDone(Player turnPlayer);
 
-
-private: 
-
-	// instance of std::mutex to protect
-	// is mutable so it can still be changed in a constant member
-	//mutable std::mutex m_mutex;
-
-	//mutable std::mutex m_cv;
-	//mutable std::unique_lock<std::mutex> m_mutexLock;
-	//mutable std::condition_variable m_cvBusyGame;
+private:
 	Player m_playerYou;
 	Player m_playerOpp;
 	GameState m_gameState;

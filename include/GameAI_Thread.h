@@ -19,14 +19,18 @@ protected:
 	// The default implementation simply calls exec().
 	void run() override;
 
-public:
-	QWaitCondition& getCVTurnBLocked();
+
+public slots:
+	void doTurn(Player turnPlayer);
+
+signals:
+	void aiMoveChosen(int);
 
 private:
 	// QImage currentImage;
 	// QQueue<Transaction *> transactions;
-	QWaitCondition m_cvTurnBlocked;
-	QMutex m_mutex;
+	//QWaitCondition m_cvTurnBlocked;
+	//QMutex m_mutex;
 	//////////////////////
 	GameAI m_gameAI;
 	QGameStateModel& m_gameStateModel;
