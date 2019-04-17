@@ -1,7 +1,5 @@
 #pragma once
 #include <qthread.h>
-#include <qwaitcondition.h>
-#include <qmutex.h>
 
 #include "GameAI.h"
 #include "QGameStateModel.h"

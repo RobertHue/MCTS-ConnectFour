@@ -1,32 +1,15 @@
-
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <cstdio>
-
+//#include <iostream>
+//#include <string>
+//#include <sstream>
+//#include <cstdio>
 
 ////////////// Qt-related includes
 #include <QApplication>
-#include <QWidget>
-#include <QObject>
-
-#include <QGridLayout>
-
-#include <QPushButton>
-
-#include <QAbstractItemModel>
-#include <QStringListModel>
-#include <QAbstractTableModel>
-
-#include <QListView>
 #include <QTableView>
-
-#include <qheaderview.h>
-#include <QStandardItem>
+#include <QHeaderView>
 ////////////// 
 #include "QGameStateModel.h"
 #include "GameAI_Thread.h"
-#include "Delegate.h"
 
 const int MAX_X = 7;
 const int MAX_Y = 5;
@@ -61,8 +44,8 @@ int main(int argc, char* argv[]) {
 		&QGameStateModel::insertTokenIntoColumn		// pointer to a member function - the slot
 	);
 
-	gameStateModel.dumpObjectInfo();
-	gameAI_Thread.dumpObjectInfo();
+	//gameStateModel.dumpObjectInfo();
+	//gameAI_Thread.dumpObjectInfo();
 
 	//*********************
 	//*** Setup View ******
@@ -70,7 +53,6 @@ int main(int argc, char* argv[]) {
 	/// construct the view, set the model and show
 	QTableView *tableView = new QTableView;
 	tableView->setModel(&gameStateModel);
-	tableView->show();
 	tableView->setWindowTitle("Connect-Four");
 	tableView->resize(460, 280);
 	tableView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

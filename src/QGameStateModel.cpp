@@ -1,12 +1,14 @@
 #include "QGameStateModel.h"
 //////////////////////////////////////////////////////////////////////
 
+
 QGameStateModel::QGameStateModel(QObject *parent)
 	:
 	QAbstractTableModel(parent),
 	m_gameState(7, 5),
 	m_playerYou(Player::PLAYER_1),
-	m_playerOpp(m_playerYou == Player::PLAYER_1 ? Player::PLAYER_2 : Player::PLAYER_1)
+	m_playerOpp(m_playerYou == Player::PLAYER_1 ? Player::PLAYER_2 : Player::PLAYER_1),
+	m_endOfGame(false)
 {
 	m_gameState.setTurnPlayer(Player::PLAYER_1);
 }
@@ -16,8 +18,8 @@ QGameStateModel::QGameStateModel(Player playerYou, int ncols, int nrows, QObject
 	QAbstractTableModel(parent),
 	m_gameState(ncols, nrows),
 	m_playerYou(playerYou),
-	m_playerOpp(m_playerYou == Player::PLAYER_1 ? Player::PLAYER_2 : Player::PLAYER_1)
-	//m_mutexLock(m_cv)
+	m_playerOpp(m_playerYou == Player::PLAYER_1 ? Player::PLAYER_2 : Player::PLAYER_1),
+	m_endOfGame(false)
 {
 	m_gameState.setTurnPlayer(playerYou);
 }
@@ -44,7 +46,16 @@ int QGameStateModel::columnCount(const QModelIndex & parent) const {
 // view will call this function columnCount() * rowCount times (for each cell) asking for the actual data in model's internal data structures.
 
 QVariant QGameStateModel::data(const QModelIndex & index, int role) const {
-	
+
+	if (role == Qt::TextAlignmentRole) {
+		return Qt::AlignCenter;
+	}
+
+	if (role == Qt::FontRole) {
+		QFont sansFont("Helvetica [Cronyx]", 18);
+		return sansFont;
+	}
+
 	if (!index.isValid()) {
 		return QVariant();
 	}
@@ -107,7 +118,7 @@ bool QGameStateModel::setData(const QModelIndex & index, const QVariant & value,
 		index.column() >= m_gameState.getMAX_X() || index.column() < 0) {
 		return false;
 	}
-	if (role == Qt::EditRole) {
+	if (role == Qt::EditRole && !m_endOfGame) {
 
 
 		if (m_gameState.getTurnPlayer() == Player::PLAYER_1) {	// player 1 has control over the gui todo maybe some pattern that ensure it
@@ -161,16 +172,28 @@ bool QGameStateModel::checkWinner() {
 	// check whether the game has ended & print out reason for end
 	Player hasWon = m_gameState.hasSomeoneWon();
 	if (hasWon == m_playerYou) {
-		std::cout << "Congratulations!!! You have won!!! :)\n";
+		std::string s = "Congratulations!!! You have won!!! :)\n";
+		std::cout << s;
+		m_endOfGame = true;
+		WinnerDialog *w = new WinnerDialog(QString(s.c_str()));
+		w->show();
 		return true;
 	}
 	else if (hasWon == m_playerOpp) {
-		std::cout << "Unfortunately the KI has won... :(\n";
+		std::string s = "Unfortunately the KI has won... :(\n";
+		std::cout << s;
+		m_endOfGame = true;
+		WinnerDialog *w = new WinnerDialog(QString(s.c_str()));
+		w->show();
 		return true;
 	}
 	if (m_gameState.getNumOfFreeFields() <= 0) {
-		std::cout << "Game is over. You did well!."
+		std::string s = "Game is over. You did well!."
 			"No more cells are free on the Game!\n";
+		std::cout << s;
+		m_endOfGame = true;
+		WinnerDialog *w = new WinnerDialog(QString(s.c_str()));
+		w->show();
 		return true;
 	}
 	return false;
