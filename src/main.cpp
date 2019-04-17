@@ -13,6 +13,7 @@
 
 const int MAX_X = 7;
 const int MAX_Y = 5;
+
 int main(int argc, char* argv[]) {
 	QApplication app(argc, argv);
 

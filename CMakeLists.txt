@@ -52,7 +52,7 @@ set(CMAKE_AUTOMOC ON)
 # Create code from a list of Qt designer ui files
 set(CMAKE_AUTOUIC ON)
 # Find the QtWidgets library
-find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Widgets CONFIG REQUIRED)
 
 
 

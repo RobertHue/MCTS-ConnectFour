@@ -5,8 +5,6 @@
 #include <stdlib.h>
 
 
-// see https://doc.qt.io/qt-5/model-view-programming.html#rows-and-columns
-
 
 const bool NO_VALID_MOVE = false;
 const bool VALID_MOVE = true;

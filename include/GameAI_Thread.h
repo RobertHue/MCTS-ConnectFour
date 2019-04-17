@@ -1,5 +1,5 @@
 #pragma once
-#include <qthread.h>
+#include <QThread>
 
 #include "GameAI.h"
 #include "QGameStateModel.h"
