@@ -1,6 +1,16 @@
 # MCTS_ConnectFour
+
 Implementation of an Connect-Four AI using the MCTS algorithm.
 
+Table of contents
+=================
+
+   * [MCTS-Algorithm](#mcts-algorithm)
+   * [UML-class diagram](#uml-class-diagram)
+   * [Installation](#installation)
+   * [MIT](#mit)
+         
+         
 ## MCTS-Algorithm
 
 The algorithm works by finding the next best move the AI can do.
