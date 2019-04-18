@@ -9,9 +9,9 @@ The root of that tree is the enemies turn and current state of the board.
 The connections from that root to childNodes are the moves the current player can do.
 
 MCTS process:
-1. expand all childNodes from the root
-2. Repeat an iteration of Selection, Expansion, Simulation, Backpropagation as many times (here set to 10,000)
-3. Select an action to perfom (most visited robstu childNode from root)
+1. expand all childNodes from the root and assign a very large random initial UCTB-value
+2. Repeat an iteration of Selection, Expansion, Simulation and Backpropagation as many times (here set to 10,000, but a time treshold can be chosen too)
+3. Select an action to perfom (here: most visited robust childNode from root)
 
 &nbsp;
 &nbsp;
@@ -47,6 +47,13 @@ Increase visit count of every node along the followed path until the root node i
 ![UML-class diagram](resources/UML_class_dia.png)
 
 Shows the class structure and assoziation between the classes used. Including signal and slots for the QT-based GUI.
+
+## Sources and Literature
+
+* https://dke.maastrichtuniversity.nl/m.winands/documents/pMCTS.pdf
+* https://de.slideshare.net/ftgaic/mcts-ai
+* http://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/
+* https://en.wikipedia.org/wiki/Monte_Carlo_tree_search
 
 ## Installation
 
