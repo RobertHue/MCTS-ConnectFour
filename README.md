@@ -13,7 +13,10 @@ MCTS process:
 2. Repeat an iteration of Selection, Expansion, Simulation, Backpropagation as many times (here set to 10,000)
 3. Select an action to perfom (most visited robstu childNode from root)
 
+&nbsp;
+&nbsp;
 ![MCTS](https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/MCTS_%28English%29_-_Updated_2017-11-19.svg/1920px-MCTS_%28English%29_-_Updated_2017-11-19.svg.png)
+
 
 Shows what the iteration in step 2. has to do (from wikipedia with CC BY-SA 4.0 licence). 
 
