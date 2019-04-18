@@ -1,9 +1,49 @@
 # MCTS_ConnectFour
 Implementation of an Connect-Four AI using the MCTS algorithm.
 
+## MCTS-Algorithm
+
+The algorithm works by finding the next best move the AI can do.
+It does that by book-keeping information about a search tree (here called: game tree). 
+The root of that tree is the enemies turn and current state of the board.
+The connections from that root to childNodes are the moves the current player can do.
+
+MCTS process:
+1. expand all childNodes from the root
+2. Repeat an iteration of Selection, Expansion, Simulation, Backpropagation as many times (here set to 10,000)
+3. Select an action to perfom (most visited robstu childNode from root)
+
+![MCTS](https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/MCTS_%28English%29_-_Updated_2017-11-19.svg/1920px-MCTS_%28English%29_-_Updated_2017-11-19.svg.png)
+
+Shows what the iteration in step 2. has to do (from wikipedia with CC BY-SA 4.0 licence). 
+
+Steps are explained below:
+
+**Selection:**
+
+The MCTS tries to traverses through the game tree always following paths with highest UCTB - doesn't matter whether enemy nodes or personal ones, because it needs to take into account that the enemy is also tries to maximize its winrate. This traversal stops, when some unexpanded Leaf-Nodes (L) is found.
+
+**Expansion:**
+
+Expand one or more Leaf-Nodes (L), unless leaf-node L ended the game.
+
+**Simulation:**
+
+Simulate a playout until game ended in a WIN / LOOSE / DRAW.
+
+**Backpropagation:**
+
+Increase visit count of every node along the followed path until the root node is reached (included) and do the following for those nodes:
+* DRAW => every nodes along the path is increased by Value::DRAW
+* WIN => every AI node along the path is increased by Value::WIN, whereas every enemy node is increased by Value::LOOSE
+* LOOSE => every AI node along the path is increased by Value::LOOSE, whereas every enemy node is increased by Value::WIN
+
 
 ## UML-class diagram
-[[https://github.com/RobertHue/MCTS_ConnectFour/master/resources/UML_class_dia.png|alt=octocat]]
+
+![UML-class diagram](resources/UML_class_dia.png)
+
+Shows the class structure and assoziation between the classes used. Including signal and slots for the QT-based GUI.
 
 ## Installation
 
@@ -13,3 +53,7 @@ Implementation of an Connect-Four AI using the MCTS algorithm.
 - cmake ..
 - make
 - executable and test_executable can be found in bin/
+
+## MIT
+### The MIT License
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  
