@@ -4,12 +4,12 @@
 #include "GameAI.h"
 #include "QGameStateModel.h"
 
-class GameAI_Thread : public QThread {
+class QGameAI_Thread : public QThread {
 	Q_OBJECT
 
 public:
-	GameAI_Thread(QGameStateModel& gsm, Player player = Player::PLAYER_1);
-	~GameAI_Thread();
+	QGameAI_Thread(QGameStateModel& gsm, Player player = Player::PLAYER_1);
+	~QGameAI_Thread();
 
 protected:
 	// the starting point of the thread

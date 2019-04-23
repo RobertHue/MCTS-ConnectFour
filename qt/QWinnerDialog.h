@@ -5,11 +5,11 @@
 #include <QFont>
 #include <QVBoxLayout>
 
-class WinnerDialog : public QDialog {
+class QWinnerDialog : public QDialog {
 	Q_OBJECT
 
 public:
-	WinnerDialog(const QString& text, QWidget * parent = 0)
+	QWinnerDialog(const QString& text, QWidget * parent = 0)
 		: QDialog(parent)
 	{
 		QVBoxLayout *mainLayout = new QVBoxLayout;

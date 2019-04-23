@@ -1,5 +1,5 @@
 #include "QGameStateModel.h"
-#include "WinnerDialog.h"
+#include "QWinnerDialog.h"
 //////////////////////////////////////////////////////////////////////
 
 
@@ -176,7 +176,7 @@ bool QGameStateModel::checkWinner() {
 		std::string s = "Congratulations!!! You have won!!! :)\n";
 		std::cout << s;
 		m_endOfGame = true;
-		WinnerDialog *w = new WinnerDialog(QString(s.c_str()));
+		QWinnerDialog *w = new QWinnerDialog(QString(s.c_str()));
 		w->show();
 		return true;
 	}
@@ -184,7 +184,7 @@ bool QGameStateModel::checkWinner() {
 		std::string s = "Unfortunately the KI has won... :(\n";
 		std::cout << s;
 		m_endOfGame = true;
-		WinnerDialog *w = new WinnerDialog(QString(s.c_str()));
+		QWinnerDialog *w = new QWinnerDialog(QString(s.c_str()));
 		w->show();
 		return true;
 	}
@@ -193,7 +193,7 @@ bool QGameStateModel::checkWinner() {
 			"No more cells are free on the Game!\n";
 		std::cout << s;
 		m_endOfGame = true;
-		WinnerDialog *w = new WinnerDialog(QString(s.c_str()));
+		QWinnerDialog *w = new QWinnerDialog(QString(s.c_str()));
 		w->show();
 		return true;
 	}

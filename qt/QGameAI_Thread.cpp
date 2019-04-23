@@ -1,6 +1,6 @@
-#include "GameAI_Thread.h"
+#include "QGameAI_Thread.h"
 
-GameAI_Thread::GameAI_Thread(QGameStateModel& gsm, Player p)
+QGameAI_Thread::QGameAI_Thread(QGameStateModel& gsm, Player p)
 	:
 	m_gameAI(p),
 	m_gameStateModel(gsm)
@@ -9,12 +9,12 @@ GameAI_Thread::GameAI_Thread(QGameStateModel& gsm, Player p)
 }
 
 
-GameAI_Thread::~GameAI_Thread()
+QGameAI_Thread::~QGameAI_Thread()
 {
 	QThread::wait();	// waits for the thread to end
 }
 
-void GameAI_Thread::run() {
+void QGameAI_Thread::run() {
 	// do the ai calculations needed to get the best col for it
 	const GameState &gs = m_gameStateModel.getGameState();
 	int col = m_gameAI.findNextMove(gs);
@@ -25,7 +25,7 @@ void GameAI_Thread::run() {
 	//QThread::exec();	// run the event loop
 }
 
-void GameAI_Thread::doTurn(Player turnPlayer) {
+void QGameAI_Thread::doTurn(Player turnPlayer) {
 	if (turnPlayer == m_gameAI.getPlayer()) {
 		this->start();
 	}

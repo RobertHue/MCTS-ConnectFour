@@ -20,25 +20,28 @@ if( Boost_FOUND AND Qt5Widgets_FOUND )
 	# String of flags to be used when building executables.
 	message(STATUS "Qt5Widgets_EXECUTABLE_COMPILE_FLAGS : ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 	
-	file(GLOB_RECURSE dependencies
-		"*.h"
-		"*.cpp"
-		mainwindow.ui
-		mainwindow.cpp
-	)
+	message(STATUS "QT_DEPS : ${QT_DEPS}")
+	
 	add_executable( 
 		${EXECUTABLE_NAME} 
-		${DEPENDENCIES} main.cpp
-	)	
+		${DEPENDENCIES} 
+		${QT_DEPS}
+		main.cpp
+	)
 	target_include_directories(
-		${EXECUTABLE_NAME} PUBLIC
-		${Boost_INCLUDE_DIRS}
-		${Qt5Widgets_INCLUDE_DIRS}
+		${EXECUTABLE_NAME}
+		PRIVATE ../qt/
+		PRIVATE ${Boost_INCLUDE_DIRS}
+		PRIVATE ${Qt5Widgets_INCLUDE_DIRS}
 	)
 	target_link_libraries( 
 		${EXECUTABLE_NAME} 
-		${Boost_LIBRARIES} 
-		Qt5::Widgets
+		PRIVATE ${Boost_LIBRARIES} 
+		PRIVATE ${Qt5Widgets_LIBRARIES}
 	)
 	
+elseif( NOT Boost_FOUND)
+	message(STATUS "cannot find Boost!!!!!!!!!!!")
+elseif( NOT Qt5Widgets_FOUND)
+	message(STATUS "cannot find Qt5Widgets!!!!!!!!!!!")
 endif()

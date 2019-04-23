@@ -7,9 +7,9 @@
 #include <QApplication>
 #include <QTableView>
 #include <QHeaderView>
-////////////// 
+//////////////
 #include "QGameStateModel.h"
-#include "GameAI_Thread.h"
+#include "QGameAI_Thread.h"
 
 const int MAX_X = 7;
 const int MAX_Y = 5;
@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
 	//********************
 	//*** Setup AI *******
 	//********************
-	GameAI_Thread gameAI_Thread(gameStateModel, Player::PLAYER_2);
+	QGameAI_Thread gameAI_Thread(gameStateModel, Player::PLAYER_2);
 
 	// setup a connection between signal playerturndone(you) and doturn (ai),
 	// so that the ai can start its turn when you are done (emit playerTurnDone)
@@ -34,13 +34,13 @@ int main(int argc, char* argv[]) {
 		&gameStateModel,		// object which emits the signal - the sender
 		&QGameStateModel::playerTurnDone, // pointer to a member function - the signal
 		&gameAI_Thread,			// hook it up to the listener - the receiver
-		&GameAI_Thread::doTurn	// pointer to a member function - the slot
+		&QGameAI_Thread::doTurn	// pointer to a member function - the slot
 	);
 
 	// ai responds with the move he made in col for the model to update
 	QObject::connect(
 		&gameAI_Thread,							// object which emits the signal - the sender
-		&GameAI_Thread::aiMoveChosen,			// pointer to a member function - the signal
+		&QGameAI_Thread::aiMoveChosen,			// pointer to a member function - the signal
 		&gameStateModel,							// hook it up to the listener - the receiver
 		&QGameStateModel::insertTokenIntoColumn		// pointer to a member function - the slot
 	);

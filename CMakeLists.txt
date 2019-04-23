@@ -50,13 +50,14 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Instruct CMake to run moc automatically when needed
 set(CMAKE_AUTOMOC ON)
 # Create code from a list of Qt designer ui files
-set(CMAKE_AUTOUIC ON)
+#set(CMAKE_AUTOUIC ON)
 # Find the QtWidgets library
-find_package(Qt5Widgets CONFIG REQUIRED)
+find_package(Qt5 REQUIRED COMPONENTS Widgets)
 
 
 
 # looking for all dependencies
+file(GLOB_RECURSE QT_DEPS "qt/*.hpp" "qt/*.h" "qt/*.cpp" "qt/*.cc")
 file(GLOB_RECURSE SOURCES_DEPS "src/*.cpp" "src/*.cc")
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR : ${CMAKE_CURRENT_SOURCE_DIR}") 
 
@@ -68,3 +69,30 @@ message(STATUS "DEPENDENCIES : ${DEPENDENCIES}")
 #add source directory
 add_subdirectory("src")
 add_subdirectory("tests")
+
+
+##### cmake code from the past which should be not used (bad practice)
+# add_definitions("-Wall")
+# usage:  enables all gcc compiler warning messages
+# disadvantage: applies it to all directories and sources below
+# alternative: target_compile_options(target PRIVATE -Wall) applies the property -Wall on the target Foo in PRIVATE-scope
+
+# include_directories(${PROJECT_SOURCE_DIR}/src/)
+# usage: adds directories specified to the search path, which are used for some compilers when including files.
+# disadvantage: command is leaked to all targets in the same scope (directories and subsources)
+# alternative: target_include_directories( target
+#    PUBLIC 
+#        public
+#    PRIVATE
+#        src)
+
+# link_libraries
+# alternative: target_link_libraries()
+
+# set(CMAKE_CXX_FLAGS -std=c++11)
+# usage: set the c++ standard to compile the all targets
+# disadvantage: it applies the standard compile for every target
+# alternative: target_compile_features(target PRIVATE/INTERFACE/PUBLIC cxx_std_11) 
+
+# file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
+# usage: 
