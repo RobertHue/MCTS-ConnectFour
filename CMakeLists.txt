@@ -9,7 +9,6 @@ cmake_minimum_required (VERSION 3.8 FATAL_ERROR)
 set(PROJECT_NAME "MCTS_ConnectFour")
 set(EXECUTABLE_NAME "MCTS_ConnectFour")
 set(TEST_NAME "MCTS_ConnectFour_tests")
-set (CMAKE_CXX_STANDARD 14)	#set C++ Standard
 project(${PROJECT_NAME} VERSION 0.1 LANGUAGES CXX)
 
 ########################################

@@ -28,6 +28,10 @@ if( Boost_FOUND AND Qt5Widgets_FOUND )
 		${QT_DEPS}
 		main.cpp
 	)
+	target_compile_features(
+		${EXECUTABLE_NAME} 
+		PRIVATE cxx_std_14
+	)
 	target_include_directories(
 		${EXECUTABLE_NAME}
 		PRIVATE ../qt/

@@ -5,10 +5,16 @@ if( Boost_FOUND )
 	message(STATUS "Boost_LIBRARIES : ${Boost_LIBRARIES}")
 	
 	message(STATUS "DEPENDENCIES : ${DEPENDENCIES}")
+	
+	
 	add_executable( 
 		${TEST_NAME} 
 		${DEPENDENCIES} 
 		MCTS_Tests.cpp
+	)
+	target_compile_features(
+		${EXECUTABLE_NAME} 
+		PRIVATE cxx_std_14
 	)
 	target_include_directories(
 		${TEST_NAME}
