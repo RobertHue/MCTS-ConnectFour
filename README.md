@@ -7,6 +7,7 @@ Table of contents
 
    * [MCTS-Algorithm](#mcts-algorithm)
    * [UML-class diagram](#uml-class-diagram)
+   * [GUI-Design](#gui-design)
    * [Installation](#installation)
    * [MIT](#mit)
          
@@ -57,6 +58,11 @@ Increase visit count of every node along the followed path until the root node i
 ![UML-class diagram](resources/UML_class_dia.png)
 
 Shows the class structure and assoziation between the classes used. Including signal and slots for the QT-based GUI.
+
+
+## GUI-Design
+In this project I used a rather simple GUI design consisting of a TableView. When you click in a non-empty column for edit and click somewhere else again, the TableView receives an update and it's going to place your token in that column. When it's not your turn, you cannot place any tokens. The game is stopped when a modal dialog pops up, indicating the winner.
+![GUI design](resources/GUI.PNG)
 
 ## Sources and Literature
 
