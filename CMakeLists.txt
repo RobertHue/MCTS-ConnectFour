@@ -1,9 +1,6 @@
-########################################
-# Author:	Robert Huemmer
-########################################
 cmake_minimum_required (VERSION 3.8 FATAL_ERROR)
 
-########################################
+#-----------------------------------------------------------------------------
 # Define the project name
 ########################################
 set(PROJECT_NAME "MCTS_ConnectFour")
@@ -11,7 +8,7 @@ set(EXECUTABLE_NAME "MCTS_ConnectFour")
 set(TEST_NAME "MCTS_ConnectFour_tests")
 project(${PROJECT_NAME} VERSION 0.1 LANGUAGES CXX)
 
-########################################
+#-----------------------------------------------------------------------------
 # generate a message
 ########################################
 message(STATUS "~~~ ${PROJECT_NAME} v${PROJECT_VERSION} ~~~")
@@ -20,18 +17,18 @@ message(STATUS "Build Type : ${CMAKE_BUILD_TYPE}")
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
-########################################
+#-----------------------------------------------------------------------------
 # set cmake module path
 ########################################
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-########################################
+#-----------------------------------------------------------------------------
 # include directories for the compiler to search for (all targets)
 ########################################
 include_directories("include")
 
  
-########################################
+#-----------------------------------------------------------------------------
 # configure and find BOOST
 ########################################
 set(Boost_USE_STATIC_LIBS        ON) 	# only find static libs
@@ -41,18 +38,12 @@ find_package(Boost 1.69.0 REQUIRED COMPONENTS system filesystem unit_test_framew
 
 
 
-########################################
+#-----------------------------------------------------------------------------
 # configure and find QT5
-########################################
-# Find includes in corresponding build directories
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-# Instruct CMake to run moc automatically when needed
-set(CMAKE_AUTOMOC ON)
-# Create code from a list of Qt designer ui files
-#set(CMAKE_AUTOUIC ON)
-# Find the QtWidgets library
-find_package(Qt5 REQUIRED COMPONENTS Widgets)
-
+set(CMAKE_INCLUDE_CURRENT_DIR ON)	# Find includes in corresponding build directories
+set(CMAKE_AUTOMOC ON)	# Instruct CMake to run moc automatically when needed
+set(CMAKE_AUTOUIC OFF)	# Create code from a list of Qt designer ui files
+find_package(Qt5 REQUIRED COMPONENTS Widgets)	# Find the QtWidgets library
 
 
 # looking for all dependencies

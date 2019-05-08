@@ -37,6 +37,7 @@ if( Boost_FOUND AND Qt5Widgets_FOUND )
 		PRIVATE ../qt/
 		PRIVATE ${Boost_INCLUDE_DIRS}
 		PRIVATE ${Qt5Widgets_INCLUDE_DIRS}
+		PRIVATE ${DEPENDENCIES}
 	)
 	target_link_libraries( 
 		${EXECUTABLE_NAME} 
