@@ -13,12 +13,13 @@ if( Boost_FOUND )
 		MCTS_Tests.cpp
 	)
 	target_compile_features(
-		${EXECUTABLE_NAME} 
+		${TEST_NAME} 
 		PRIVATE cxx_std_14
 	)
 	target_include_directories(
 		${TEST_NAME}
 		PRIVATE ${Boost_INCLUDE_DIRS}
+		PRIVATE ${DEPENDENCIES}
 	)	
 	target_link_libraries( 
 		${TEST_NAME}
