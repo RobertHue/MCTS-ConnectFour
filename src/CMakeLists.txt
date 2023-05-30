@@ -1,10 +1,10 @@
 if( Boost_FOUND AND Qt5Widgets_FOUND )
 
 	message(STATUS " ############ SETTING UP MAIN MODULE ############ ")
-	message(STATUS "DEPENDENCIES : ${DEPENDENCIES}") 
+	message(STATUS "DEPENDENCIES : ${DEPENDENCIES}")
 	message(STATUS "boost-include-dirs : ${Boost_INCLUDE_DIRS}")
 	message(STATUS "Boost_LIBRARIES : ${Boost_LIBRARIES}")
-	
+
 	# String describing the version of the module.
 	message(STATUS "Qt5Widgets_VERSION : ${Qt5Widgets_VERSION}")
 	# List of libraries for use with the target_link_libraries command.
@@ -19,17 +19,17 @@ if( Boost_FOUND AND Qt5Widgets_FOUND )
 	message(STATUS "Qt5Widgets_FOUND : ${Qt5Widgets_FOUND}")
 	# String of flags to be used when building executables.
 	message(STATUS "Qt5Widgets_EXECUTABLE_COMPILE_FLAGS : ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-	
+
 	message(STATUS "QT_DEPS : ${QT_DEPS}")
-	
-	add_executable( 
-		${EXECUTABLE_NAME} 
-		${DEPENDENCIES} 
+
+	add_executable(
+		${EXECUTABLE_NAME}
+		${DEPENDENCIES}
 		${QT_DEPS}
 		main.cpp
 	)
 	target_compile_features(
-		${EXECUTABLE_NAME} 
+		${EXECUTABLE_NAME}
 		PRIVATE cxx_std_14
 	)
 	target_include_directories(
@@ -39,12 +39,12 @@ if( Boost_FOUND AND Qt5Widgets_FOUND )
 		PRIVATE ${Qt5Widgets_INCLUDE_DIRS}
 		PRIVATE ${DEPENDENCIES}
 	)
-	target_link_libraries( 
-		${EXECUTABLE_NAME} 
-		PRIVATE ${Boost_LIBRARIES} 
+	target_link_libraries(
+		${EXECUTABLE_NAME}
+		PRIVATE ${Boost_LIBRARIES}
 		PRIVATE ${Qt5Widgets_LIBRARIES}
 	)
-	
+
 elseif( NOT Boost_FOUND)
 	message(STATUS "cannot find Boost!!!!!!!!!!!")
 elseif( NOT Qt5Widgets_FOUND)
