@@ -1,9 +1,10 @@
 ///////////////////////////////////////////////////////////////////////////
-#include "GameAI.h"
 #include <chrono>   // for high_resolution_clock
 #include <iterator> // for std::advance
 #include <limits>   // for numeric::limits to get the smallest double
 #include <stdexcept>
+
+#include "GameAI.h"
 
 std::ostream &operator<<(std::ostream &os, const NodeDataType &nodeData)
 {

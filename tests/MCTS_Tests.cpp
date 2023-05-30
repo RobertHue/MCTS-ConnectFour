@@ -1,10 +1,11 @@
 #define BOOST_TEST_MODULE "TestMCTSModule"
-#include <boost/test/unit_test.hpp>
 
 #include <cstdio>
 #include <iostream>
 #include <sstream>
 #include <string>
+
+#include <boost/test/unit_test.hpp>
 
 #include "GameAI.h"
 #include "GameState.h"
