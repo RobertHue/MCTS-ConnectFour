@@ -82,7 +82,7 @@ QVariant QGameStateModel::data(const QModelIndex &index, int role) const
         int column = index.column();
         int row = index.row();
 
-        int data = m_gameState.getGameDataAt(column, row);
+        const int data = m_gameState.getGameDataAt(column, row);
 
         if (data == static_cast<int>(Player::PLAYER_1))
         {
@@ -197,7 +197,7 @@ void QGameStateModel::insertTokenIntoColumn(int col)
 {
     bool isValidMove;
     isValidMove = m_gameState.insertTokenIntoColumn(col);
-    Position pos = m_gameState.getPositionOfLastPlacedToken();
+    const Position pos = m_gameState.getPositionOfLastPlacedToken();
     QModelIndex topLeftIdx = this->index(pos.x, pos.y);
     QModelIndex bottomRightIdx = this->index(pos.x + 1, pos.y + 1);
     //Try to force the view(s) to redraw at certain cell:
@@ -209,7 +209,7 @@ bool QGameStateModel::checkWinner()
 {
 
     // check whether the game has ended & print out reason for end
-    Player hasWon = m_gameState.hasSomeoneWon();
+    const Player hasWon = m_gameState.hasSomeoneWon();
     if (hasWon == m_playerYou)
     {
         std::string s = "Congratulations!!! You have won!!! :)\n";

@@ -194,7 +194,7 @@ Player GameState::wouldSomeoneWin(int column) const
     int num_of_tokens_p1_in_row = 0;
     int num_of_tokens_p2_in_row = 0;
 
-    int offsets[][2] = {
+    const int offsets[][2] = {
         {-3, 0},  {-2, 0},  {-1, 0},  {1, 0},  {2, 0},  {3, 0}, // horizontal
         {0, -3},  {0, -2},  {0, -1},  {0, 1},  {0, 2},  {0, 3}, // vertical
         {-3, -3}, {-2, -2}, {-1, -1}, {1, 1},  {2, 2},  {3, 3}, // diagonal1
@@ -211,8 +211,8 @@ Player GameState::wouldSomeoneWin(int column) const
             num_of_tokens_p1_in_row = 0;
             num_of_tokens_p2_in_row = 0;
         }
-        int x_check = x_placed + offsets[i][0];
-        int y_check = y_placed + offsets[i][1];
+        const int x_check = x_placed + offsets[i][0];
+        const int y_check = y_placed + offsets[i][1];
 
         // check whether bounds are reached in those directions:
         if (x_check < 0 || x_check >= MAX_X)
@@ -260,14 +260,14 @@ Player GameState::wouldSomeoneWin(int column) const
 Player GameState::hasSomeoneWon()
 {
 
-    int x_placed = positionOfLastPlacedToken.x;
-    int y_placed = positionOfLastPlacedToken.y;
+    const int x_placed = positionOfLastPlacedToken.x;
+    const int y_placed = positionOfLastPlacedToken.y;
 
     // count how many tokens there are in each row:
     int num_of_tokens_p1_in_row = 0;
     int num_of_tokens_p2_in_row = 0;
 
-    int offsets[][2] = {
+    const int offsets[][2] = {
         {-3, 0},  {-2, 0},  {-1, 0},  {0, 0},
         {1, 0},   {2, 0},   {3, 0}, // horizontal
         {0, -3},  {0, -2},  {0, -1},  {0, 0},
@@ -288,8 +288,8 @@ Player GameState::hasSomeoneWon()
             num_of_tokens_p1_in_row = 0;
             num_of_tokens_p2_in_row = 0;
         }
-        int x_check = x_placed + offsets[i][0];
-        int y_check = y_placed + offsets[i][1];
+        const int x_check = x_placed + offsets[i][0];
+        const int y_check = y_placed + offsets[i][1];
 
         // check whether bounds are reached in those directions:
         if (x_check < 0 || x_check >= MAX_X)

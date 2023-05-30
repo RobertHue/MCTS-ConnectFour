@@ -16,7 +16,7 @@ void QGameAI_Thread::run()
 {
     // do the ai calculations needed to get the best col for it
     const GameState &gs = m_gameStateModel.getGameState();
-    int col = m_gameAI.findNextMove(gs);
+    const int col = m_gameAI.findNextMove(gs);
 
     // insert the token with the help of the gameStateModel reference
     emit aiMoveChosen(col);

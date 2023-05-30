@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE(TreeTest00)
 {
     BOOST_TEST_MESSAGE("TreeTest00");
 
-    Tree<int> tree;
+    const Tree<int> tree;
 
     //BOOST_CHECK(tree.size() == tree2.size());
 }
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(TestGameState)
 
     BOOST_CHECK(gs.getPositionOfLastPlacedToken() == Position(6, 2));
 
-    std::vector<int> possibleMoves = gs.getPossibleMoves();
+    const std::vector<int> possibleMoves = gs.getPossibleMoves();
     int m = 0;
     for (auto &pm : possibleMoves)
     {
@@ -219,7 +219,7 @@ BOOST_AUTO_TEST_CASE(TreeTest01)
     EXPECTED = 4;
     BOOST_CHECK(ACTUAL == EXPECTED);
 
-    Tree<NodeData> tree2 = tree;
+    const Tree<NodeData> tree2 = tree;
     tree2.getRoot()->data.sequenceThatLeadedToThisNode = "root2";
     Tree<NodeData>::printLevelOrder(tree.getRoot());
 
@@ -244,8 +244,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test01)
 {
     BOOST_TEST_MESSAGE("MCTS_Test01");
 
-    Player playerYou = Player::PLAYER_2;
-    Player playerAI = Player::PLAYER_1;
+    const Player playerYou = Player::PLAYER_2;
+    const Player playerAI = Player::PLAYER_1;
     const int MAX_X = 7;
     const int MAX_Y = 5;
     GameState gs(MAX_X, MAX_Y);
@@ -261,8 +261,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test01)
     gs.drawGameStateOnConsole();
 
     gs.setTurnPlayer(playerAI);
-    int ACTUAL_COLUMN = ai.findNextMove(gs);
-    int EXPECTED_COLUMN = 3;
+    const int ACTUAL_COLUMN = ai.findNextMove(gs);
+    const int EXPECTED_COLUMN = 3;
     BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
     checkChildVisitsValuePlausibily(ai);
@@ -273,8 +273,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test02)
 {
     BOOST_TEST_MESSAGE("MCTS_Test02");
 
-    Player playerYou = Player::PLAYER_2;
-    Player playerAI = Player::PLAYER_1;
+    const Player playerYou = Player::PLAYER_2;
+    const Player playerAI = Player::PLAYER_1;
     const int MAX_X = 7;
     const int MAX_Y = 5;
     GameState gs(MAX_X, MAX_Y);
@@ -293,8 +293,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test02)
     gs.drawGameStateOnConsole();
 
     gs.setTurnPlayer(playerAI);
-    int ACTUAL_COLUMN = ai.findNextMove(gs);
-    int EXPECTED_COLUMN = 2;
+    const int ACTUAL_COLUMN = ai.findNextMove(gs);
+    const int EXPECTED_COLUMN = 2;
     BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
     checkChildVisitsValuePlausibily(ai);
@@ -305,8 +305,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test03)
 {
     BOOST_TEST_MESSAGE("MCTS_Test03");
 
-    Player playerYou = Player::PLAYER_2;
-    Player playerAI = Player::PLAYER_1;
+    const Player playerYou = Player::PLAYER_2;
+    const Player playerAI = Player::PLAYER_1;
     const int MAX_X = 7;
     const int MAX_Y = 5;
     GameState gs(MAX_X, MAX_Y);
@@ -345,8 +345,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test03)
     gs.drawGameStateOnConsole();
 
     gs.setTurnPlayer(playerAI);
-    int ACTUAL_COLUMN = ai.findNextMove(gs);
-    int EXPECTED_COLUMN = 2;
+    const int ACTUAL_COLUMN = ai.findNextMove(gs);
+    const int EXPECTED_COLUMN = 2;
     BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
     checkChildVisitsValuePlausibily(ai);
@@ -357,8 +357,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test04)
 {
     BOOST_TEST_MESSAGE("MCTS_Test04");
 
-    Player playerYou = Player::PLAYER_2;
-    Player playerAI = Player::PLAYER_1;
+    const Player playerYou = Player::PLAYER_2;
+    const Player playerAI = Player::PLAYER_1;
     const int MAX_X = 7;
     const int MAX_Y = 5;
     GameState gs(MAX_X, MAX_Y);
@@ -404,8 +404,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test04)
     gs.drawGameStateOnConsole();
 
     gs.setTurnPlayer(playerAI);
-    int ACTUAL_COLUMN = ai.findNextMove(gs);
-    int EXPECTED_COLUMN = 3;
+    const int ACTUAL_COLUMN = ai.findNextMove(gs);
+    const int EXPECTED_COLUMN = 3;
     BOOST_CHECK(ACTUAL_COLUMN ==
                 EXPECTED_COLUMN); // is it really working always?
 
@@ -418,8 +418,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test05)
 {
     BOOST_TEST_MESSAGE("MCTS_Test05");
 
-    Player playerYou = Player::PLAYER_2;
-    Player playerAI = Player::PLAYER_1;
+    const Player playerYou = Player::PLAYER_2;
+    const Player playerAI = Player::PLAYER_1;
     const int MAX_X = 7;
     const int MAX_Y = 5;
     GameState gs(MAX_X, MAX_Y);
@@ -439,8 +439,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test05)
     gs.drawGameStateOnConsole();
 
     gs.setTurnPlayer(playerAI);
-    int ACTUAL_COLUMN = ai.findNextMove(gs);
-    int EXPECTED_COLUMN = 2;
+    const int ACTUAL_COLUMN = ai.findNextMove(gs);
+    const int EXPECTED_COLUMN = 2;
     BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
     checkChildVisitsValuePlausibily(ai);
@@ -451,8 +451,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test06)
 {
     BOOST_TEST_MESSAGE("MCTS_Test06");
 
-    Player playerYou = Player::PLAYER_2;
-    Player playerAI = Player::PLAYER_1;
+    const Player playerYou = Player::PLAYER_2;
+    const Player playerAI = Player::PLAYER_1;
     const int MAX_X = 7;
     const int MAX_Y = 5;
     GameState gs(MAX_X, MAX_Y);
@@ -473,8 +473,9 @@ BOOST_AUTO_TEST_CASE(MCTS_Test06)
     gs.drawGameStateOnConsole();
 
     //gs.setTurnPlayer(playerYou);
-    int ACTUAL_COLUMN = ai.findNextMove(gs);
-    int EXPECTED_COLUMN = 6; // should be chosen to avoid circle from winning
+    const int ACTUAL_COLUMN = ai.findNextMove(gs);
+    const int EXPECTED_COLUMN =
+        6; // should be chosen to avoid circle from winning
     BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
     checkChildVisitsValuePlausibily(ai);
@@ -486,8 +487,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test07)
 {
     BOOST_TEST_MESSAGE("MCTS_Test07");
 
-    Player playerYou = Player::PLAYER_2;
-    Player playerAI = Player::PLAYER_1;
+    const Player playerYou = Player::PLAYER_2;
+    const Player playerAI = Player::PLAYER_1;
     const int MAX_X = 4;
     const int MAX_Y = 4;
     GameState gs(MAX_X, MAX_Y);
@@ -504,8 +505,9 @@ BOOST_AUTO_TEST_CASE(MCTS_Test07)
     gs.drawGameStateOnConsole();
 
     gs.setTurnPlayer(playerAI);
-    int ACTUAL_COLUMN = ai.findNextMove(gs);
-    int EXPECTED_COLUMN = 3; // should be chosen to avoid cross from winning
+    const int ACTUAL_COLUMN = ai.findNextMove(gs);
+    const int EXPECTED_COLUMN =
+        3; // should be chosen to avoid cross from winning
     BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
     checkChildVisitsValuePlausibily(ai);
@@ -520,8 +522,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test08)
 
     for (int i = 0; i < 1; ++i)
     {
-        Player playerYou = Player::PLAYER_2;
-        Player playerAI = Player::PLAYER_1;
+        const Player playerYou = Player::PLAYER_2;
+        const Player playerAI = Player::PLAYER_1;
         const int MAX_X = 7;
         const int MAX_Y = 5;
         GameState gs(MAX_X, MAX_Y);
@@ -530,8 +532,8 @@ BOOST_AUTO_TEST_CASE(MCTS_Test08)
         gs.drawGameStateOnConsole();
 
         gs.setTurnPlayer(playerAI);
-        int ACTUAL_COLUMN = ai.findNextMove(gs);
-        int EXPECTED_COLUMN = 3; // should be chosen to avoid cross from winning
+        const int ACTUAL_COLUMN = ai.findNextMove(gs);
+        const int EXPECTED_COLUMN = 3; // to avoid cross from winning
         BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
         checkChildVisitsValuePlausibily(ai);
