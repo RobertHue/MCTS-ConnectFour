@@ -5,17 +5,22 @@ Implementation of an Connect-Four AI using the MCTS algorithm.
 Table of contents
 =================
 
-   * [MCTS-Algorithm](#mcts-algorithm)
-   * [UML-class diagram](#uml-class-diagram)
-   * [GUI-Design](#gui-design)
-   * [Installation](#installation)
-   * [MIT](#mit)
-         
-         
+- [MCTS\_ConnectFour](#mcts_connectfour)
+- [Table of contents](#table-of-contents)
+  - [MCTS-Algorithm](#mcts-algorithm)
+  - [UML-class diagram](#uml-class-diagram)
+  - [GUI-Design](#gui-design)
+  - [Sources and Literature](#sources-and-literature)
+  - [Pre-requisites](#pre-requisites)
+  - [Compilation](#compilation)
+  - [MIT](#mit)
+    - [The MIT License](#the-mit-license)
+
+
 ## MCTS-Algorithm
 
 The algorithm works by finding the next best move the AI can do.
-It does that by book-keeping information about a search tree (here called: game tree). 
+It does that by book-keeping information about a search tree (here called: game tree).
 The root of that tree is the enemies turn and current state of the board.
 The connections from that root to childNodes are the moves the current player can do.
 
@@ -29,7 +34,7 @@ MCTS process:
 ![MCTS](https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/MCTS_%28English%29_-_Updated_2017-11-19.svg/1920px-MCTS_%28English%29_-_Updated_2017-11-19.svg.png)
 
 
-Shows what the iteration in step 2. has to do (from wikipedia with CC BY-SA 4.0 licence). 
+Shows what the iteration in step 2. has to do (from wikipedia with CC BY-SA 4.0 licence).
 
 Steps are explained below:
 
@@ -71,15 +76,45 @@ In this project I used a rather simple GUI design consisting of a TableView. Whe
 * http://jeffbradberry.com/posts/2015/09/intro-to-monte-carlo-tree-search/
 * https://en.wikipedia.org/wiki/Monte_Carlo_tree_search
 
-## Installation
+## Pre-requisites
 
-- sudo apt-get install libboost-all-dev
-- mkdir build bin
-- cd build
-- cmake ..
-- make
-- executable and test_executable can be found in bin/
+The installation pre-requisites are as follows:
+
+- [CMake 3.8](https://cmake.org/download/)
+- [Conan 2.0](https://docs.conan.io/1/installation.html)
+
+As explained [here](https://doc.qt.io/qt-6/linux-requirements.html), on Linux the xcb platform plugin is used. It provides basic features to run against X11. To install the following development libraries run the following command::
+
+```bash
+sudo apt-get install libfontconfig1-dev libfreetype6-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-cursor-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxcb-util-dev libxcb-xinerama0-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev
+```
+
+
+## Compilation
+
+To compile this project with the tests and the game itself execute the following commands:
+
+```bash
+mkdir build
+cd build
+conan install . --output-folder=build --build=missing
+cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build .
+```
+
+To execute the tests do the following:
+
+```bash
+../bin/MCTS_ConnectFour_tests
+```
+
+To execute the game do the following:
+
+```bash
+../bin/MCTS_ConnectFour
+```
+
 
 ## MIT
 ### The MIT License
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

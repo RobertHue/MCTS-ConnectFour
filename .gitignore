@@ -11,5 +11,7 @@ bin/
 
 # do not ignore .gitignore
 !.gitignore
- 
+
+
+CMakeUserPresets.json
 # end

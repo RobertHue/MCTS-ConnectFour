@@ -27,7 +27,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 ########################################
 include_directories("include")
 
- 
+
 #-----------------------------------------------------------------------------
 # configure and find BOOST
 ########################################
@@ -43,18 +43,19 @@ find_package(Boost 1.69.0 REQUIRED COMPONENTS system filesystem unit_test_framew
 set(CMAKE_INCLUDE_CURRENT_DIR ON)	# Find includes in corresponding build directories
 set(CMAKE_AUTOMOC ON)	# Instruct CMake to run moc automatically when needed
 set(CMAKE_AUTOUIC OFF)	# Create code from a list of Qt designer ui files
-find_package(Qt5 REQUIRED COMPONENTS Widgets)	# Find the QtWidgets library
+find_package(Qt5 REQUIRED)
+find_package(Qt5Widgets REQUIRED)
 
 
 # looking for all dependencies
 file(GLOB_RECURSE QT_DEPS "qt/*.hpp" "qt/*.h" "qt/*.cpp" "qt/*.cc")
 file(GLOB_RECURSE SOURCES_DEPS "src/*.cpp" "src/*.cc")
-message(STATUS "CMAKE_CURRENT_SOURCE_DIR : ${CMAKE_CURRENT_SOURCE_DIR}") 
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR : ${CMAKE_CURRENT_SOURCE_DIR}")
 
 list(REMOVE_ITEM SOURCES_DEPS ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp) # remove main.cpp so its not included inside test build
 file(GLOB_RECURSE HEADERS_DEPS "include/*.hpp" "include/*.h")
-set(DEPENDENCIES ${SOURCES_DEPS} ${HEADERS_DEPS}) 
-message(STATUS "DEPENDENCIES : ${DEPENDENCIES}") 
+set(DEPENDENCIES ${SOURCES_DEPS} ${HEADERS_DEPS})
+message(STATUS "DEPENDENCIES : ${DEPENDENCIES}")
 
 #add source directory
 add_subdirectory("src")
@@ -71,7 +72,7 @@ add_subdirectory("tests")
 # usage: adds directories specified to the search path, which are used for some compilers when including files.
 # disadvantage: command is leaked to all targets in the same scope (directories and subsources)
 # alternative: target_include_directories( target
-#    PUBLIC 
+#    PUBLIC
 #        public
 #    PRIVATE
 #        src)
@@ -82,7 +83,7 @@ add_subdirectory("tests")
 # set(CMAKE_CXX_FLAGS -std=c++11)
 # usage: set the c++ standard to compile the all targets
 # disadvantage: it applies the standard compile for every target
-# alternative: target_compile_features(target PRIVATE/INTERFACE/PUBLIC cxx_std_11) 
+# alternative: target_compile_features(target PRIVATE/INTERFACE/PUBLIC cxx_std_11)
 
 # file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
-# usage: 
+# usage:
