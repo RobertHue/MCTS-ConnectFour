@@ -1,8 +1,6 @@
 {
   "editor.tabSize": 4,
-  "editor.rulers": [
-    80
-  ],
+  "editor.rulers": [80],
   "editor.renderWhitespace": "trailing",
   "editor.suggestSelection": "first",
   "editor.formatOnSave": true,
@@ -154,21 +152,21 @@
   "doxdocgen.generic.includeTypeAtReturn": false,
   "markdown.validate.enabled": true,
   "[markdown]": {
-    "files.trimTrailingWhitespace": false,
+    "files.trimTrailingWhitespace": true,
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "yzhang.markdown-all-in-one",
     "editor.wordWrap": "wordWrapColumn"
   },
   "[yaml]": {
-    "editor.formatOnSave": false,
+    "editor.formatOnSave": true,
     "editor.defaultFormatter": "redhat.vscode-yaml"
   },
   "[json]": {
-    "editor.formatOnSave": false,
+    "editor.formatOnSave": true,
     "editor.defaultFormatter": "vscode.json-language-features"
   },
   "[jsonc]": {
-    "editor.formatOnSave": false
+    "editor.formatOnSave": true
   },
   "[plaintext]": {
     "editor.wordWrap": "wordWrapColumn",
@@ -198,10 +196,7 @@
   "svg.preview.autoOpen": true,
   "remote.WSL.fileWatcher.polling": true,
   "errorLens.delay": 1000,
-  "errorLens.enabledDiagnosticLevels": [
-    "error",
-    "warning"
-  ],
+  "errorLens.enabledDiagnosticLevels": ["error", "warning"],
   "errorLens.enabled": true,
   "Workspace_Formatter.excludePattern": [
     "**/build",
@@ -239,10 +234,7 @@
   "C_Cpp_Runner.compilerArgs": [],
   "C_Cpp_Runner.linkerArgs": [],
   "C_Cpp_Runner.includePaths": [],
-  "C_Cpp_Runner.includeSearch": [
-    "*",
-    "**/*"
-  ],
+  "C_Cpp_Runner.includeSearch": ["*", "**/*"],
   "C_Cpp_Runner.excludeSearch": [
     "**/build",
     "**/build/**",
@@ -252,5 +244,6 @@
     "**/.vscode/**"
   ],
   "C_Cpp_Runner.useAddressSanitizer": false,
-  "C_Cpp_Runner.showCompilationTime": false
+  "C_Cpp_Runner.showCompilationTime": false,
+  "cmake.configureOnOpen": false
 }
