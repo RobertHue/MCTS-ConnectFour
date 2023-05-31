@@ -8,8 +8,8 @@
 #include <QHeaderView>
 #include <QTableView>
 //////////////
-#include "QGameAI_Thread.h"
-#include "QGameStateModel.h"
+#include "ui/QGameAI_Thread.h"
+#include "ui/QGameStateModel.h"
 
 const int MAX_X = 7;
 const int MAX_Y = 5;

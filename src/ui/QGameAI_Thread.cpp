@@ -1,4 +1,4 @@
-#include "QGameAI_Thread.h"
+#include "ui/QGameAI_Thread.h"
 
 QGameAI_Thread::QGameAI_Thread(QGameStateModel &gsm, Player p)
     : m_gameAI(p), m_gameStateModel(gsm)

@@ -1,8 +1,8 @@
 #pragma once
 #include <QThread>
 
-#include "GameAI.h"
-#include "QGameStateModel.h"
+#include "ai/GameAI.h"
+#include "ui/QGameStateModel.h"
 
 class QGameAI_Thread : public QThread
 {

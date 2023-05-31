@@ -1,5 +1,5 @@
-#include "QGameStateModel.h"
-#include "QWinnerDialog.h"
+#include "ui/QGameStateModel.h"
+#include "ui/QWinnerDialog.h"
 //////////////////////////////////////////////////////////////////////
 
 

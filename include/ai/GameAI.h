@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "GameState.h"
 #include "Tree.h"
+#include "data/GameState.h"
 
 // nodedata is used for the gametree
 //struct NodeData;	// struct declaration (can be used to forward declare)

@@ -3,7 +3,7 @@ boost/1.81.0
 qt/5.15.8
 
 [options]
-boost/*:shared=False
+boost/*:shared=True
 qt/*:shared=True
 # You can choose the opengl mode, default is 'desktop'
 qt/*:opengl=desktop # dynamic

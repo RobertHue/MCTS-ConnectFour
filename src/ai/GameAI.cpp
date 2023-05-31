@@ -4,7 +4,7 @@
 #include <limits>   // for numeric::limits to get the smallest double
 #include <stdexcept>
 
-#include "GameAI.h"
+#include "ai/GameAI.h"
 
 std::ostream &operator<<(std::ostream &os, const NodeDataType &nodeData)
 {

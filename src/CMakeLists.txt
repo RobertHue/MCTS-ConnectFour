@@ -1,46 +1,65 @@
-if( NOT Boost_FOUND)
-	message(FATAL_ERROR "cannot find Boost!!!!!!!!!!!")
-elseif( NOT Qt5Widgets_FOUND)
-	message(FATAL_ERROR "cannot find Qt5Widgets!!!!!!!!!!!")
+#-----------------------------------------------------------------------------
+# Configure & Find QT5
+set(CMAKE_INCLUDE_CURRENT_DIR ON)	# Find includes in corresponding build directories
+set(CMAKE_AUTOMOC ON)	# Instruct CMake to run moc automatically when needed
+set(CMAKE_AUTOUIC OFF)	# Create code from a list of Qt designer ui files
+find_package(Qt5 REQUIRED)
+find_package(Qt5Widgets REQUIRED)
+if(Qt5Widgets_FOUND)
+    message(STATUS "Qt5Widgets found: ${Qt5Widgets_INCLUDE_DIRS}")
+    message(STATUS "Qt5Widgets libraries: ${Qt5Widgets_LIBRARIES}")
+    # Other configurations or target definitions
+else()
+    message(FATAL_ERROR "Boost's unit_test_framework component not found.")
 endif()
 
 
-message(STATUS " ############ SETTING UP MAIN MODULE ############ ")
-message(STATUS "DEPENDENCIES : ${DEPENDENCIES}")
-message(STATUS "boost-include-dirs : ${Boost_INCLUDE_DIRS}")
-message(STATUS "Boost_LIBRARIES : ${Boost_LIBRARIES}")
+set(DEPENDENCIES
+    # AI-headers
+    ${CMAKE_SOURCE_DIR}/include/ai/GameAI.h
+    ${CMAKE_SOURCE_DIR}/include/ai/Tree.h  # templated
 
-# String describing the version of the module.
-message(STATUS "Qt5Widgets_VERSION : ${Qt5Widgets_VERSION}")
-# List of libraries for use with the target_link_libraries command.
-message(STATUS "Qt5Widgets_LIBRARIES : ${Qt5Widgets_LIBRARIES}")
-# List of directories for use with the include_directories command.
-message(STATUS "Qt5Widgets_INCLUDE_DIRS : ${Qt5Widgets_INCLUDE_DIRS}")
-# List of definitions for use with add_definitions.
-message(STATUS "Qt5Widgets_DEFINITIONS : ${Qt5Widgets_DEFINITIONS}")
-# List of definitions for use with the COMPILE_DEFINITIONS target property.
-message(STATUS "Qt5Widgets_COMPILE_DEFINITIONS : ${Qt5Widgets_COMPILE_DEFINITIONS}")
-# Boolean describing whether the module was found successfully.
-message(STATUS "Qt5Widgets_FOUND : ${Qt5Widgets_FOUND}")
-# String of flags to be used when building executables.
-message(STATUS "Qt5Widgets_EXECUTABLE_COMPILE_FLAGS : ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+    # Data-headers
+    ${CMAKE_SOURCE_DIR}/include/data/GameState.h
 
-message(STATUS "QT_DEPS : ${QT_DEPS}")
+    # UI-headers
+    ${CMAKE_SOURCE_DIR}/include/ui/QGameAI_Thread.h
+    ${CMAKE_SOURCE_DIR}/include/ui/QGameStateModel.h
+    ${CMAKE_SOURCE_DIR}/include/ui/QWinnerDialog.h  # templated
+
+    # AI-sources
+    ${CMAKE_SOURCE_DIR}/src/ai/GameAI.cpp
+
+    # Data-sources
+    ${CMAKE_SOURCE_DIR}/src/data/GameState.cpp
+
+    # UI-sources
+    ${CMAKE_SOURCE_DIR}/src/ui/QGameAI_Thread.cpp
+    ${CMAKE_SOURCE_DIR}/src/ui/QGameStateModel.cpp
+
+    # MAIN
+    main.cpp
+)
 
 add_executable(
     ${EXECUTABLE_NAME}
-    ${DEPENDENCIES}
     ${QT_DEPS}
-    main.cpp
+    ${DEPENDENCIES}
+)
+target_compile_options(
+    ${EXECUTABLE_NAME}
+    PRIVATE -Wall -Wextra
+)
+target_compile_features(
+    ${EXECUTABLE_NAME}
+    PRIVATE cxx_std_17
 )
 target_include_directories(
     ${EXECUTABLE_NAME}
-    PRIVATE ${Boost_INCLUDE_DIRS}
     PRIVATE ${Qt5Widgets_INCLUDE_DIRS}
-    PRIVATE ${CMAKE_SOURCE_DIR}
+    PRIVATE ${CMAKE_SOURCE_DIR}/include/
 )
 target_link_libraries(
     ${EXECUTABLE_NAME}
-    PRIVATE ${Boost_LIBRARIES}
     PRIVATE ${Qt5Widgets_LIBRARIES}
 )

@@ -122,7 +122,8 @@
     "cinttypes": "cpp",
     "typeindex": "cpp",
     "__nullptr": "cpp",
-    "qlabel": "cpp"
+    "qlabel": "cpp",
+    "*.ipp": "cpp"
   },
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
@@ -142,7 +143,7 @@
   "C_Cpp.vcFormat.indent.caseContentsWhenBlock": true,
   "C_Cpp.vcFormat.space.pointerReferenceAlignment": "right",
   "C_Cpp.default.browse.limitSymbolsToIncludedHeaders": false,
-  "C_Cpp.default.cppStandard": "c++20",
+  "C_Cpp.default.cppStandard": "c++17",
   "C_Cpp.default.cStandard": "c11",
   "C_Cpp.default.includePath": [
     "/home/robert/.conan2/p/b/qt96995fabb4014/p/include/QtCore",

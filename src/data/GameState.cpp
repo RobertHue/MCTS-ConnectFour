@@ -1,5 +1,5 @@
 
-#include "GameState.h"
+#include "data/GameState.h"
 
 ///////////////////////////////////////////////
 

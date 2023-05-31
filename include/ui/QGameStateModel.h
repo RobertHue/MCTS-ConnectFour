@@ -3,7 +3,7 @@
 #include <QAbstractTableModel>
 #include <QVariant>
 
-#include "GameState.h"
+#include "data/GameState.h"
 /**
 	@brief	functions as a adapter for the GameState
 	GameState's m_gameData is processessed to be available for Qt-Views
