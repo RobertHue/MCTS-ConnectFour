@@ -123,7 +123,8 @@
     "typeindex": "cpp",
     "__nullptr": "cpp",
     "qlabel": "cpp",
-    "*.ipp": "cpp"
+    "*.ipp": "cpp",
+    "qthread": "cpp"
   },
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
@@ -145,10 +146,7 @@
   "C_Cpp.default.browse.limitSymbolsToIncludedHeaders": false,
   "C_Cpp.default.cppStandard": "c++17",
   "C_Cpp.default.cStandard": "c11",
-  "C_Cpp.default.includePath": [
-    "/home/robert/.conan2/p/b/qt96995fabb4014/p/include/QtCore",
-    "/home/robert/.conan2/p/b/qt96995fabb4014/p/include/QtWidgets"
-  ],
+  "C_Cpp.default.includePath": [],
   "C_Cpp.formatting": "clangFormat",
   "[c]": {
     "editor.formatOnSave": true,
@@ -159,6 +157,7 @@
     "editor.defaultFormatter": "ms-vscode.cpptools"
   },
   "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+  //   "C_Cpp.codeAnalysis.clangTidy.config":
   "C_Cpp.codeAnalysis.runAutomatically": true,
   "C_Cpp.configurationWarnings": "disabled",
   "doxdocgen.file.fileTemplate": "@file {name}",

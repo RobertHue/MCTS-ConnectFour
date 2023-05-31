@@ -3,15 +3,16 @@
     {
       "name": "linux-gcc-x64",
       "includePath": [
-        "${workspaceFolder}/**"
+        "${workspaceFolder}/**",
+        "/home/robert/.conan2/p/b/qt96995fabb4014/p/include/**",
+        "/home/robert/.conan2/p/b/qt96995fabb4014/p/include/QtWidgets/**"
       ],
       "compilerPath": "/usr/bin/gcc",
       "cStandard": "${default}",
       "cppStandard": "${default}",
       "intelliSenseMode": "linux-gcc-x64",
-      "compilerArgs": [
-        ""
-      ]
+      "defines": [],
+      "compilerArgs": []
     }
   ],
   "version": 4
