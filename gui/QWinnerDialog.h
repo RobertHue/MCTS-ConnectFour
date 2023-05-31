@@ -4,6 +4,8 @@
 #include <QFont>
 #include <QLabel>
 #include <QVBoxLayout>
+// #include <qt5/QtWidgets/QLabel>
+
 
 class QWinnerDialog : public QDialog
 {
