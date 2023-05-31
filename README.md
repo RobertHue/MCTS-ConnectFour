@@ -80,7 +80,7 @@ In this project I used a rather simple GUI design consisting of a TableView. Whe
 
 The installation pre-requisites are as follows:
 
-- [CMake 3.8](https://cmake.org/download/)
+- [CMake 3.20](https://cmake.org/download/)
 - [Conan 2.0](https://docs.conan.io/1/installation.html)
 
 As explained [here](https://doc.qt.io/qt-6/linux-requirements.html), on Linux the xcb platform plugin is used. It provides basic features to run against X11. To install the following development libraries run the following command::
@@ -97,7 +97,7 @@ To compile this project with the tests and the game itself execute the following
 ```bash
 mkdir build
 cd build
-conan install . --output-folder=build --build=missing
+conan install .. --output-folder=. --build=missing
 cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 ```
