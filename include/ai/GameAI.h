@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "Tree.h"
+#include "ai/Tree.h"
 #include "data/GameState.h"
 
 // nodedata is used for the gametree
@@ -36,13 +36,14 @@ typedef struct NodeData
     std::string sequenceThatLeadedToThisNode;
 } NodeDataType;
 
-std::ostream &operator<<(std::ostream &os, const NodeDataType &nodeData);
-
+// aliases for easier access
 using TreeType = Tree<NodeDataType>;
 using NodeType = TreeType::NodeType;
+using NodeTypePtr = TreeType::NodeTypePtr;
 
-void printChildNodeInfo(const NodeType *node);
+std::ostream &operator<<(std::ostream &os, const NodeDataType &nodeData);
 
+void printChildNodeInfo(const NodeTypePtr node);
 
 /**
 @brief	this class is responsible for finding the next move for the AI in ConnectFour
@@ -86,6 +87,14 @@ public:
         {
             return f;
         } // user-defined conversion (implicit)
+
+        // for using Value x = Double(4.3);
+        Value &operator=(double value)
+        {
+            f = value;
+            return *this;
+        }
+
     public:
         static constexpr double WIN = 1.0;
         static constexpr double DRAW = 0.5;
@@ -107,10 +116,10 @@ public:
 
     /// calculates the next move for the AI based on the MCTS-algorithm
     /// @return		the MCTS-based move for the AI
-    int findNextMove(const GameState &gPanel);
+    int findNextMove(const GameState &gameState);
 
     /// gets the game tree used for MCTS
-    TreeType *getGameTree() const;
+    const TreeType &getGameTree() const;
 
     /// gets the ai player:
     Player getPlayer() const;
@@ -126,20 +135,22 @@ private:
     /// expands all child nodes of passed node (mostly used for root (R))
     /// also initializes those created child nodes with a
     /// randomly assigned high UCTB-value
-    void expandAllChildrenOf(NodeType *Node);
+    void expandAllChildrenOf(NodeTypePtr nodeToExpand);
 
     /// Selects the most promising child node and therefore the most promising move
     /// until a leaf node L is reached.
     /// @note	L is a node from which no simulation (playout) has yet been initiated.
     /// @note	changes the simulatedGameState of this class
-    NodeType *selectPromisingNode(NodeType *rootNode);
+    NodeTypePtr selectPromisingNode(NodeTypePtr rootNode);
+
+    NodeTypePtr selectMostVisitedChild(NodeTypePtr rootNode);
 
     /// expands the give leaf_node
     /// @return	expanded node, otherwhise if it wasnt possible to expand the leaf_node L again
     /// @note	first checks whether L ends the game in WIN/DRAW/LOOSE for either player
     ///			2nd if thats not the case, then create one/more child nodes and choose node C from one of them
     ///			child nodes are valid moves from the game position defined by leaf_node L
-    NodeType *expandNode(NodeType *leaf_node);
+    NodeTypePtr expandNode(NodeTypePtr leaf_node);
 
 
     /**
@@ -151,13 +162,13 @@ private:
 
 	 @return	a double indicaing if the game was won by the AI
 	 */
-    double simulation(NodeType *expanded_node);
+    double simulation(NodeTypePtr expanded_node);
 
 
     /// use the result of the simulation (playout) to update (backpropagate) information in
     /// the nodes (of the game tree) on the path from
     /// expanded node (C) to root node (R)
-    void backpropagation(NodeType *expanded_node,
+    void backpropagation(NodeTypePtr expanded_node,
                          const Value ratingToBeUpdated);
 
 
@@ -165,9 +176,9 @@ private:
 
 private:
     /// selects the most visited child node from the game tree rootNode
-    NodeType *selectMostVisitedChild(const NodeType *rootNode);
-    NodeType *findBestNodeWithUCT(NodeType *node);
-    double uctValue(NodeType *node);
+    NodeTypePtr electMostVisitedChild(NodeTypePtr rootNode);
+    NodeTypePtr findBestNodeWithUCT(NodeTypePtr node);
+    double uctValue(NodeTypePtr node);
 
     int pickBestMoveFrom(std::vector<int> &possibleMoves, const GameState &gs);
 
@@ -202,9 +213,9 @@ private:
 	 */
     int pickRandomMove(const GameState &gp);
 
-    NodeType *pickBestChild(NodeType *node, const GameState &gs);
+    NodeTypePtr pickBestChild(NodeTypePtr node, const GameState &gs);
 
-    NodeType *pickRandomChild(NodeType *node);
+    NodeTypePtr pickRandomChild(NodeTypePtr node);
 
     // macht einen zuflligen spielzug und ndert gameDataH
     // es wird die position des Spielsteins zurckgegeben
@@ -215,5 +226,5 @@ private:
 	*/
     int doRandomMove(GameState &gp);
 
-    std::vector<int> setupPossibleMovesOf(NodeType *node);
+    std::vector<int> setupPossibleMovesOf(NodeTypePtr node);
 };

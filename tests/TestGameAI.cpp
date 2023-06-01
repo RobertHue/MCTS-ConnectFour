@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE(TreeTest00)
 
 
 /// tests whether the nodes child node size is <= MAX_X
-void checkChildCountIteratively(NodeType *node, const int MAX_X)
+void checkChildCountIteratively(NodeTypePtr node, const int MAX_X)
 {
     if (node == nullptr)
     {
@@ -31,34 +31,34 @@ void checkChildCountIteratively(NodeType *node, const int MAX_X)
     BOOST_CHECK(node->childNodes.size() <= static_cast<std::size_t>(MAX_X));
 
     /* first delete all subtrees (from left to right) */
-    for (std::size_t i = 0; i < node->childNodes.size(); ++i)
+    for (const auto &child : node->childNodes)
     {
-        checkChildCountIteratively(node->childNodes[i], MAX_X);
+        checkChildCountIteratively(child, MAX_X);
     }
 }
 
 
 void checkChildVisitsValuePlausibily(const GameAI &ai)
 {
-    NodeType *rootNode = ai.getGameTree()->getRoot();
+    const NodeTypePtr rootNode = ai.getGameTree().getRoot();
 
     // test whether root.rating (level0) is equals to the sum of ratings on level2
     // level1 is the opponent's rating
     double sumOfChildRatings = 0.0;
-    for (auto &c1 : rootNode->childNodes)
+    for (auto &child_prev : rootNode->childNodes)
     {
-        for (auto &c2 : c1->childNodes)
+        for (auto &child_next : child_prev->childNodes)
         {
-            sumOfChildRatings += c2->data.rating;
+            sumOfChildRatings += child_next->data.rating;
         }
     }
     BOOST_CHECK(rootNode->data.rating == sumOfChildRatings);
 
     // test whether root.visits are equals to the sum of visits on level1
-    int sumOfChildVisits = 0;
-    for (auto &c : rootNode->childNodes)
+    std::size_t sumOfChildVisits = 0;
+    for (auto &child : rootNode->childNodes)
     {
-        sumOfChildVisits += c->data.visits;
+        sumOfChildVisits += child->data.visits;
     }
     BOOST_CHECK(rootNode->data.visits == sumOfChildVisits);
 }
@@ -67,16 +67,16 @@ void checkChildVisitsValuePlausibily(const GameAI &ai)
 // tests tree create, copy assignment and proper deconstruction of a Tree
 BOOST_AUTO_TEST_CASE(TreeTest01)
 {
-    int ACTUAL, EXPECTED;
+    std::size_t ACTUAL = 0, EXPECTED = 0;
     BOOST_TEST_MESSAGE("TreeTest01");
 
     Tree<NodeData> tree = Tree<NodeData>();
     tree.getRoot()->data.sequenceThatLeadedToThisNode = "root1";
-    NodeType *newNode0 = tree.createNewNode(tree.getRoot());
+    const NodeTypePtr newNode0 = tree.createNewNode(tree.getRoot());
     newNode0->data.sequenceThatLeadedToThisNode = "newNode0";
-    NodeType *newNode1 = tree.createNewNode(tree.getRoot());
+    const NodeTypePtr newNode1 = tree.createNewNode(tree.getRoot());
     newNode1->data.sequenceThatLeadedToThisNode = "newNode1";
-    NodeType *newNode2 = tree.createNewNode(tree.getRoot());
+    const NodeTypePtr newNode2 = tree.createNewNode(tree.getRoot());
     newNode2->data.sequenceThatLeadedToThisNode = "newNode2";
     tree.printLevelOrder();
     ACTUAL = tree.size();
@@ -87,21 +87,19 @@ BOOST_AUTO_TEST_CASE(TreeTest01)
     tree2.getRoot()->data.sequenceThatLeadedToThisNode = "root2";
     Tree<NodeData>::printLevelOrder(tree.getRoot());
 
-    Tree<NodeData> *ptree3 = new Tree<NodeData>;
+    auto ptree3 = std::make_unique<Tree<NodeData>>();
     ptree3->getRoot()->data.sequenceThatLeadedToThisNode = "root3";
-    NodeType *newNode3 = ptree3->createNewNode(ptree3->getRoot());
+    const NodeTypePtr newNode3 = ptree3->createNewNode(ptree3->getRoot());
     newNode3->data.sequenceThatLeadedToThisNode = "newNode3";
-    NodeType *newNode4 = ptree3->createNewNode(ptree3->getRoot());
+    const NodeTypePtr newNode4 = ptree3->createNewNode(ptree3->getRoot());
     newNode4->data.sequenceThatLeadedToThisNode = "newNode4";
-    NodeType *newNode5 = ptree3->createNewNode(ptree3->getRoot());
+    const NodeTypePtr newNode5 = ptree3->createNewNode(ptree3->getRoot());
     newNode5->data.sequenceThatLeadedToThisNode = "newNode5";
     Tree<NodeData>::printLevelOrder(ptree3->getRoot());
     ACTUAL = tree2.size();
     EXPECTED = 4;
     BOOST_CHECK(ACTUAL == EXPECTED);
     BOOST_CHECK(tree.size() == tree2.size());
-
-    delete ptree3;
 }
 
 BOOST_AUTO_TEST_CASE(MCTS_Test01)
@@ -130,7 +128,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test01)
     BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
     checkChildVisitsValuePlausibily(ai);
-    checkChildCountIteratively(ai.getGameTree()->getRoot(), gs.getMAX_X());
+    checkChildCountIteratively(ai.getGameTree().getRoot(), gs.getMAX_X());
 } // --run_test=MCTS_Test01
 
 BOOST_AUTO_TEST_CASE(MCTS_Test02)
@@ -162,7 +160,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test02)
     BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
     checkChildVisitsValuePlausibily(ai);
-    checkChildCountIteratively(ai.getGameTree()->getRoot(), gs.getMAX_X());
+    checkChildCountIteratively(ai.getGameTree().getRoot(), gs.getMAX_X());
 }
 
 BOOST_AUTO_TEST_CASE(MCTS_Test03)
@@ -214,7 +212,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test03)
     BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
     checkChildVisitsValuePlausibily(ai);
-    checkChildCountIteratively(ai.getGameTree()->getRoot(), gs.getMAX_X());
+    checkChildCountIteratively(ai.getGameTree().getRoot(), gs.getMAX_X());
 }
 
 BOOST_AUTO_TEST_CASE(MCTS_Test04)
@@ -274,7 +272,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test04)
                 EXPECTED_COLUMN); // is it really working always?
 
     checkChildVisitsValuePlausibily(ai);
-    checkChildCountIteratively(ai.getGameTree()->getRoot(), gs.getMAX_X());
+    checkChildCountIteratively(ai.getGameTree().getRoot(), gs.getMAX_X());
 }
 
 
@@ -308,7 +306,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test05)
     BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
     checkChildVisitsValuePlausibily(ai);
-    checkChildCountIteratively(ai.getGameTree()->getRoot(), gs.getMAX_X());
+    checkChildCountIteratively(ai.getGameTree().getRoot(), gs.getMAX_X());
 }
 
 BOOST_AUTO_TEST_CASE(MCTS_Test06)
@@ -343,7 +341,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test06)
     BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
     checkChildVisitsValuePlausibily(ai);
-    checkChildCountIteratively(ai.getGameTree()->getRoot(), gs.getMAX_X());
+    checkChildCountIteratively(ai.getGameTree().getRoot(), gs.getMAX_X());
 }
 
 
@@ -375,7 +373,7 @@ BOOST_AUTO_TEST_CASE(MCTS_Test07)
     BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
     checkChildVisitsValuePlausibily(ai);
-    checkChildCountIteratively(ai.getGameTree()->getRoot(), gs.getMAX_X());
+    checkChildCountIteratively(ai.getGameTree().getRoot(), gs.getMAX_X());
 }
 
 /// tests whether the AI places the first token in the middle of the board
@@ -401,6 +399,6 @@ BOOST_AUTO_TEST_CASE(MCTS_Test08)
         BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
 
         checkChildVisitsValuePlausibily(ai);
-        checkChildCountIteratively(ai.getGameTree()->getRoot(), gs.getMAX_X());
+        checkChildCountIteratively(ai.getGameTree().getRoot(), gs.getMAX_X());
     }
 }

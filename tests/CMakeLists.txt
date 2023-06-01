@@ -15,18 +15,14 @@ endif()
 
 
 set(DEPENDENCIES
-    # AI-headers
+    # AI
+    ${CMAKE_SOURCE_DIR}/src/ai/GameAI.cpp
     ${CMAKE_SOURCE_DIR}/include/ai/GameAI.h
     ${CMAKE_SOURCE_DIR}/include/ai/Tree.h  # templated
 
-    # Data-headers
-    ${CMAKE_SOURCE_DIR}/include/data/GameState.h
-
-    # AI-sources
-    ${CMAKE_SOURCE_DIR}/src/ai/GameAI.cpp
-
-    # Data-sources
+    # Data
     ${CMAKE_SOURCE_DIR}/src/data/GameState.cpp
+    ${CMAKE_SOURCE_DIR}/include/data/GameState.h
 
     # MAIN
     main_tests.cpp
@@ -42,6 +38,10 @@ add_executable(
 target_compile_options(
     ${TEST_NAME}
     PRIVATE -Wall -Wextra
+)
+target_compile_definitions(
+    ${TEST_NAME}
+    PRIVATE UNIT_TEST=1
 )
 target_compile_features(
     ${TEST_NAME}

@@ -124,7 +124,9 @@
     "__nullptr": "cpp",
     "qlabel": "cpp",
     "*.ipp": "cpp",
-    "qthread": "cpp"
+    "qthread": "cpp",
+    "codecvt": "cpp",
+    "stack": "cpp"
   },
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,

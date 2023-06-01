@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "ai/GameAI.h"
+#include "ai/Tree.h"
 
 std::ostream &operator<<(std::ostream &os, const NodeDataType &nodeData)
 {
@@ -15,7 +16,7 @@ std::ostream &operator<<(std::ostream &os, const NodeDataType &nodeData)
     return os; // enables concatenation of ostreams with <<
 }
 
-inline void printChildNodeInfo(const NodeType &node)
+inline void printChildNodeInfo(const NodeTypePtr node)
 {
     const int firstTab = 15;
     const int secondTab = 8;
@@ -23,7 +24,6 @@ inline void printChildNodeInfo(const NodeType &node)
     std::cout << "Child Node Info:\n";
     for (auto &n : node->childNodes)
     {
-
         std::cout << "[ Move:" << n->data.chosenMoveThatLeadedToThisNode
                   << std::setw(firstTab) << "Wins:" << std::setw(secondTab)
                   << n->data.rating << std::setw(firstTab)
@@ -52,9 +52,6 @@ int GameAI::findNextMove(const GameState &gameState)
     m_pGameTree->getRoot()->data.player = OP_Player;
 
     std::cout << "Start of MCTS!\n";
-    auto selected_node = std::make_shared<NodeTypePtr>();
-    auto expanded_node = std::make_shared<NodeTypePtr>();
-    const Value rating;
 
     // Record start time
     auto start = std::chrono::high_resolution_clock::now();
@@ -79,17 +76,15 @@ int GameAI::findNextMove(const GameState &gameState)
         ///////////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////////
 
-        NodeTypePtr root_node = m_pGameTree->getRoot();
-        selected_node = selectPromisingNode(root_node);
-
+        const NodeTypePtr root_node = m_pGameTree->getRoot();
+        const NodeTypePtr selected_node = selectPromisingNode(root_node);
 
         //m_pGameTree->printLevelOrder();
         //printChildNodeInfo(m_pGameTree->getRoot());
 
-
         // expansion can also be performed after the simulation..
-        expanded_node = expandNode(selected_node);
-        rating = simulation(expanded_node);
+        const NodeTypePtr expanded_node = expandNode(selected_node);
+        const Value rating = simulation(expanded_node);
 
         /*
 		if (rating == Value::WIN) { std::cout << "\nSIMULATION: AI has won in the simulation :D\n"; }
@@ -121,7 +116,8 @@ int GameAI::findNextMove(const GameState &gameState)
 
     std::cout << "Elapsed time: " << elapsed.count() << " s\n";
     std::cout << "End of MCTS!\n";
-    NodeTypePtr chosenNode = selectMostVisitedChild(m_pGameTree->getRoot());
+    const NodeTypePtr chosenNode =
+        selectMostVisitedChild(m_pGameTree->getRoot());
     if (chosenNode == nullptr)
     {
         std::cout << "AI could not choose a column. Possible reason: board is "
@@ -134,7 +130,7 @@ int GameAI::findNextMove(const GameState &gameState)
 }
 
 
-void GameAI::expandAllChildrenOf(const NodeType &nodeToExpand)
+void GameAI::expandAllChildrenOf(NodeTypePtr nodeToExpand)
 {
     const std::vector<int> possibleMoves = setupPossibleMovesOf(nodeToExpand);
 
@@ -156,7 +152,7 @@ void GameAI::expandAllChildrenOf(const NodeType &nodeToExpand)
     }
 }
 
-NodeTypePtr GameAI::findBestNodeWithUCT(const NodeType &node)
+NodeTypePtr GameAI::findBestNodeWithUCT(NodeTypePtr node)
 {
     // go through all childNodes and choose the one with the highest UCTB
     NodeTypePtr nodeWithHighestUCT =
@@ -175,7 +171,7 @@ NodeTypePtr GameAI::findBestNodeWithUCT(const NodeType &node)
     return nodeWithHighestUCT;
 }
 
-double GameAI::uctValue(const NodeType &node)
+double GameAI::uctValue(NodeTypePtr node)
 {
     // protect against division by zero
     if (node->data.visits == 0)
@@ -276,7 +272,7 @@ NodeTypePtr GameAI::expandNode(NodeTypePtr leaf_node)
 ///////////////////////////
 /// S I M U L A T I O N ///
 ///////////////////////////
-double GameAI::simulation(const NodeType &expanded_node)
+double GameAI::simulation(NodeTypePtr expanded_node)
 {
     // has someone won?
     const Player hasWonSim = simulatedGameState.hasSomeoneWon();
@@ -385,7 +381,7 @@ void GameAI::backpropagation(NodeTypePtr expanded_node,
 ///////////////////////////////////////////////////////////////////////////
 
 
-NodeTypePtr GameAI::selectMostVisitedChild(const NodeType &rootNode)
+NodeTypePtr GameAI::selectMostVisitedChild(NodeTypePtr rootNode)
 {
     NodeTypePtr selected_node = nullptr;
     std::size_t max_visit_count = 0;
@@ -539,7 +535,7 @@ int GameAI::pickRandomMove(const GameState &gs)
     return randomColumn;
 }
 
-NodeTypePtr GameAI::pickBestChild(const NodeType &node, const GameState &gs)
+NodeTypePtr GameAI::pickBestChild(NodeTypePtr node, const GameState &gs)
 {
     const int columnChosen = pickBestMove(gs);
     if (columnChosen == -1)
@@ -563,7 +559,7 @@ NodeTypePtr GameAI::pickBestChild(const NodeType &node, const GameState &gs)
     }
     return bestChild;
 }
-NodeTypePtr GameAI::pickRandomChild(const NodeType &node)
+NodeTypePtr GameAI::pickRandomChild(NodeTypePtr node)
 {
     if (node->childNodes.size() > 0)
     {
@@ -591,7 +587,7 @@ int GameAI::doRandomMove(GameState &gs)
     return pickedColumn;
 }
 
-std::vector<int> GameAI::setupPossibleMovesOf(const NodeType &node)
+std::vector<int> GameAI::setupPossibleMovesOf(NodeTypePtr node)
 {
     // make a deep copy of the simulatedGameState
     const GameState tmpState = simulatedGameState;
@@ -616,9 +612,10 @@ std::vector<int> GameAI::setupPossibleMovesOf(const NodeType &node)
 
 ///////////////////////////////////////////////////////////////////////////
 
-std::shared_ptr<TreeType> GameAI::getGameTree() const
+const TreeType &GameAI::getGameTree() const
 {
-    return m_pGameTree;
+    const TreeType &constRef = *m_pGameTree;
+    return constRef;
 }
 
 Player GameAI::getPlayer() const

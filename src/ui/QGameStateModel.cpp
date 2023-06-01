@@ -61,26 +61,26 @@ QVariant QGameStateModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::FontRole)
     {
-        QFont sansFont("Helvetica [Cronyx]", 18);
+        const QFont sansFont("Helvetica [Cronyx]", 18);
         return sansFont;
     }
 
     if (!index.isValid())
     {
-        return QVariant();
+        return QVariant{};
     }
 
     if (index.row() >= m_gameState.getMAX_Y() || index.row() < 0 ||
         index.column() >= m_gameState.getMAX_X() || index.column() < 0)
     {
-        return QVariant();
+        return QVariant{};
     }
 
     if (role == Qt::DisplayRole)
     {
 
-        int column = index.column();
-        int row = index.row();
+        const int column = index.column();
+        const int row = index.row();
 
         const int data = m_gameState.getGameDataAt(column, row);
 
@@ -98,7 +98,7 @@ QVariant QGameStateModel::data(const QModelIndex &index, int role) const
         }
     }
 
-    return QVariant();
+    return QVariant{};
 }
 
 // provides views with information to show in their headers (?)
@@ -110,7 +110,7 @@ QVariant QGameStateModel::headerData(int section,
 
 
     if (role != Qt::DisplayRole)
-        return QVariant();
+        return QVariant{};
 
     if (orientation == Qt::Horizontal)
         return QString("Column %1").arg(section);
@@ -195,11 +195,13 @@ const GameState &QGameStateModel::getGameState() const
 
 void QGameStateModel::insertTokenIntoColumn(int col)
 {
-    bool isValidMove;
+    bool isValidMove = false;
     isValidMove = m_gameState.insertTokenIntoColumn(col);
+    // TODO: check whether move was valid and return a QDialog if not
+
     const Position pos = m_gameState.getPositionOfLastPlacedToken();
-    QModelIndex topLeftIdx = this->index(pos.x, pos.y);
-    QModelIndex bottomRightIdx = this->index(pos.x + 1, pos.y + 1);
+    const QModelIndex topLeftIdx = this->index(pos.x, pos.y);
+    const QModelIndex bottomRightIdx = this->index(pos.x + 1, pos.y + 1);
     //Try to force the view(s) to redraw at certain cell:
     emit QAbstractItemModel::dataChanged(topLeftIdx, bottomRightIdx);
     checkWinner(); // has someone won?
@@ -212,29 +214,29 @@ bool QGameStateModel::checkWinner()
     const Player hasWon = m_gameState.hasSomeoneWon();
     if (hasWon == m_playerYou)
     {
-        std::string s = "Congratulations!!! You have won!!! :)\n";
+        const std::string s = "Congratulations!!! You have won!!! :)\n";
         std::cout << s;
         m_endOfGame = true;
-        QWinnerDialog *w = new QWinnerDialog(QString(s.c_str()));
+        auto *w = new QWinnerDialog(QString(s.c_str()));
         w->show();
         return true;
     }
     else if (hasWon == m_playerOpp)
     {
-        std::string s = "Unfortunately the KI has won... :(\n";
+        const std::string s = "Unfortunately the KI has won... :(\n";
         std::cout << s;
         m_endOfGame = true;
-        QWinnerDialog *w = new QWinnerDialog(QString(s.c_str()));
+        auto *w = new QWinnerDialog(QString(s.c_str()));
         w->show();
         return true;
     }
     if (m_gameState.getNumOfFreeFields() <= 0)
     {
-        std::string s = "Game is over. You did well!."
-                        "No more cells are free on the Game!\n";
+        const std::string s = "Game is over. You did well!."
+                              "No more cells are free on the Game!\n";
         std::cout << s;
         m_endOfGame = true;
-        QWinnerDialog *w = new QWinnerDialog(QString(s.c_str()));
+        auto *w = new QWinnerDialog(QString(s.c_str()));
         w->show();
         return true;
     }

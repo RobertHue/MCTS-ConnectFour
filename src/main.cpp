@@ -16,7 +16,7 @@ const int MAX_Y = 5;
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
+    const QApplication app(argc, argv);
 
     //**********************
     //*** Setup Model ******
@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     //********************
     //*** Setup AI *******
     //********************
-    QGameAI_Thread gameAI_Thread(gameStateModel, Player::PLAYER_2);
+    const QGameAI_Thread gameAI_Thread(gameStateModel, Player::PLAYER_2);
 
     // setup a connection between signal playerturndone(you) and doturn (ai),
     // so that the ai can start its turn when you are done (emit playerTurnDone)
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     //*** Setup View ******
     //*********************
     /// construct the view, set the model and show
-    QTableView *tableView = new QTableView;
+    auto tableView = std::make_unique<QTableView>();
     tableView->setModel(&gameStateModel);
     tableView->setWindowTitle("Connect-Four");
     tableView->resize(460, 280);

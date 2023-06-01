@@ -12,35 +12,33 @@
 //////// N o d e ////////
 /////////////////////////
 
-template <typename _DataType>
+template <typename T>
 class Node
 {
 public:
     Node();
-    Node(const _DataType &src);
-    Node(_DataType &&src);
+    Node(const T &src);
+    Node(T &&src);
 
-    Node<_DataType> *parent;                   /// parent
-    std::vector<Node<_DataType> *> childNodes; /// children
-    _DataType data;                            /// data
+    std::shared_ptr<Node<T>> parent;                  /// parent
+    std::vector<std::shared_ptr<Node<T>>> childNodes; /// children
+    T data;                                           /// data
 };
 
 //////////////////////////////////////////////////
 
-template <typename _DataType>
-inline Node<_DataType>::Node() : parent(nullptr), childNodes(), data()
+template <typename T>
+inline Node<T>::Node() : parent(nullptr), childNodes(), data()
 {
 }
 
-template <typename _DataType>
-inline Node<_DataType>::Node(const _DataType &src)
-    : parent(nullptr), childNodes(), data(src)
+template <typename T>
+inline Node<T>::Node(const T &src) : parent(nullptr), childNodes(), data(src)
 {
 }
 
-template <typename _DataType>
-inline Node<_DataType>::Node(_DataType &&src)
-    : parent(nullptr), childNodes(), data(src)
+template <typename T>
+inline Node<T>::Node(T &&src) : parent(nullptr), childNodes(), data(src)
 {
 }
 
@@ -48,66 +46,66 @@ inline Node<_DataType>::Node(_DataType &&src)
 //////// T r e e ////////
 /////////////////////////
 
-template <typename _DataType>
+template <typename T>
 class Tree
 {
 public:
-    using NodeType = Node<_DataType>; /// alias type for the template type used
+    using NodeType = Node<T>;
+    using NodeTypePtr = std::shared_ptr<NodeType>;
 
 public:
-    Tree();                                      /// constructor
-    ~Tree();                                     /// destructor
-    Tree(const Tree<_DataType> &src);            /// Copy constructor
-    Tree &operator=(const Tree<_DataType> &rhs); // copy assignment constructor
+    Tree();                              // constructor
+    ~Tree();                             // destructor
+    Tree(const Tree<T> &src);            // Copy constructor
+    Tree &operator=(const Tree<T> &rhs); // copy assignment constructor
     // destructor, copy constructor and copy assignment constructor
     // just needed for when pointer is used
 
 public:
     bool isEmpty() const;
-    Node<_DataType> *getRoot() const;
-    std::size_t size() const; /// returns the number of nodes
+    NodeTypePtr getRoot() const;
+    std::size_t size() const; // returns the number of nodes
 
-    // Prints the n-ary tree level wise (level-order)
-    static void printLevelOrder(NodeType *rootNode);
-    void
-    printLevelOrder(); // prints the level order from the position of the root node
+    // prints the level order from the position of the root node
     //enables prettier calls, eg: tree.printLevelOrder();
+    void printLevelOrder();
 
-    NodeType *createNewNode(
-        NodeType *
-            dstNode); /// creates a new node at destination with default values returning the newly created node
+    // creates a new node at destination with default values returning the newly created node
+    NodeTypePtr createNewNode(NodeTypePtr dstNode);
 
-private:
-    void clear(
-        NodeType *
-            node); // clears the subtree from the position of the passed node, used by destructor
-    NodeType *copyTree(
-        NodeType *parent,
-        NodeType *
-            other); // copies the tree on the right to the left, used by copy constructors
+public: /* STATIC */
+    // Prints the n-ary tree level wise (level-order)
+    static void printLevelOrder(NodeTypePtr rootNode);
 
 private:
-    NodeType *m_root; // stores a pointer to the root node of the tree
+    // clears the subtree from the position of the passed node, used by destructor
+    void clear(NodeTypePtr node);
+
+    // copies the tree on the right to the left, used by copy constructors
+    NodeTypePtr copyTree(NodeTypePtr parent, NodeTypePtr other);
+
+private:
+    NodeTypePtr m_root; // stores a pointer to the root node of the tree
     int m_amountOfNodes; // cached value of the tree size, so no traversal needed anymore to find it out
 };
 
-template <typename _DataType>
+template <typename T>
 std::ostream &operator<<(
     std::ostream &,
-    const Node<_DataType> &
+    const Node<T> &
         node); // friend to ostream not needed because it has public access to struct anyways
 
 //////////////////////////////////////////////////
 
-template <typename _DataType>
-Tree<_DataType>::Tree() : m_amountOfNodes(0)
+template <typename T>
+Tree<T>::Tree() : m_amountOfNodes(0)
 {
     //cout << "constructor called \n";
     m_root = createNewNode(nullptr);
 }
 
-template <typename _DataType>
-Tree<_DataType>::~Tree()
+template <typename T>
+Tree<T>::~Tree()
 {
     //cout << "destructor called \n";
     //std::cout << "before call to clear: " << m_amountOfNodes << "\n";
@@ -115,8 +113,8 @@ Tree<_DataType>::~Tree()
     //std::cout << "after call to clear: " << m_amountOfNodes << "\n";
 }
 
-template <typename _DataType>
-Tree<_DataType>::Tree(const Tree<_DataType> &src)
+template <typename T>
+Tree<T>::Tree(const Tree<T> &src)
 {
     //cout << "copy constructor called \n";
     // check for self-assignment
@@ -130,8 +128,8 @@ Tree<_DataType>::Tree(const Tree<_DataType> &src)
     m_root = copyTree(nullptr, src.m_root);
 }
 
-template <typename _DataType>
-Tree<_DataType> &Tree<_DataType>::operator=(const Tree<_DataType> &rhs)
+template <typename T>
+Tree<T> &Tree<T>::operator=(const Tree<T> &rhs)
 {
     //cout << "copy assignment constructor called \n";
 
@@ -150,22 +148,22 @@ Tree<_DataType> &Tree<_DataType>::operator=(const Tree<_DataType> &rhs)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-template <typename _DataType>
-inline bool Tree<_DataType>::isEmpty() const
+template <typename T>
+inline bool Tree<T>::isEmpty() const
 {
     return !m_root;
 }
 
-template <typename _DataType>
-inline Node<_DataType> *Tree<_DataType>::getRoot() const
+template <typename T>
+inline typename Tree<T>::NodeTypePtr Tree<T>::getRoot() const
 {
     return m_root;
 }
 
-template <typename _DataType>
-inline Node<_DataType> *Tree<_DataType>::createNewNode(NodeType *dstNode)
+template <typename T>
+inline typename Tree<T>::NodeTypePtr Tree<T>::createNewNode(NodeTypePtr dstNode)
 {
-    NodeType *newNode = new NodeType;
+    NodeTypePtr newNode = std::make_shared<NodeType>();
 
     // addNodeTo destination node
     newNode->parent = dstNode;
@@ -178,16 +176,28 @@ inline Node<_DataType> *Tree<_DataType>::createNewNode(NodeType *dstNode)
     return newNode;
 }
 
+template <typename T>
+inline void Tree<T>::printLevelOrder()
+{
+    Tree<T>::printLevelOrder(m_root);
+}
+
+template <typename T>
+inline std::size_t Tree<T>::size() const
+{
+    return m_amountOfNodes;
+}
+
 // Print the tree level-order assisted by queue
-template <typename _DataType>
-inline void Tree<_DataType>::printLevelOrder(NodeType *rootNode)
+template <typename T>
+inline void Tree<T>::printLevelOrder(NodeTypePtr rootNode)
 {
     if (rootNode == nullptr)
     {
         return;
     }
-    std::queue<NodeType *> q; // Create a queue (FIFO)
-    q.push(rootNode);         // Enqueue root
+    std::queue<NodeTypePtr> q; // Create a queue (FIFO)
+    q.push(rootNode);          // Enqueue root
 
     int level = 0;
     while (!q.empty())
@@ -199,7 +209,7 @@ inline void Tree<_DataType>::printLevelOrder(NodeType *rootNode)
         while (n > 0)
         {
             // Dequeue an item from queue and print it
-            NodeType *p = q.front();
+            NodeTypePtr p = q.front();
             q.pop();
             std::cout << std::setw(10) << *p << " ";
 
@@ -216,20 +226,8 @@ inline void Tree<_DataType>::printLevelOrder(NodeType *rootNode)
     std::cout << "\n\n";
 }
 
-template <typename _DataType>
-inline void Tree<_DataType>::printLevelOrder()
-{
-    Tree<_DataType>::printLevelOrder(m_root);
-}
-
-template <typename _DataType>
-inline std::size_t Tree<_DataType>::size() const
-{
-    return m_amountOfNodes;
-}
-
-template <typename _DataType>
-inline void Tree<_DataType>::clear(NodeType *node)
+template <typename T>
+inline void Tree<T>::clear(NodeTypePtr node)
 {
     if (node == nullptr)
     {
@@ -242,15 +240,15 @@ inline void Tree<_DataType>::clear(NodeType *node)
         clear(node->childNodes[i]);
     }
 
-    /* then delete the node */
     //cout << "\n\n Deleting node: " << node->UCTB << "\n\n";
-    delete node;
+    // TODO: make sure that the cleared node is really cleared inside memory;
+    // TODO: also since its a shared_ptr; probably other pointers will do as well
     --m_amountOfNodes;
 }
 
-template <typename _DataType>
-inline Node<_DataType> *Tree<_DataType>::copyTree(NodeType *parent,
-                                                  NodeType *src)
+template <typename T>
+inline typename Tree<T>::NodeTypePtr Tree<T>::copyTree(NodeTypePtr parent,
+                                                       NodeTypePtr src)
 {
     if (src == nullptr)
     {
@@ -258,7 +256,7 @@ inline Node<_DataType> *Tree<_DataType>::copyTree(NodeType *parent,
     }
 
     // create newNode and copy data
-    NodeType *newNode = createNewNode(parent);
+    NodeTypePtr newNode = createNewNode(parent);
     newNode->data = src->data;
 
     // copy all subtrees from current node (parent)
@@ -271,8 +269,8 @@ inline Node<_DataType> *Tree<_DataType>::copyTree(NodeType *parent,
     return newNode;
 }
 
-template <typename _DataType>
-inline std::ostream &operator<<(std::ostream &os, const Node<_DataType> &node)
+template <typename T>
+inline std::ostream &operator<<(std::ostream &os, const Node<T> &node)
 {
     os << node.data;
     return os; // enables concatenation of ostreams with <<
