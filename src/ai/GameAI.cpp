@@ -64,55 +64,17 @@ int GameAI::findNextMove(const GameState &gameState)
 
     for (size_t i = 0; i < MAX_NUM_OF_ITERATIONS; ++i)
     {
-
-        // reset the simulated GameState
-        // make a mutable copy of the const GameState (deep copy)
-        simulatedGameState = gameState;
-
-        //@note:   root-node is always the opponent's turn (OP_Player),
-        //which is also the current turn, so now the AI can chose it's turn
-
-        ///////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////
-
+        simulatedGameState = gameState; // reset the simulated GameState
         const NodeTypePtr root_node = m_pGameTree->getRoot();
         const NodeTypePtr selected_node = selectPromisingNode(root_node);
-
-        //m_pGameTree->printLevelOrder();
-        //printChildNodeInfo(m_pGameTree->getRoot());
-
-        // expansion can also be performed after the simulation..
         const NodeTypePtr expanded_node = expandNode(selected_node);
         const Value rating = simulation(expanded_node);
-
-        /*
-		if (rating == Value::WIN) { std::cout << "\nSIMULATION: AI has won in the simulation :D\n"; }
-		if (rating == Value::DRAW) { std::cout << "\nSIMULATION: draw\n"; }
-		if (rating == Value::LOOSE) { std::cout << "\nSIMULATION:  AI has lost in the simulation :(\n"; }
-		*/
-
         backpropagation(expanded_node, rating);
-
-        ///////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////
-        ///////////////////////////////////////////////////////////////////
-        //@todo getAvailablePositions, getEmptyPosition,
-        // debug:
-        // TreeType::levelOrder(m_pGameTree->getRoot());
-        // GameState::drawGameStateOnConsole(simulatedGameState.getGameData(),
-        // simulatedGameState.getMAX_X(), simulatedGameState.getMAX_Y());
-        // system("PAUSE");
     }
 
     // Record end time
     auto finish = std::chrono::high_resolution_clock::now();
     const std::chrono::duration<double> elapsed = finish - start;
-
-    // debug:
-    //TreeType::printLevelOrder(m_pGameTree->getRoot());
-    //m_pGameTree->printLevelOrder();
-    //printChildNodeInfo(m_pGameTree->getRoot());
 
     std::cout << "Elapsed time: " << elapsed.count() << " s\n";
     std::cout << "End of MCTS!\n";
@@ -189,7 +151,6 @@ double GameAI::uctValue(NodeTypePtr node)
 
     // calculate UCTB value
     node->data.UCTB = node->data.winratio + node->data.uct;
-
     return node->data.UCTB;
 }
 
@@ -292,15 +253,6 @@ double GameAI::simulation(NodeTypePtr expanded_node)
     // for (int i = 0; i < NUM_OF_SIMULATION_FRAMES; ++i)
     while (true)
     {
-        /*
-		if (simulatedGameState.getTurnPlayer() == AI_Player) { std::cout << "AI's turn:\n"; }
-		if (simulatedGameState.getTurnPlayer() == OP_Player) { std::cout << "OP's turn:\n"; }
-
-		system("PAUSE");
-        GameState::drawGameStateOnConsole(simulatedGameState.getGameData(),
-				simulatedGameState.getMAX_X(), simulatedGameState.getMAX_Y());
-		*/
-
         // choose a move
         // int columnChosen = pickRandomMove(simulatedGameState);
         const int columnChosen = pickBestMove(simulatedGameState);
@@ -376,11 +328,6 @@ void GameAI::backpropagation(NodeTypePtr expanded_node,
     }
 }
 
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
-
-
 NodeTypePtr GameAI::selectMostVisitedChild(NodeTypePtr rootNode)
 {
     NodeTypePtr selected_node = nullptr;
@@ -422,10 +369,6 @@ int GameAI::pickBestMoveFrom(std::vector<int> &possibleMoves,
     // try to look for a move that hinders the OtherPlayer from winning
     for (const auto &move : possibleMoves)
     {
-        //GameState tmpState = gs;  // make mutable copy of the const GameState
-        //tmpState.setTurnPlayer(OtherPlayer);	// simulate a turn of the opponent
-        //tmpState.insertTokenIntoColumn(possibleMoves[i]); // make the move on the copy
-
         const Player playerThatJustWon = gs.wouldSomeoneWin(move);
         if (playerThatJustWon == OtherPlayer)
         {
@@ -442,17 +385,6 @@ int GameAI::pickBestMoveFrom(std::vector<int> &possibleMoves,
 int GameAI::pickRandomMoveFrom(std::vector<int> &possibleMoves,
                                const GameState &gs)
 {
-    /*
-	std::vector<std::vector<int>> gameData = gs.getGameData();
-	// collect every column, where a token can be put into:
-	std::vector<int> possibleColumns;
-	for (int i = 0; i < gs.getMAX_X(); ++i) {
-		if (gameData[i][0] == FREE_FIELD) {
-			possibleColumns.push_back(i);
-		}
-	}
-	if (possibleColumns.empty()) { return -1; } // all columns are already full
-	*/
     /* initialize random seed: */
     time_t t = std::time(nullptr);
     time(&t);
@@ -474,9 +406,6 @@ int GameAI::pickBestMove(const GameState &gs)
     // try to look for a winning move for current player
     for (col_move = 0; col_move < gs.getMAX_X(); ++col_move)
     {
-        //GameState tmpState = gs;  // make a mutable copy of the const GameState
-        //tmpState.insertTokenIntoColumn(col_move); // make the move on the copy
-
         const Player playerThatJustWon = gs.wouldSomeoneWin(col_move);
         if (playerThatJustWon == currentPlayer)
         {
@@ -487,10 +416,6 @@ int GameAI::pickBestMove(const GameState &gs)
     // try to look for a move that hinders the OtherPlayer from winning
     for (col_move = 0; col_move < gs.getMAX_X(); ++col_move)
     {
-        //GameState tmpState = gs;  // make mutable copy of the const GameState
-        //tmpState.setTurnPlayer(OtherPlayer);	// simulate a turn of the opponent
-        //tmpState.insertTokenIntoColumn(col_move); // make the move on the copy
-
         const Player playerThatJustWon = gs.wouldSomeoneWin(col_move);
         if (playerThatJustWon == OtherPlayer)
         {
@@ -559,6 +484,7 @@ NodeTypePtr GameAI::pickBestChild(NodeTypePtr node, const GameState &gs)
     }
     return bestChild;
 }
+
 NodeTypePtr GameAI::pickRandomChild(NodeTypePtr node)
 {
     if (node->childNodes.size() > 0)
