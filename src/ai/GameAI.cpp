@@ -7,13 +7,15 @@
 #include "ai/GameAI.h"
 #include "ai/Tree.h"
 
+/**
+ * @brief ostream operator<< Overloading for NodeDataType
+ */
 std::ostream &operator<<(std::ostream &os, const NodeDataType &nodeData)
 {
     os << nodeData.sequenceThatLeadedToThisNode
        << "::" << static_cast<int>(nodeData.UCTB) << " | " << nodeData.rating
        << "/" << nodeData.visits << '\t';
-
-    return os; // enables concatenation of ostreams with <<
+    return os;
 }
 
 inline void printChildNodeInfo(const NodeTypePtr node)
