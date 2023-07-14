@@ -34,7 +34,7 @@ jobs:
           conan profile detect
           conan profile list
           conan profile path default
-          conan profile show default
+          conan profile show
 
       - name: Create build-directory
         run: mkdir -p build/
