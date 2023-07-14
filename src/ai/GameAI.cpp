@@ -24,7 +24,7 @@ inline void printChildNodeInfo(const NodeTypePtr node)
     const int secondTab = 8;
     std::cout << "-----------------------\n";
     std::cout << "Child Node Info:\n";
-    for (auto &n : node->childNodes)
+    for (const auto &n : node->childNodes)
     {
         std::cout << "[ Move:" << n->data.chosenMoveThatLeadedToThisNode
                   << std::setw(firstTab) << "Wins:" << std::setw(secondTab)
