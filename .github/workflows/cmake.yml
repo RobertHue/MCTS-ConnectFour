@@ -35,7 +35,11 @@ jobs:
           conan install .. --output-folder=. --build=missing
 
       - name: Conan version
-        run: echo "${{ steps.conan.outputs.version }}"
+        run: |
+          cd build/
+          pwd
+          ls -lisa
+          echo "${{ steps.conan.outputs.version }}"
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -52,4 +56,4 @@ jobs:
         working-directory: ${{github.workspace}}/build
         # Execute tests defined by the CMake configuration.
         # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-        run: ../bin/MCTS_ConnectFour_tests # ctest -C ${{env.BUILD_TYPE}}
+        run: ./bin/MCTS_ConnectFour_tests # ctest -C ${{env.BUILD_TYPE}}
