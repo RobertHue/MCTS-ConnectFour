@@ -24,19 +24,13 @@ jobs:
         id: conan
         uses: turtlebrowser/get-conan@main
         with:
-          version: 1.50.0
-      # also see http://codingadventures.org/2021/10/23/github-actions-and-conan/
+          version: 2.0.6
 
       - name: Conan version
         run: echo "${{ steps.conan.outputs.version }}"
 
-      - name: Create default profile
-        run: conan profile new default --detect
-
-      - name: Update profile
-        run: |
-          conan profile update settings.compiler.cppstd=gnu20 default
-          conan profile update settings.compiler.libcxx=libstdc++11 default
+      - name: Conan - set profile
+        run: conan config install
 
       - name: Create build-directory
         run: mkdir -p build/
