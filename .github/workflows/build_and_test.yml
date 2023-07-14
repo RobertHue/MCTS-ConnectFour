@@ -32,8 +32,10 @@ jobs:
       - name: Create build-directory
         run: mkdir -p build/
 
-      - name: Install dependencies
-        run: conan install . -s build_type=${{env.BUILD_TYPE}} --install-folder=${{github.workspace}}/build
+      - name: Conan - Install dependencies
+        run: |
+          cd build
+          conan install .. --output-folder=. --build=missing
 
       - name: Conan version
         run: echo "${{ steps.conan.outputs.version }}"
