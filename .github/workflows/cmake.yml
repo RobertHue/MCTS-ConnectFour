@@ -32,7 +32,9 @@ jobs:
           cd build/
 
       - name: Configure Conan
-        run: conan install .. --output-folder=. --build=missing
+        run: pwd
+          ls .
+          conan install .. --output-folder=. --build=missing
 
       - name: Conan version
         run: echo "${{ steps.conan.outputs.version }}"
@@ -45,10 +47,7 @@ jobs:
 
       - name: Build
         # Build your program with the given configuration
-        run:
-          cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-          pwd
-          ls .
+        run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
         # cmake --build .
 
       - name: Test
