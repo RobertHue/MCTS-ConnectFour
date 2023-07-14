@@ -33,9 +33,7 @@ jobs:
         run: |
           cd build/
           conan profile detect
-          pwd
-          ls -lisa
-          ls -lisa ..
+          conan profile update settings.compiler.cppstd=gnu20 default
           conan install .. --output-folder=. --build=missing
 
       - name: Conan version
