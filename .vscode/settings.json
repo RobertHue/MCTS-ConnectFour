@@ -176,6 +176,8 @@
     "editor.defaultFormatter": "yzhang.markdown-all-in-one",
     "editor.wordWrap": "wordWrapColumn"
   },
+  "yaml.completion": false,
+  "yaml.format.enable": true,
   "[yaml]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "redhat.vscode-yaml"

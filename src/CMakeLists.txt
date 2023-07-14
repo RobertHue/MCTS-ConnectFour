@@ -1,16 +1,17 @@
 #-----------------------------------------------------------------------------
 # Configure & Find QT5
-set(CMAKE_INCLUDE_CURRENT_DIR ON)	# Find includes in corresponding build directories
+# set(CMAKE_INCLUDE_CURRENT_DIR ON)	# Find includes in corresponding build directories
+find_package(Qt5Widgets COMPONENTS Widgets)
 set(CMAKE_AUTOMOC ON)	# Instruct CMake to run moc automatically when needed
 set(CMAKE_AUTOUIC OFF)	# Create code from a list of Qt designer ui files
-find_package(Qt5 REQUIRED)
-find_package(Qt5Widgets REQUIRED)
+set(CMAKE_AUTORCC ON)
+message(STATUS "Qt5Widgets_FOUND: ${Qt5Widgets_FOUND}")
 if(Qt5Widgets_FOUND)
     message(STATUS "Qt5Widgets found: ${Qt5Widgets_INCLUDE_DIRS}")
     message(STATUS "Qt5Widgets libraries: ${Qt5Widgets_LIBRARIES}")
     # Other configurations or target definitions
 else()
-    message(FATAL_ERROR "Boost's unit_test_framework component not found.")
+    message(FATAL_ERROR "Qt5Widgets component not found.")
 endif()
 
 
@@ -49,10 +50,6 @@ add_executable(
 target_compile_options(
     ${EXECUTABLE_NAME}
     PRIVATE -Wall -Wextra
-)
-target_compile_features(
-    ${EXECUTABLE_NAME}
-    PRIVATE cxx_std_17
 )
 target_include_directories(
     ${EXECUTABLE_NAME}

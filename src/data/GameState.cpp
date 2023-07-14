@@ -4,9 +4,6 @@
 
 ///////////////////////////////////////////////
 
-
-///////////////////////////////////////////////
-
 GameState::GameState(int x, int y)
     : turnPlayer(Player::NONE), otherPlayer(Player::NONE), MAX_X(x), MAX_Y(y),
       numOfFreeFields(MAX_X * MAX_Y)
@@ -17,7 +14,7 @@ GameState::GameState(int x, int y)
     this->setTurnPlayer(Player::PLAYER_1);
 }
 
-///////////////////////////////
+///////////////////
 //// GETTER  //////
 ///////////////////
 
@@ -82,7 +79,6 @@ std::vector<int> GameState::getPossibleMoves() const
     {
         for (row = MAX_Y - 1; row >= 0; --row)
         {
-
             // check whether insertion cell is still free
             if (m_gameData[col][row] == static_cast<int>(Player::NONE))
             {
@@ -95,7 +91,7 @@ std::vector<int> GameState::getPossibleMoves() const
     return possibleMoves;
 }
 
-///////////////////////////////
+///////////////////
 //// SETTER  //////
 ///////////////////
 
@@ -155,7 +151,7 @@ bool GameState::insertTokenIntoColumn(int column)
             return VALID_MOVE;
         }
     }
-    // token couldn't be placed at column. Please choose again!
+    // Token couldn't be placed at column. Please choose again!
     // Reason: Column is already full
     return NO_VALID_MOVE;
 }
@@ -329,7 +325,7 @@ Player GameState::hasSomeoneWon()
     return Player::NONE; // noone has won yet!
 }
 
-///////////////////////////////
+//////////////////////
 //// VISUALIZE  //////
 //////////////////////
 

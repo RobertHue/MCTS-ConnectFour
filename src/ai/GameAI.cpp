@@ -7,10 +7,6 @@
 #include "ai/GameAI.h"
 #include "ai/Tree.h"
 
-// test github workflow
-/**
- * @brief ostream operator<< Overloading for NodeDataType
- */
 std::ostream &operator<<(std::ostream &os, const NodeDataType &nodeData)
 {
     os << nodeData.sequenceThatLeadedToThisNode
@@ -160,6 +156,7 @@ double GameAI::uctValue(NodeTypePtr node)
 /////////////////////////
 /// S E L E C T I O N ///
 /////////////////////////
+
 NodeTypePtr GameAI::selectPromisingNode(NodeTypePtr rootNode)
 {
     auto selectedNode = std::move(rootNode);
@@ -193,6 +190,7 @@ NodeTypePtr GameAI::selectPromisingNode(NodeTypePtr rootNode)
 /////////////////////////
 /// E X P A N S I O N ///
 /////////////////////////	// L -> C
+
 NodeTypePtr GameAI::expandNode(NodeTypePtr leaf_node)
 {
     // e1.) Does the Leaf Node L node end the Game? (won/loss/tie)?
@@ -236,6 +234,7 @@ NodeTypePtr GameAI::expandNode(NodeTypePtr leaf_node)
 ///////////////////////////
 /// S I M U L A T I O N ///
 ///////////////////////////
+
 double GameAI::simulation(NodeTypePtr expanded_node)
 {
     // has someone won?
@@ -287,6 +286,7 @@ double GameAI::simulation(NodeTypePtr expanded_node)
 /////////////////////////////////////
 /// B A C K P R O P A G A T I O N ///
 /////////////////////////////////////
+
 void GameAI::backpropagation(NodeTypePtr expanded_node,
                              const Value ratingToBeUpdated)
 {

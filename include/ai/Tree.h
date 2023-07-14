@@ -90,33 +90,25 @@ private:
 };
 
 template <typename T>
-std::ostream &operator<<(
-    std::ostream &,
-    const Node<T> &
-        node); // friend to ostream not needed because it has public access to struct anyways
+std::ostream &operator<<(std::ostream &, const Node<T> &node);
 
 //////////////////////////////////////////////////
 
 template <typename T>
 Tree<T>::Tree() : m_amountOfNodes(0)
 {
-    //cout << "constructor called \n";
     m_root = createNewNode(nullptr);
 }
 
 template <typename T>
 Tree<T>::~Tree()
 {
-    //cout << "destructor called \n";
-    //std::cout << "before call to clear: " << m_amountOfNodes << "\n";
     clear(m_root);
-    //std::cout << "after call to clear: " << m_amountOfNodes << "\n";
 }
 
 template <typename T>
 Tree<T>::Tree(const Tree<T> &src)
 {
-    //cout << "copy constructor called \n";
     // check for self-assignment
     if (this == &src)
     {
@@ -131,8 +123,6 @@ Tree<T>::Tree(const Tree<T> &src)
 template <typename T>
 Tree<T> &Tree<T>::operator=(const Tree<T> &rhs)
 {
-    //cout << "copy assignment constructor called \n";
-
     // check for self-assignment
     if (this == &rhs)
     {
@@ -240,9 +230,6 @@ inline void Tree<T>::clear(NodeTypePtr node)
         clear(node->childNodes[i]);
     }
 
-    //cout << "\n\n Deleting node: " << node->UCTB << "\n\n";
-    // TODO: make sure that the cleared node is really cleared inside memory;
-    // TODO: also since its a shared_ptr; probably other pointers will do as well
     --m_amountOfNodes;
 }
 

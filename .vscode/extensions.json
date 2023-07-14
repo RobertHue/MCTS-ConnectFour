@@ -1,6 +1,7 @@
 {
-    "recommendations": [
-        "franneck94.vscode-c-cpp-dev-extension-pack",
-        "franneck94.vscode-coding-tools-extension-pack"
-    ]
+  "recommendations": [
+    "franneck94.vscode-c-cpp-dev-extension-pack",
+    "franneck94.vscode-coding-tools-extension-pack",
+    "github.vscode-github-actions"
+  ]
 }
