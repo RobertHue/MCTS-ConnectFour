@@ -32,7 +32,8 @@ jobs:
           cd build/
 
       - name: Configure Conan
-        run: pwd
+        run: |
+          pwd
           ls .
           conan install .. --output-folder=. --build=missing
 
