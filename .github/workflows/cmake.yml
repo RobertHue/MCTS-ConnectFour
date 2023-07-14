@@ -20,11 +20,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Conan
-        id: conan
-        uses: turtlebrowser/get-conan@main
-        with:
-          version: 2.0.6
+      # - name: Install Conan
+      #   id: conan
+      #   uses: turtlebrowser/get-conan@main
+      #   with:
+      #     version: 2.0.6
+      # Instead:
+      - name: Get Conan
+        uses: turtlebrowser/get-conan@v2.0.6
 
       - name: Create build-directory
         run: mkdir -p build/
