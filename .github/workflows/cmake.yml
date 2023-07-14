@@ -26,15 +26,12 @@ jobs:
         with:
           version: 2.0.6
 
-      - name: Create build directory
-        run: |
-          mkdir -p build/
-          cd build/
+      - name: Create build-directory
+        run: mkdir -p build/
 
       - name: Configure Conan
         run: |
-          pwd
-          ls .
+          cd build/
           conan install .. --output-folder=. --build=missing
 
       - name: Conan version
