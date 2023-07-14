@@ -29,16 +29,18 @@ jobs:
       - name: Conan version
         run: echo "${{ steps.conan.outputs.version }}"
 
+      - name: Conan - Create the profiles
+        run: |
+          conan profile detect
+          conan profile list
+
       - name: Create build-directory
         run: mkdir -p build/
 
       - name: Conan - Install dependencies
         run: |
-          conan profile list
           cd build
-          conan profile list
-          conan install .. -s build_type=${{env.BUILD_TYPE}} --output-folder=.
-        # conan install .. -s build_type=${{env.BUILD_TYPE}} --output-folder=. --build=missing
+          conan install .. -s build_type=${{env.BUILD_TYPE}} --output-folder=. --build=missing
 
       - name: Conan version
         run: echo "${{ steps.conan.outputs.version }}"
