@@ -32,10 +32,10 @@ jobs:
       - name: Configure Conan
         run: |
           cd build/
+          conan profile detect
           pwd
           ls -lisa
           ls -lisa ..
-          ls -lisa ../..
           conan install .. --output-folder=. --build=missing
 
       - name: Conan version
