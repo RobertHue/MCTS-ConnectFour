@@ -1,6 +1,6 @@
 # MCTS_ConnectFour
 
-![example workflow](https://github.com/RobertHue/MCTS_ConnectFour/actions/workflows/cmake.yml/badge.svg)
+![example workflow](https://github.com/RobertHue/MCTS_ConnectFour/actions/workflows/build_and_test.yml/badge.svg)
 
 Implementation of an Connect-Four AI using the MCTS algorithm.
 

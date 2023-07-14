@@ -29,9 +29,6 @@ jobs:
       - name: Conan version
         run: echo "${{ steps.conan.outputs.version }}"
 
-      - name: Conan - set profile
-        run: conan config install
-
       - name: Create build-directory
         run: mkdir -p build/
 
