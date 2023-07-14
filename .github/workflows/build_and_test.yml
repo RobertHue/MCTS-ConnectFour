@@ -35,7 +35,7 @@ jobs:
       - name: Conan - Install dependencies
         run: |
           cd build
-          conan install .. --output-folder=. --build=missing
+          conan install .. -s build_type=${{env.BUILD_TYPE}} --output-folder=. --build=missing
 
       - name: Conan version
         run: echo "${{ steps.conan.outputs.version }}"
