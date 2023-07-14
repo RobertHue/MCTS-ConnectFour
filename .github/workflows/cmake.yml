@@ -20,14 +20,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install Conan
-        id: conan
-        uses: turtlebrowser/get-conan@main
-        with:
-          version: 1.0
-      # Instead:
-      # - name: Get Conan
-      #   uses: turtlebrowser/get-conan@v1.0
+      # see http://codingadventures.org/2021/10/23/github-actions-and-conan/
+      - name: Get Conan
+        uses: turtlebrowser/get-conan@v1.0
 
       - name: Create default profile
         run: conan profile new default --detect
@@ -50,12 +45,10 @@ jobs:
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
         # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
         run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-        # cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
         # Build your program with the given configuration
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
-        # cmake --build .
 
       - name: Test
         working-directory: ${{github.workspace}}/build
