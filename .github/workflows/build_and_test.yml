@@ -33,6 +33,8 @@ jobs:
         run: |
           conan profile detect
           conan profile list
+          conan profile path
+          conan profile show
 
       - name: Create build-directory
         run: mkdir -p build/
