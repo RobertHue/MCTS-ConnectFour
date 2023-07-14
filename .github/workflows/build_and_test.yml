@@ -34,8 +34,11 @@ jobs:
 
       - name: Conan - Install dependencies
         run: |
+          conan profile list
           cd build
-          conan install .. -s build_type=${{env.BUILD_TYPE}} --output-folder=. --build=missing
+          conan profile list
+          conan install .. -s build_type=${{env.BUILD_TYPE}} --output-folder=.
+        # conan install .. -s build_type=${{env.BUILD_TYPE}} --output-folder=. --build=missing
 
       - name: Conan version
         run: echo "${{ steps.conan.outputs.version }}"
