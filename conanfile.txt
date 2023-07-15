@@ -1,5 +1,5 @@
 [requires]
-libpng/1.6.39
+libpng/1.6.40
 boost/[>=1.0.0]
 qt/5.15.8
 
