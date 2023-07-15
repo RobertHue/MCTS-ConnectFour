@@ -26,6 +26,9 @@ jobs:
         with:
           version: 2.0.8
 
+      - name: Conan add conancenter
+        run: conan remote add conancenter https://center.conan.io
+
       - name: Conan version
         run: echo "${{ steps.conan.outputs.version }}"
 
