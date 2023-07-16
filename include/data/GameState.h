@@ -64,7 +64,7 @@ private:
 public:
     GameState(int x = 4, int y = 4); // constructor with arguments
 
-                                     ///////////////////////////////
+    ///////////////////
     //// GETTER  //////
     ///////////////////
 
@@ -82,7 +82,7 @@ public:
     Position getPositionOfLastPlacedToken() const;
     std::vector<int> getPossibleMoves() const;
 
-    ///////////////////////////////
+    ///////////////////
     //// SETTER  //////
     ///////////////////
 
@@ -90,22 +90,20 @@ public:
 
     void nextTurn();
 
-    /** @brief		checks whether the move into column is valid
-	  * if valid,	then this method inserts it into GamePanel and returns VALID_MOVE
-	  * otherwhise, returns NO_VALID_MOVE and does nothing
-	  */
+    /// @brief Checks whether the move into column is valid
+    /// @return if valid, then this method inserts it into GamePanel and returns VALID_MOVE
+    /// otherwhise, returns NO_VALID_MOVE and does nothing
     bool insertTokenIntoColumn(int column);
+    // TODO Should follow SOLID principles (desc says checks but it does more than checking; here also inserting)
 
-
-    /// test whether turnPlayer would win in column xy; does not alter anything to gamestate; hence the const-qualifier
+    /// @brief Tests whether turnPlayer would win in column xy; does not alter anything to gamestate; hence the const-qualifier
     Player wouldSomeoneWin(int column) const;
 
-    /** @brief		retun a player, that has won
-	 * returns NONE(0), if there is a tie or there is no winner yet
-	 */
+    /// @brief Checks whether some player has won
+    /// @return NONE(0), if there is a tie or there is no winner yet
     Player hasSomeoneWon();
 
-    ///////////////////////////////
+    //////////////////////
     //// VISUALIZE  //////
     //////////////////////
 
