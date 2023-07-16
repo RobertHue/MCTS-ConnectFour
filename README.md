@@ -54,6 +54,13 @@ To execute the game do the following:
 ../bin/MCTS_ConnectFour
 ```
 
+To clear all the whole conan cache, use the following command:
+
+```bash
+../bin/MCTS_ConnectFour
+```
+
+
 ## MCTS-Algorithm
 
 The algorithm works by finding the next best move the AI can do.
