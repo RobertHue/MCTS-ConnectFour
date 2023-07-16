@@ -1,4 +1,6 @@
 [requires]
+# specify freetype revision to fix: "ERROR: Version conflict: freetype/2.13.0->libpng/1.6.40, qt/5.15.9->libpng/1.6.39."
+freetype/2.13.0@#a312c096b314c6cfd6b43e290c88928a
 boost/[>=1.0.0]
 qt/5.15.9
 
