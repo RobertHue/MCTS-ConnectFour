@@ -29,6 +29,9 @@ jobs:
       - name: Conan version
         run: echo "${{ steps.conan.outputs.version }}"
 
+      - name: Conan Remote
+        run: conan remote list
+
       - name: Conan - Create the profiles
         run: |
           conan profile detect
