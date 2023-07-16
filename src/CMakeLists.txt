@@ -50,10 +50,6 @@ target_compile_options(
     ${EXECUTABLE_NAME}
     PRIVATE -Wall -Wextra
 )
-target_compile_features(
-    ${EXECUTABLE_NAME}
-    PRIVATE cxx_std_17
-)
 target_include_directories(
     ${EXECUTABLE_NAME}
     PRIVATE ${Qt5Widgets_INCLUDE_DIRS}
