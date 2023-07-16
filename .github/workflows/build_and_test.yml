@@ -9,6 +9,8 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  CONAN_USER_HOME: "${{ github.workspace }}/release/"
+  CONAN_USER_HOME_SHORT: "${{ github.workspace }}/release/short"
 
 jobs:
   build:
@@ -25,6 +27,21 @@ jobs:
         uses: turtlebrowser/get-conan@main
         with:
           version: 2.0.8
+
+      - name: Cache Conan modules
+        id: cache-conan
+        uses: turtlebrowser/conan-cache@master
+        with:
+          bot_name: ${{ secrets.BOT_NAME }}
+          bot_token: ${{ secrets.BOT_TOKEN }}
+          cache_name: ${{ env.CACHE_GITHUB }}/${{ env.CACHE_GITHUB_REPO }}
+          key: host-${{ runner.os }}-target-${{ runner.os }}-${{ hashFiles('conanfile.py') }}
+          target_os: ${{ runner.os }}
+          lfs_limit: 60
+
+      - name: On cache miss add bincrafters remote
+        if: ${{ steps.cache-conan.outputs.cache-hit == 0 }}
+        run: conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
       - name: Conan version
         run: echo "${{ steps.conan.outputs.version }}"
