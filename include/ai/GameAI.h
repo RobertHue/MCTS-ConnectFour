@@ -138,8 +138,6 @@ private:
     /// @note changes the simulatedGameState of this class
     NodeTypePtr selectPromisingNode(NodeTypePtr rootNode);
 
-    NodeTypePtr selectMostVisitedChild(NodeTypePtr rootNode);
-
     /// @brief  Expands the give leaf_node
     /// @param leaf_node the leaf node
     /// @return	expanded node, otherwhise if it wasnt possible to expand the leaf_node L again
@@ -166,9 +164,11 @@ private:
                          const Value ratingToBeUpdated);
 
 private:
-    /// selects the most visited child node from the game tree rootNode
+    /// @brief Selects the most visited child node from the game tree rootNode
     NodeTypePtr selectMostVisitedChild(NodeTypePtr rootNode);
+
     NodeTypePtr findBestNodeWithUCT(NodeTypePtr node);
+
     double uctValue(NodeTypePtr node);
 
     int pickBestMoveFrom(std::vector<int> &possibleMoves, const GameState &gs);
