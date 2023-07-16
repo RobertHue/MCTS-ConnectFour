@@ -39,6 +39,12 @@ jobs:
           conan profile path default
           conan profile show
 
+      - name: Conan - Output global.conf
+        run: cat /home/runner/.conan2/global.conf
+
+      - name: Conan version
+        run: echo "${{ steps.conan.outputs.version }}"
+
       - name: Create build-directory
         run: mkdir -p build/
 
@@ -46,9 +52,6 @@ jobs:
         run: |
           cd build
           conan install .. -s build_type=${{env.BUILD_TYPE}} --output-folder=. --build=missing --profile:build=../conan-profile.txt
-
-      - name: Conan version
-        run: echo "${{ steps.conan.outputs.version }}"
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
