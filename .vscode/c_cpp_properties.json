@@ -2,17 +2,14 @@
   "configurations": [
     {
       "name": "linux-gcc-x64",
-      "includePath": [
-        "${workspaceFolder}/**",
-        "/home/robert/.conan2/p/b/qt96995fabb4014/p/include/**",
-        "/home/robert/.conan2/p/b/qt96995fabb4014/p/include/QtWidgets/**"
-      ],
+      "includePath": ["${workspaceFolder}/**", "~/.conan2/data/**"],
       "compilerPath": "/usr/bin/gcc",
       "cStandard": "${default}",
-      "cppStandard": "${default}",
+      "cppStandard": "c++20",
       "intelliSenseMode": "linux-gcc-x64",
       "defines": [],
-      "compilerArgs": []
+      "compilerArgs": [],
+      "compileCommands": "${workspaceFolder}/build/compile_commands.json"
     }
   ],
   "version": 4

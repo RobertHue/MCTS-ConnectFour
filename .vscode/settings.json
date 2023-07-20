@@ -126,7 +126,8 @@
     "*.ipp": "cpp",
     "qthread": "cpp",
     "codecvt": "cpp",
-    "stack": "cpp"
+    "stack": "cpp",
+    "qdialog": "cpp"
   },
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
