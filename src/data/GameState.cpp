@@ -2,7 +2,9 @@
 
 #include "data/GameState.h"
 
+
 ///////////////////////////////////////////////
+
 
 GameState::GameState(int x, int y)
     : turnPlayer(Player::NONE), otherPlayer(Player::NONE), MAX_X(x), MAX_Y(y),
@@ -14,19 +16,23 @@ GameState::GameState(int x, int y)
     this->setTurnPlayer(Player::PLAYER_1);
 }
 
+
 ///////////////////
 //// GETTER  //////
 ///////////////////
+
 
 int GameState::getMAX_X() const
 {
     return MAX_X;
 }
 
+
 int GameState::getMAX_Y() const
 {
     return MAX_Y;
 }
+
 
 int GameState::getNumOfFreeFields() const
 {
@@ -34,13 +40,16 @@ int GameState::getNumOfFreeFields() const
     return this->numOfFreeFields;
 }
 
+
 int GameState::getGameDataAt(int x, int y) const
 {
 
     return m_gameData[x][y];
 }
 
+
 ////////////////////////////////////////////
+
 
 Player GameState::getTurnPlayer() const
 {
@@ -48,13 +57,16 @@ Player GameState::getTurnPlayer() const
     return this->turnPlayer;
 }
 
+
 Player GameState::getOtherPlayer() const
 {
 
     return this->otherPlayer;
 }
 
+
 ////////////////////////////////////////////
+
 
 const GameState::GameDataType &GameState::getGameData() const
 {
@@ -62,11 +74,13 @@ const GameState::GameDataType &GameState::getGameData() const
     return m_gameData;
 }
 
+
 Position GameState::getPositionOfLastPlacedToken() const
 {
 
     return this->positionOfLastPlacedToken;
 }
+
 
 std::vector<int> GameState::getPossibleMoves() const
 {
@@ -74,7 +88,7 @@ std::vector<int> GameState::getPossibleMoves() const
     // stores the cols which can be made as possible moves
     std::vector<int> possibleMoves;
 
-    int row = 0, col = 0;
+    auto row = int{0}, col = int{0};
     for (col = 0; col < MAX_X; ++col)
     {
         for (row = MAX_Y - 1; row >= 0; --row)
@@ -97,8 +111,6 @@ std::vector<int> GameState::getPossibleMoves() const
 
 void GameState::setTurnPlayer(Player turnPlayer)
 {
-
-
     // protection against wrong parameters:
     if (turnPlayer != Player::PLAYER_1 && turnPlayer != Player::PLAYER_2)
     {
@@ -115,7 +127,6 @@ void GameState::setTurnPlayer(Player turnPlayer)
 
 void GameState::nextTurn()
 {
-
     if (turnPlayer == Player::PLAYER_1)
     {
         turnPlayer = Player::PLAYER_2;
@@ -128,11 +139,11 @@ void GameState::nextTurn()
     }
 }
 
+
 bool GameState::insertTokenIntoColumn(int column)
 {
     for (int row = MAX_Y - 1; row >= 0; --row)
     {
-
         // check whether insertion cell is still free
         if (m_gameData[column][row] == static_cast<int>(Player::NONE))
         {
@@ -156,18 +167,17 @@ bool GameState::insertTokenIntoColumn(int column)
     return NO_VALID_MOVE;
 }
 
+
 Player GameState::wouldSomeoneWin(int column) const
 {
     bool wouldMoveBeValid = NO_VALID_MOVE;
-    int x_placed = -1;
-    int y_placed = -1;
+    auto x_placed = int{-1};
+    auto y_placed = int{-1};
     for (int row = MAX_Y - 1; row >= 0; --row)
     {
-
         // check whether insertion cell is still free
         if (m_gameData[column][row] == static_cast<int>(Player::NONE))
         {
-
             // remember the position of the last placed token
             x_placed = column;
             y_placed = row;
@@ -185,10 +195,10 @@ Player GameState::wouldSomeoneWin(int column) const
     }
 
     // count how many tokens there are in each row:
-    int num_of_tokens_p1_in_row = 0;
-    int num_of_tokens_p2_in_row = 0;
+    auto num_of_tokens_p1_in_row = int{0};
+    auto num_of_tokens_p2_in_row = int{0};
 
-    const std::array<std::array<int, 2>, 24> offsets = {{
+    const auto offsets = std::array<std::array<int, 2>, 24>{{
         {-3, 0},  {-2, 0},  {-1, 0},  {1, 0},  {2, 0},  {3, 0}, // horizontal
         {0, -3},  {0, -2},  {0, -1},  {0, 1},  {0, 2},  {0, 3}, // vertical
         {-3, -3}, {-2, -2}, {-1, -1}, {1, 1},  {2, 2},  {3, 3}, // diagonal1
@@ -213,24 +223,23 @@ Player GameState::wouldSomeoneWin(int column) const
         if (y_check < 0 || y_check >= MAX_Y)
             continue;
 
-
         if (this->m_gameData[x_check][y_check] ==
             static_cast<int>(Player::PLAYER_1))
         {
-            num_of_tokens_p2_in_row = 0;
+            num_of_tokens_p2_in_row = int{0};
             ++num_of_tokens_p1_in_row;
         }
         else if (this->m_gameData[x_check][y_check] ==
                  static_cast<int>(Player::PLAYER_2))
         {
-            num_of_tokens_p1_in_row = 0;
+            num_of_tokens_p1_in_row = int{0};
             ++num_of_tokens_p2_in_row;
         }
         else if (this->m_gameData[x_check][y_check] ==
                  static_cast<int>(Player::NONE))
         {
-            num_of_tokens_p1_in_row = 0;
-            num_of_tokens_p2_in_row = 0;
+            num_of_tokens_p1_in_row = int{0};
+            num_of_tokens_p2_in_row = int{0};
         }
 
         // has someone won?
@@ -250,16 +259,17 @@ Player GameState::wouldSomeoneWin(int column) const
     return Player::NONE; // noone has won yet!
 }
 
+
 Player GameState::hasSomeoneWon()
 {
     const int x_placed = positionOfLastPlacedToken.x;
     const int y_placed = positionOfLastPlacedToken.y;
 
     // count how many tokens there are in each row:
-    int num_of_tokens_p1_in_row = 0;
-    int num_of_tokens_p2_in_row = 0;
+    auto num_of_tokens_p1_in_row = int{0};
+    auto num_of_tokens_p2_in_row = int{0};
 
-    const std::array<std::array<int, 2>, 28> offsets = {{
+    const auto offsets = std::array<std::array<int, 2>, 28>{{
         {-3, 0},  {-2, 0},  {-1, 0},  {0, 0},
         {1, 0},   {2, 0},   {3, 0}, // horizontal
         {0, -3},  {0, -2},  {0, -1},  {0, 0},
@@ -276,8 +286,8 @@ Player GameState::hasSomeoneWon()
         // new line inside the offset_Matrix => new check of number of tokens in each of the 8 directions
         if ((i % 7) == 0)
         {
-            num_of_tokens_p1_in_row = 0;
-            num_of_tokens_p2_in_row = 0;
+            num_of_tokens_p1_in_row = int{0};
+            num_of_tokens_p2_in_row = int{0};
         }
         const int x_check = x_placed + offsets[i][0];
         const int y_check = y_placed + offsets[i][1];
@@ -288,24 +298,23 @@ Player GameState::hasSomeoneWon()
         if (y_check < 0 || y_check >= MAX_Y)
             continue;
 
-
         if (this->m_gameData[x_check][y_check] ==
             static_cast<int>(Player::PLAYER_1))
         {
-            num_of_tokens_p2_in_row = 0;
+            num_of_tokens_p2_in_row = int{0};
             ++num_of_tokens_p1_in_row;
         }
         else if (this->m_gameData[x_check][y_check] ==
                  static_cast<int>(Player::PLAYER_2))
         {
-            num_of_tokens_p1_in_row = 0;
+            num_of_tokens_p1_in_row = int{0};
             ++num_of_tokens_p2_in_row;
         }
         else if (this->m_gameData[x_check][y_check] ==
                  static_cast<int>(Player::NONE))
         {
-            num_of_tokens_p1_in_row = 0;
-            num_of_tokens_p2_in_row = 0;
+            num_of_tokens_p1_in_row = int{0};
+            num_of_tokens_p2_in_row = int{0};
         }
 
         // has someone won?
@@ -325,9 +334,11 @@ Player GameState::hasSomeoneWon()
     return Player::NONE; // noone has won yet!
 }
 
+
 //////////////////////
 //// VISUALIZE  //////
 //////////////////////
+
 
 void GameState::drawGameStateOnConsole()
 {

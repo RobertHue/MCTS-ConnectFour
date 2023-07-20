@@ -1,6 +1,7 @@
 #ifndef TREE_H_
 #define TREE_H_
 
+
 #include <cstddef>  // for std::size_t
 #include <iomanip>  // for std::setw(n)
 #include <iostream> // for std::cout
@@ -8,9 +9,11 @@
 #include <string>   // for std::string
 #include <vector>   // for std::vector (childNodes)
 
+
 /////////////////////////
 //////// N o d e ////////
 /////////////////////////
+
 
 template <typename T>
 class Node
@@ -25,26 +28,32 @@ public:
     T data;                                           /// data
 };
 
+
 //////////////////////////////////////////////////
+
 
 template <typename T>
 inline Node<T>::Node() : parent(nullptr), childNodes(), data()
 {
 }
 
+
 template <typename T>
 inline Node<T>::Node(const T &src) : parent(nullptr), childNodes(), data(src)
 {
 }
+
 
 template <typename T>
 inline Node<T>::Node(T &&src) : parent(nullptr), childNodes(), data(src)
 {
 }
 
+
 /////////////////////////
 //////// T r e e ////////
 /////////////////////////
+
 
 template <typename T>
 class Tree
@@ -89,10 +98,13 @@ private:
     int m_amountOfNodes; // cached value of the tree size, so no traversal needed anymore to find it out
 };
 
+
 template <typename T>
 std::ostream &operator<<(std::ostream &, const Node<T> &node);
 
+
 //////////////////////////////////////////////////
+
 
 template <typename T>
 Tree<T>::Tree() : m_amountOfNodes(0)
@@ -100,11 +112,13 @@ Tree<T>::Tree() : m_amountOfNodes(0)
     m_root = createNewNode(nullptr);
 }
 
+
 template <typename T>
 Tree<T>::~Tree()
 {
     clear(m_root);
 }
+
 
 template <typename T>
 Tree<T>::Tree(const Tree<T> &src)
@@ -119,6 +133,7 @@ Tree<T>::Tree(const Tree<T> &src)
     m_amountOfNodes = 0;
     m_root = copyTree(nullptr, src.m_root);
 }
+
 
 template <typename T>
 Tree<T> &Tree<T>::operator=(const Tree<T> &rhs)
@@ -136,7 +151,9 @@ Tree<T> &Tree<T>::operator=(const Tree<T> &rhs)
     return *this;
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////
+
 
 template <typename T>
 inline bool Tree<T>::isEmpty() const
@@ -144,11 +161,13 @@ inline bool Tree<T>::isEmpty() const
     return !m_root;
 }
 
+
 template <typename T>
 inline typename Tree<T>::NodeTypePtr Tree<T>::getRoot() const
 {
     return m_root;
 }
+
 
 template <typename T>
 inline typename Tree<T>::NodeTypePtr Tree<T>::createNewNode(NodeTypePtr dstNode)
@@ -166,17 +185,20 @@ inline typename Tree<T>::NodeTypePtr Tree<T>::createNewNode(NodeTypePtr dstNode)
     return newNode;
 }
 
+
 template <typename T>
 inline void Tree<T>::printLevelOrder()
 {
     Tree<T>::printLevelOrder(m_root);
 }
 
+
 template <typename T>
 inline std::size_t Tree<T>::size() const
 {
     return m_amountOfNodes;
 }
+
 
 // Print the tree level-order assisted by queue
 template <typename T>
@@ -216,6 +238,7 @@ inline void Tree<T>::printLevelOrder(NodeTypePtr rootNode)
     std::cout << "\n\n";
 }
 
+
 template <typename T>
 inline void Tree<T>::clear(NodeTypePtr node)
 {
@@ -232,6 +255,7 @@ inline void Tree<T>::clear(NodeTypePtr node)
 
     --m_amountOfNodes;
 }
+
 
 template <typename T>
 inline typename Tree<T>::NodeTypePtr Tree<T>::copyTree(NodeTypePtr parent,
@@ -256,11 +280,13 @@ inline typename Tree<T>::NodeTypePtr Tree<T>::copyTree(NodeTypePtr parent,
     return newNode;
 }
 
+
 template <typename T>
 inline std::ostream &operator<<(std::ostream &os, const Node<T> &node)
 {
     os << node.data;
     return os; // enables concatenation of ostreams with <<
 }
+
 
 #endif /* TREE_H_ */

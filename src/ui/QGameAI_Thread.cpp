@@ -12,6 +12,7 @@ QGameAI_Thread::~QGameAI_Thread()
     QThread::wait(); // waits for the thread to end
 }
 
+
 void QGameAI_Thread::run()
 {
     // do the ai calculations needed to get the best col for it
@@ -23,6 +24,7 @@ void QGameAI_Thread::run()
 
     //QThread::exec();	// run the event loop
 }
+
 
 void QGameAI_Thread::doTurn(Player turnPlayer)
 {

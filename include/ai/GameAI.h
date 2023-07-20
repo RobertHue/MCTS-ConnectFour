@@ -146,7 +146,6 @@ private:
     ///       child nodes are valid moves from the game position defined by leaf_node L
     NodeTypePtr expandNode(NodeTypePtr leaf_node);
 
-
     /// @brief Simulates a game from the expanded node (C) and
     ///        updates the game tree (just one simulation per call)
     /// @param expanded_node the expanded node
@@ -154,7 +153,6 @@ private:
     ///       the path to that expanded node
     /// @return a double indicaing if the game was won by the AI
     double simulation(NodeTypePtr expanded_node);
-
 
     /// @brief Backpropagate/Update the ratings from the expanded node to its root node.
     /// @note use the result of the simulation (playout) to update (backpropagate)
