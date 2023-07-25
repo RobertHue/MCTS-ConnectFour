@@ -5,7 +5,7 @@
       "includePath": ["${workspaceFolder}/**", "~/.conan2/data/**"],
       "compilerPath": "/usr/bin/gcc",
       "cStandard": "${default}",
-      "cppStandard": "c++20",
+      "cppStandard": "c++23",
       "intelliSenseMode": "linux-gcc-x64",
       "defines": [],
       "compilerArgs": [],
