@@ -42,6 +42,12 @@ cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 cmake --build . -j 4
 ```
 
+To clean, use the following:
+
+```bash
+cmake --build . --target clean
+```
+
 To execute the tests do the following:
 
 ```bash
