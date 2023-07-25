@@ -101,8 +101,8 @@ jobs:
             -s build_type=${{ env.BUILD_TYPE }} \
             --output-folder=. \
             --build=missing \
-            --profile:build=${{ github.workspace }}/conan-profile.txt
-            --profile:host=${{ github.workspace }}/conan-profile.txt
+            --profile:build=${{ github.workspace }}/conan-profile.txt \
+            --profile:host=${{ github.workspace }}/conan-profile.txt \
 
         ########################################################################
 
