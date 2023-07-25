@@ -38,8 +38,8 @@ jobs:
             libgl-dev libgl1-mesa-dev qttools5-dev
           version: 1.0
 
-#    - name: update ubuntu
-#      run: sudo apt-get update && sudo apt-get install -y git && sudo apt-get install -y jq
+      #    - name: update ubuntu
+      #      run: sudo apt-get update && sudo apt-get install -y git && sudo apt-get install -y jq
 
       - name: fix apt.install on system-requirements
         run: |
@@ -102,6 +102,7 @@ jobs:
             --output-folder=. \
             --build=missing \
             --profile:build=${{ github.workspace }}/conan-profile.txt
+            --profile:host=${{ github.workspace }}/conan-profile.txt
 
         ########################################################################
 
