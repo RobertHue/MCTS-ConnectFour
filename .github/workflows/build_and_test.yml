@@ -126,7 +126,7 @@ jobs:
       - name: Build
         run: |
           cd ${{ github.workspace }}/build/
-          cmake --build .
+          cmake --build . -j 4
 
       - name: Test
         working-directory: ${{ github.workspace }}/build

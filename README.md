@@ -39,7 +39,7 @@ mkdir build
 cd build
 conan install .. --output-folder=. --build=missing --profile:build=../conan-profile.txt
 cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-cmake --build .
+cmake --build . -j 4
 ```
 
 To execute the tests do the following:
