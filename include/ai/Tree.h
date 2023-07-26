@@ -97,16 +97,8 @@ private:
 
 
 template <typename T>
-std::ostream &operator<<(std::ostream &, const Node<T> &node);
-
-
-//////////////////////////////////////////////////
-
-
-template <typename T>
-Tree<T>::Tree() : m_amountOfNodes(0)
+Tree<T>::Tree() : m_root(createNewNode(nullptr))
 {
-    m_root = createNewNode(nullptr);
 }
 
 
