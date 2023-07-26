@@ -9,7 +9,7 @@
       "stopAtEntry": true,
       "externalConsole": true,
       "cwd": "${workspaceFolder}/bin/",
-      "program": "MCTS_ConnectFour",
+      "program": "${workspaceFolder}/bin/MCTS_ConnectFour",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
@@ -29,7 +29,7 @@
       "stopAtEntry": false,
       "externalConsole": false,
       "cwd": "${workspaceFolder}/bin/",
-      "program": "MCTS_ConnectFour",
+      "program": "${workspaceFolder}/bin/MCTS_ConnectFour",
       "preLaunchTask": "Cmake: Build Release"
     }
   ]
