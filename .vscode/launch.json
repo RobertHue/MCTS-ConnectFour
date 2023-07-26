@@ -6,10 +6,10 @@
       "type": "cppdbg",
       "request": "launch",
       "args": [],
-      "stopAtEntry": false,
-      "externalConsole": false,
-      "cwd": "/home/robert/Development/UdemyCpp/02_Basics/2_4/IncludeGuards",
-      "program": "/home/robert/Development/UdemyCpp/02_Basics/2_4/IncludeGuards/build/Debug/outDebug",
+      "stopAtEntry": true,
+      "externalConsole": true,
+      "cwd": "${workspaceFolder}/bin/",
+      "program": "MCTS_ConnectFour",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
@@ -18,7 +18,19 @@
           "text": "-enable-pretty-printing",
           "ignoreFailures": true
         }
-      ]
+      ],
+      "preLaunchTask": "Cmake: Build Debug"
+    },
+    {
+      "name": "C/C++ Runner: Release Session",
+      "type": "cppdbg",
+      "request": "launch",
+      "args": [],
+      "stopAtEntry": false,
+      "externalConsole": false,
+      "cwd": "${workspaceFolder}/bin/",
+      "program": "MCTS_ConnectFour",
+      "preLaunchTask": "Cmake: Build Release"
     }
   ]
 }
