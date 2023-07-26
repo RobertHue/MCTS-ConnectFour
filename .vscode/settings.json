@@ -127,7 +127,8 @@
     "qthread": "cpp",
     "codecvt": "cpp",
     "stack": "cpp",
-    "qdialog": "cpp"
+    "qdialog": "cpp",
+    "source_location": "cpp"
   },
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,

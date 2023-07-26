@@ -1,6 +1,7 @@
 {
   "version": "2.0.0",
   "tasks": [
+    ////////////////////////////////////////////////////////////////////////////
     {
       "label": "Conan: Install Debug",
       "type": "shell",
@@ -8,14 +9,6 @@
         "cwd": "${workspaceRoot}/build"
       },
       "command": "mkdir -p build && conan install .. --output-folder=. --build=missing --profile:build=../conan-profile.txt --profile:host=../conan-profile.txt --settings=build_type=Debug"
-    },
-    {
-      "label": "Conan: Install Release",
-      "type": "shell",
-      "options": {
-        "cwd": "${workspaceRoot}/build"
-      },
-      "command": "mkdir -p build && conan install .. --output-folder=. --build=missing --profile:build=../conan-profile.txt --profile:host=../conan-profile.txt --settings=build_type=Release"
     },
     {
       "label": "Cmake: Build Debug",
@@ -26,6 +19,15 @@
       "command": "cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug && cmake --build . -j 4",
       "dependsOn": ["Conan: Install Debug"]
     },
+    ////////////////////////////////////////////////////////////////////////////
+    {
+      "label": "Conan: Install Release",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceRoot}/build"
+      },
+      "command": "mkdir -p build && conan install .. --output-folder=. --build=missing --profile:build=../conan-profile.txt --profile:host=../conan-profile.txt --settings=build_type=Release"
+    },
     {
       "label": "Cmake: Build Release",
       "type": "shell",
@@ -35,5 +37,6 @@
       "command": "cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release && cmake --build . -j 4",
       "dependsOn": ["Conan: Install Release"]
     }
+    ////////////////////////////////////////////////////////////////////////////
   ]
 }
