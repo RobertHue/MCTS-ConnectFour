@@ -35,7 +35,7 @@ jobs:
             libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev
             libxcb-render-util0-dev libxcb-util-dev libxcb-xinerama0-dev
             libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev
-            libgl-dev libgl1-mesa-dev qttools5-dev gcc-13
+            libgl-dev libgl1-mesa-dev qttools5-dev
           version: 1.0
 
       #    - name: update ubuntu
