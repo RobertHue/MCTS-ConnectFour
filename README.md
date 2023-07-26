@@ -35,9 +35,9 @@ sudo apt-get install libfontconfig1-dev libfreetype6-dev libx11-dev libx11-xcb-d
 To compile this project with the tests and the game itself execute the following commands:
 
 ```bash
-mkdir build
+mkdir -p build
 cd build
-conan install .. --output-folder=. --build=missing --profile:build=../conan-profile.txt
+conan install .. --output-folder=. --build=missing --profile:build=../conan-profile.txt --profile:host=../conan-profile.txt
 cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 cmake --build . -j 4
 ```
