@@ -68,16 +68,16 @@ public:
     Tree &operator=(Tree<T> &&rhs) noexcept = default; // move assign construct
 
 public:
-    bool isEmpty() const;
-    NodeTypePtr getRoot() const;
-    std::size_t size() const; // returns the number of nodes
+    [[nodiscard]] bool isEmpty() const;
+    [[nodiscard]] NodeTypePtr getRoot() const;
+    [[nodiscard]] std::size_t size() const; // returns the number of nodes
 
     // prints the level order from the position of the root node
     //enables prettier calls, eg: tree.printLevelOrder();
     void printLevelOrder();
 
     // creates a new node at destination with default values returning the newly created node
-    NodeTypePtr createNewNode(NodeTypePtr dstNode);
+    [[maybe_unused]] NodeTypePtr createNewNode(NodeTypePtr dstNode);
 
 public: /* STATIC */
     // Prints the n-ary tree level wise (level-order)
@@ -87,12 +87,12 @@ private:
     // clears the subtree from the position of the passed node, used by destructor
     void clear(NodeTypePtr node);
 
-    // copies the tree on the right to the left, used by copy constructors
-    NodeTypePtr copyTree(NodeTypePtr parent, NodeTypePtr other);
+    // copies the tree from the right to the left, used by copy constructors
+    [[nodiscard]] NodeTypePtr copyTree(NodeTypePtr parent, NodeTypePtr other);
 
 private:
     NodeTypePtr m_root; // stores a pointer to the root node of the tree
-    int m_amountOfNodes; // cached value of the tree size, so no traversal needed anymore to find it out
+    int m_amountOfNodes{}; // cached value of the tree size, so no traversal needed anymore to find it out
 };
 
 
