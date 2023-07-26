@@ -27,20 +27,20 @@ public:
     Node();
 
     // Rule of Five-idiom
-    ~Node() noexcept = default;                    // destructor
-    Node(const Node<T> &src) = default;            // copy construct
-    Node &operator=(const Node<T> &rhs) = default; // copy assignment construct
-    Node(Node<T> &&src) noexcept = default;        // move construct
-    Node &operator=(Node<T> &&rhs) noexcept = default; // move assign construct
+    ~Node() noexcept = default;                      // destructor
+    Node(const Node<T> &other) = default;            // copy construct
+    Node &operator=(const Node<T> &other) = default; // copy assignment constr
+    Node(Node<T> &&other) noexcept = default;        // move construct
+    Node &operator=(Node<T> &&other) noexcept = default; // move assign constr
 
-    NodeType parent;                                   /// parent
-    ChildNodeType childNodes;                          /// children
-    T data;                                            /// data
+    NodeType parent;                                     /// parent
+    ChildNodeType childNodes;                            /// children
+    T data;                                              /// data
 };
 
 
 template <typename T>
-inline Node<T>::Node() : parent(nullptr), childNodes(), data()
+inline Node<T>::Node() : parent(NodeType{}), childNodes(), data()
 {
 }
 
@@ -61,11 +61,11 @@ public:
     Tree();
 
     // Rule of Five-idiom
-    ~Tree() noexcept = default;                    // destructor
-    Tree(const Tree<T> &src) = default;            // copy construct
-    Tree &operator=(const Tree<T> &rhs) = default; // copy assignment construct
-    Tree(Tree<T> &&src) noexcept = default;        // move construct
-    Tree &operator=(Tree<T> &&rhs) noexcept = default; // move assign construct
+    ~Tree() noexcept;                          // destructor
+    Tree(const Tree<T> &other);                // copy construct
+    Tree &operator=(const Tree<T> &other);     // copy assignment construct
+    Tree(Tree<T> &&other) noexcept;            // move construct
+    Tree &operator=(Tree<T> &&other) noexcept; // move assign construct
 
 public:
     [[nodiscard]] bool isEmpty() const;
@@ -92,13 +92,78 @@ private:
 
 private:
     NodeTypePtr m_root; // stores a pointer to the root node of the tree
-    int m_amountOfNodes{}; // cached value of the tree size, so no traversal needed anymore to find it out
+    std::size_t m_amountOfNodes; // cached tree size, so no traversal needed
 };
 
 
 template <typename T>
-Tree<T>::Tree() : m_root(createNewNode(nullptr))
+Tree<T>::Tree()
+    : m_root(createNewNode(NodeTypePtr{})), m_amountOfNodes(std::size_t{})
 {
+}
+
+
+template <typename T>
+Tree<T>::~Tree() noexcept
+{
+    clear(m_root);
+}
+
+
+template <typename T>
+Tree<T>::Tree(const Tree<T> &other)
+{
+    // check for self-assignment
+    if (this == &other)
+    {
+        return;
+    }
+
+    // assign the contents (deep copy)
+    this->m_root = copyTree(NodeTypePtr{}, other.m_root);
+    this->m_amountOfNodes = std::size_t{};
+}
+
+
+template <typename T>
+Tree<T> &Tree<T>::operator=(const Tree<T> &other)
+{
+    // check for self-assignment
+    if (this == &other)
+    {
+        return *this;
+    }
+
+    // assign the contents (deep copy)
+    this->m_root = copyTree(NodeTypePtr{}, other.m_root);
+    this->m_amountOfNodes = std::size_t{};
+
+    return *this;
+}
+
+
+template <typename T>
+Tree<T>::Tree(Tree &&other) noexcept
+    : m_root(std::move(other.m_root)),
+      m_amountOfNodes(std::move(other.m_amountOfNodes))
+{
+    other.m_root = NodeTypePtr{};
+    other.m_amountOfNodes = std::size_t{};
+}
+
+template <typename T>
+Tree<T> &Tree<T>::operator=(Tree &&other) noexcept
+{
+    if (this != &other)
+    {
+        this->m_root = std::move(other.m_root);
+        this->m_amountOfNodes = std::move(other.m_amountOfNodes);
+
+        other.m_root = NodeTypePtr{};
+        other.m_amountOfNodes = std::size_t{};
+    }
+
+    return *this;
 }
 
 
