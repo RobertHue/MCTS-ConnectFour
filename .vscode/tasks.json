@@ -8,7 +8,7 @@
       "options": {
         "cwd": "${workspaceRoot}/build"
       },
-      "command": "mkdir -p build && conan install .. --output-folder=. --build=missing --profile:build=../conan-profile.txt --profile:host=../conan-profile.txt --settings=build_type=Debug"
+      "command": "export NOT_ON_C3I=1 && conan install .. --output-folder=. --build=missing -s build_type=Debug"
     },
     {
       "label": "Cmake: Build Debug",
@@ -26,7 +26,7 @@
       "options": {
         "cwd": "${workspaceRoot}/build"
       },
-      "command": "mkdir -p build && conan install .. --output-folder=. --build=missing --profile:build=../conan-profile.txt --profile:host=../conan-profile.txt --settings=build_type=Release"
+      "command": "export NOT_ON_C3I=1 && conan install .. --output-folder=. --build=missing -s build_type=Release"
     },
     {
       "label": "Cmake: Build Release",
