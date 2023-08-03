@@ -1,7 +1,7 @@
 [settings]
 arch=x86_64
 compiler=gcc
-compiler.cppstd=20
+compiler.cppstd=gnu20
 compiler.libcxx=libstdc++11
 compiler.version=11
 os=Linux
