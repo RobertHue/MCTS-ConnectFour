@@ -91,14 +91,14 @@ private:
     [[nodiscard]] NodeTypePtr copyTree(NodeTypePtr parent, NodeTypePtr other);
 
 private:
-    NodeTypePtr m_root; // stores a pointer to the root node of the tree
     std::size_t m_amountOfNodes; // cached tree size, so no traversal needed
+    NodeTypePtr m_root; // stores a pointer to the root node of the tree
 };
 
 
 template <typename T>
 Tree<T>::Tree()
-    : m_root(createNewNode(NodeTypePtr{})), m_amountOfNodes(std::size_t{})
+    : m_amountOfNodes(std::size_t{}), m_root(createNewNode(NodeTypePtr{}))
 {
 }
 
@@ -112,6 +112,7 @@ Tree<T>::~Tree() noexcept
 
 template <typename T>
 Tree<T>::Tree(const Tree<T> &other)
+    : m_amountOfNodes(std::size_t{}), m_root(nullptr)
 {
     // check for self-assignment
     if (this == &other)
@@ -120,8 +121,8 @@ Tree<T>::Tree(const Tree<T> &other)
     }
 
     // assign the contents (deep copy)
-    this->m_root = copyTree(NodeTypePtr{}, other.m_root);
     this->m_amountOfNodes = std::size_t{};
+    this->m_root = copyTree(NodeTypePtr{}, other.m_root);
 }
 
 
@@ -135,8 +136,8 @@ Tree<T> &Tree<T>::operator=(const Tree<T> &other)
     }
 
     // assign the contents (deep copy)
-    this->m_root = copyTree(NodeTypePtr{}, other.m_root);
     this->m_amountOfNodes = std::size_t{};
+    this->m_root = copyTree(NodeTypePtr{}, other.m_root);
 
     return *this;
 }
@@ -147,8 +148,8 @@ Tree<T>::Tree(Tree &&other) noexcept
     : m_root(std::move(other.m_root)),
       m_amountOfNodes(std::move(other.m_amountOfNodes))
 {
-    other.m_root = NodeTypePtr{};
     other.m_amountOfNodes = std::size_t{};
+    other.m_root = NodeTypePtr{};
 }
 
 template <typename T>
@@ -156,11 +157,11 @@ Tree<T> &Tree<T>::operator=(Tree &&other) noexcept
 {
     if (this != &other)
     {
-        this->m_root = std::move(other.m_root);
         this->m_amountOfNodes = std::move(other.m_amountOfNodes);
+        this->m_root = std::move(other.m_root);
 
-        other.m_root = NodeTypePtr{};
         other.m_amountOfNodes = std::size_t{};
+        other.m_root = NodeTypePtr{};
     }
 
     return *this;
