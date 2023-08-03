@@ -98,11 +98,11 @@ jobs:
           mkdir -p ${{ github.workspace }}/build/
           cd ${{ github.workspace }}/build/
           conan install .. \
-            -s build_type=${{ env.BUILD_TYPE }} \
             --output-folder=. \
             --build=missing \
             --profile:build=${{ github.workspace }}/conan-profile.txt \
             --profile:host=${{ github.workspace }}/conan-profile.txt \
+            -s build_type=${{ env.BUILD_TYPE }} \
 
         ########################################################################
 
