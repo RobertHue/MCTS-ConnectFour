@@ -35,17 +35,9 @@ add_executable(
     ${TEST_NAME}
     ${DEPENDENCIES}
 )
-target_compile_options(
-    ${TEST_NAME}
-    PRIVATE -Wall -Wextra
-)
 target_compile_definitions(
     ${TEST_NAME}
     PRIVATE UNIT_TEST=1
-)
-target_compile_features(
-    ${TEST_NAME}
-    PRIVATE cxx_std_17
 )
 target_include_directories(
     ${TEST_NAME}
