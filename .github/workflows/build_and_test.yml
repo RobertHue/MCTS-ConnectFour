@@ -95,6 +95,7 @@ jobs:
 
       - name: Conan - Install package dependencies from conanfile.txt
         run: |
+          export NOT_ON_C3I=1
           mkdir -p ${{ github.workspace }}/build/
           cd ${{ github.workspace }}/build/
           conan install .. \
