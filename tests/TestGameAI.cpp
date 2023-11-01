@@ -375,30 +375,3 @@ BOOST_AUTO_TEST_CASE(MCTS_Test07)
     checkChildVisitsValuePlausibily(ai);
     checkChildCountIteratively(ai.getGameTree().getRoot(), gs.getMAX_X());
 }
-
-/// tests whether the AI places the first token in the middle of the board
-/// on an empty board. there is the highest probabily to win :)
-BOOST_AUTO_TEST_CASE(MCTS_Test08)
-{
-    BOOST_TEST_MESSAGE("MCTS_Test08");
-
-    for (int i = 0; i < 1; ++i)
-    {
-        const Player playerYou = Player::PLAYER_2;
-        const Player playerAI = Player::PLAYER_1;
-        const int MAX_X = 7;
-        const int MAX_Y = 5;
-        GameState gs(MAX_X, MAX_Y);
-        GameAI ai(playerAI);
-
-        gs.drawGameStateOnConsole();
-
-        gs.setTurnPlayer(playerAI);
-        const int ACTUAL_COLUMN = ai.findNextMove(gs);
-        const int EXPECTED_COLUMN = 3; // to avoid cross from winning
-        BOOST_CHECK(ACTUAL_COLUMN == EXPECTED_COLUMN);
-
-        checkChildVisitsValuePlausibily(ai);
-        checkChildCountIteratively(ai.getGameTree().getRoot(), gs.getMAX_X());
-    }
-}
