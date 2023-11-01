@@ -4,6 +4,8 @@
 
 Implementation of an Connect-Four AI using the MCTS algorithm.
 
+![mcts-gui](resources/mcts-gui.png)
+
 ## Table of contents
 
 - [MCTS\_ConnectFour](#mcts_connectfour)
